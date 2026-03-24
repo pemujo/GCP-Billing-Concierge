@@ -1,5 +1,119 @@
-# Ignore all hidden files and directories
-/**/.*
-/**/.*/
-# Except the .gitignore file itself
-!/.gitignore
+# ====================================================================
+# PROJECT-WIDE OVERRIDES
+# ====================================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+
+# ====================================================================
+# PYTHON & VIRTUAL ENVIRONMENTS
+# ====================================================================
+__pycache__/
+.python-version
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env/
+.venv/
+env.bak/
+venv.bak/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ====================================================================
+# AGENT DEVELOPMENT (ADK / AI / LLM)
+# ====================================================================
+# Secrets (CRITICAL: Never commit these)
+.env
+.env.*
+*.env
+secrets.yaml
+credentials.json
+auth.json
+
+# Agent State & Memory
+**/state/
+**/memory/
+**/logs/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Vector DBs & Local Model Artifacts
+**/vector_store/
+**/chroma/
+**/pinecone/
+models/
+indices/
+*.bin
+*.gguf
+*.onnx
+
+# Testing & Traces
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+htmlcov/
+.hypothesis/
+**/traces/
+**/eval_results/
+
+# ====================================================================
+# TERRAFORM (INFRASTRUCTURE)
+# ====================================================================
+# Local terraform directory (providers/modules)
+.terraform/
+
+# State files (CONTAINS SECRETS - DO NOT COMMIT)
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Variables and overrides
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI Config
+.terraformrc
+terraform.rc
+
+# ====================================================================
+# IDEs & NOTEBOOKS
+# ====================================================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.ipynb_checkpoints/
