@@ -1,1 +1,1 @@
-# gcp-finops-agent
+# Cloud AI FinOps Agent
