@@ -42,9 +42,11 @@ Before running the setup, ensure you have:
 ## 🚀 Getting Started
 
 ### 1. Enable Required APIs
-Set environment variables:
+Set environment variables with your project ID and the desired name for your agent:
+
 ```bash
 export GOOGLE_CLOUD_PROJECT="your-project-id"
+export AGENT_NAME="billing-concierge"
 ```
 
 Run the following command to enable the necessary Google Cloud services:
@@ -68,13 +70,6 @@ gcloud services enable \
 ### 2. Installation & Configuration
 
 To initialize your FinOps agent project, use the `agent-starter-pack`. This command will create a new project directory using this repository as a template, setting up the necessary structure and dependencies.
-
-Set your project ID and the desired name for your agent:
-
-```bash
-export GOOGLE_CLOUD_PROJECT="your-project-id"
-export AGENT_NAME="billing-concierge"
-```
 
 Initialize the project:
 
