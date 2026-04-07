@@ -64,7 +64,7 @@ def main():
     load_dotenv(agent_env)
 
     local_project = os.getenv("GOOGLE_CLOUD_PROJECT")
-    billing_project = os.getenv("billing_export_Project_ID")
+    billing_project = os.getenv("BILLING_EXPORT_PROJECT_ID")
     
     if not local_project or not billing_project:
         print("❌ ERROR: Missing project variables in .env. Run 'make setup_billing' first.")

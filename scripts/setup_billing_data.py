@@ -36,9 +36,9 @@ def main():
     
     # Context variables from .env or Shell
     curr_execution_p = os.getenv("GOOGLE_CLOUD_PROJECT", "")
-    curr_billing_p = os.getenv("billing_export_Project_ID", "")
-    curr_d = os.getenv("billing_export_dataset", "")
-    curr_t = os.getenv("billing_export_table", "")
+    curr_billing_p = os.getenv("BILLING_EXPORT_PROJECT_ID", "")
+    curr_d = os.getenv("BILLING_EXPORT_DATASET", "")
+    curr_t = os.getenv("BILLING_EXPORT_TABLE", "")
 
     draw_header("💰 GCP Billing Data Setup")
     print("1) Use an existing Billing export on BigQuery table.")
@@ -95,9 +95,9 @@ def main():
             return
 
         final_vars.update({
-            "billing_export_Project_ID": exec_p,
-            "billing_export_dataset": dataset_id,
-            "billing_export_table": table_id
+            "BILLING_EXPORT_PROJECT_ID": exec_p,
+            "BILLING_EXPORT_DATASET": dataset_id,
+            "BILLING_EXPORT_TABLE": table_id
         })
 
     else:
@@ -108,9 +108,9 @@ def main():
         bq_table = input(f"Table name [{curr_t}]: ") or curr_t
 
         final_vars.update({
-            "billing_export_Project_ID": bq_project,
-            "billing_export_dataset": bq_dataset,
-            "billing_export_table": bq_table
+            "BILLING_EXPORT_PROJECT_ID": bq_project,
+            "BILLING_EXPORT_DATASET": bq_dataset,
+            "BILLING_EXPORT_TABLE": bq_table
         })
 
     # Persist all variables to the agent .env
