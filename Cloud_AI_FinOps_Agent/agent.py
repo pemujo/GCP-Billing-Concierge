@@ -1,94 +1,87 @@
+import logging
 import os
+
 import google.auth
 import google.cloud.logging
-
-from google.auth.transport.requests import Request
+from dotenv import load_dotenv
 from google.adk.agents import Agent
-from google.adk.tools.data_agent.config import DataAgentToolConfig
-from google.adk.tools.data_agent.credentials import DataAgentCredentialsConfig
-from google.adk.tools.data_agent.data_agent_toolset import DataAgentToolset
-from google.adk.tools.bigquery import BigQueryCredentialsConfig, BigQueryToolset
+from google.adk.tools.bigquery import (
+    BigQueryCredentialsConfig,
+    BigQueryToolset,
+)
 from google.adk.tools.bigquery.config import BigQueryToolConfig, WriteMode
-from google.cloud.logging_v2.resource import Resource 
 from google.auth.transport.requests import Request
 
-# --- 1. AUTHENTICATION & PROJECT ID ---
-credentials, detected_project_id = google.auth.default(
-    scopes=["https://www.googleapis.com/auth/cloud-platform"]
-)
-PROJECT_ID = detected_project_id or os.environ.get("GOOGLE_CLOUD_PROJECT")
+# Internal Imports
+from .prompt import get_instructions
+from .utils.tools import log_billing_anomaly
 
-# Refresh the token immediately for the Data Agent and Logging clients
-auth_request = Request()
-credentials.refresh(auth_request)
+# Initialization
+load_dotenv()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# --- 2. CUSTOM LOGGING TOOL ---
-def log_billing_anomaly(anomaly_type: str, severity: str, details: str):
-    """
-    Logs a billing anomaly. 
-    Args:
-        anomaly_type: Category (e.g., 'High Query Cost').
-        severity: Must be one of: DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
-        details: Specific info about the anomaly.
-    """
-    client = google.cloud.logging.Client(project=PROJECT_ID, credentials=credentials)
-    logger = client.logger("billing-anomaly-detector")
-    
-    # 1. Map common AI/User terms to valid Cloud Logging Enums
-    severity_map = {
-        "HIGH": "ERROR",
-        "MEDIUM": "WARNING",
-        "LOW": "INFO",
-        "URGENT": "CRITICAL"
-    }
-    
-    # Standardize the input (uppercase and map if necessary)
-    clean_severity = severity.upper()
-    final_severity = severity_map.get(clean_severity, clean_severity)
-    
-    # Fallback to WARNING if the agent provides something totally weird
-    valid_severities = ["DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "CRITICAL", "ALERT", "EMERGENCY"]
-    if final_severity not in valid_severities:
-        final_severity = "WARNING"
+# Environment & Auth
+try:
+    credentials, _ = google.auth.default(
+        scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    )
+    bq_credentials_config = BigQueryCredentialsConfig(credentials=credentials)
+    auth_request = Request()
+    credentials.refresh(auth_request)
+    AGENT_PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    if not AGENT_PROJECT_ID:
+        raise ValueError(
+            "GOOGLE_CLOUD_PROJECT is not set in environment or .env file."
+        )
 
-    payload = {
-        "message": f"Anomaly: {anomaly_type}",
-        "details": details,
-        "original_severity_input": severity # Keep the agent's original thought in the payload
-    }
-    
-    resource_dict = {
-        "type": "global",
-        "labels": {"project_id": PROJECT_ID}
-    }
-    
-    # 2. Use the validated 'final_severity'
-    logger.log_struct(payload, resource=resource_dict, severity=final_severity)
-    return f"Logged {anomaly_type} successfully with severity {final_severity}."
+    logging_client = google.cloud.logging.Client(
+        project=AGENT_PROJECT_ID, credentials=credentials
+    )
 
-# --- 3. TOOLSET CONFIGURATIONS ---
-da_creds = DataAgentCredentialsConfig(
-    credentials=credentials,
-)
-da_toolset = DataAgentToolset(
-    credentials_config=da_creds,
-    data_agent_tool_config=DataAgentToolConfig(max_query_result_rows=100)
+except Exception:
+    # This captures the full traceback, not just the error message
+    logger.exception("Failed to initialize GCP environment or credentials.")
+    raise
+
+# Config Constants
+GEMINI_MODEL = os.getenv("BIGQUERY_AGENT_MODEL", "gemini-2.5-flash")
+FULL_TABLE_PATH = f"""{os.getenv("BILLING_EXPORT_PROJECT_ID")}.
+                {os.getenv("BILLING_EXPORT_DATASET")}.{os.getenv("BILLING_EXPORT_TABLE")}"""
+
+# Toolset Setup
+bq_read_only_config = BigQueryToolConfig(write_mode=WriteMode.BLOCKED)
+bigquery_toolset = BigQueryToolset(
+    credentials_config=bq_credentials_config,
+    bigquery_tool_config=bq_read_only_config,
+    tool_filter=[
+        "get_table_info",
+        "execute_sql",
+        "ask_data_insights",
+        "get_job_info",
+    ],
 )
 
-bq_creds = BigQueryCredentialsConfig(credentials=credentials)
-bq_toolset = BigQueryToolset(
-    credentials_config=bq_creds,
-    bigquery_tool_config=BigQueryToolConfig(write_mode=WriteMode.BLOCKED)
+
+# Functional Wrapper for Tool
+def log_anomaly_wrapper(anomaly_type: str, severity: str, details: str):
+    return log_billing_anomaly(
+        logging_client,
+        AGENT_PROJECT_ID,
+        FULL_TABLE_PATH,
+        anomaly_type,
+        severity,
+        details,
+    )
+
+
+# Final Agent Definition
+billing_agent = Agent(
+    model=GEMINI_MODEL,
+    name="gcp_billing_concierge",
+    description="FinOps agent for GCP Billing analysis and anomaly logging.",
+    instruction=get_instructions(FULL_TABLE_PATH, AGENT_PROJECT_ID),
+    tools=[bigquery_toolset, log_anomaly_wrapper],
 )
-# 6. AGENT DEFINITION (Updated to Gemini 2.5 Flash)
-root_agent = Agent(
-    name="data_bq_agent",
-    model="gemini-2.5-flash", # <--- Updated model version
-    instruction=(
-        f"You are a FinOps expert with access to GCP's billing data avialable on project {PROJECT_ID}. "
-        "Use the data agent called: 'Billing Agent' and the 'ask_data_agent' function to get billing analysis"
-        "CRITICAL: If the agent responds saying there was an anomaly in the consumption, "
-        "call 'log_billing_anomaly' immediately before responding to the user."
-    ),
-    tools=[da_toolset, bq_toolset, log_billing_anomaly],
-)
+
+root_agent = billing_agent
