@@ -1,66 +1,39 @@
 # 💰 FinOps Billing Agent
+This agent allows users to query Google Cloud billing and cost data using natural language. It is built with Google ADK, Vertex AI Reasoning Engine (formerly Agent Engine), and BigQuery.
 
-This agent allows users to query Google Cloud billing and cost data using natural language. It is built with [Google ADK](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/agents/adk), Vertex AI Agent Engine, and BigQuery.
+## 📋 Prerequisites
+Before running the setup, ensure you have:
 
-## 📊 Overview
+* Python 3.10+ and uv installed (pip install uv).
+* gcloud CLI installed and configured.
+* Application Default Credentials set with gcloud auth application-default login.
+* Google ADK installed.
+* Agent Starter Pack (Recommended).
+* Google Workspace with Gemini Enterprise or Business licenses (Optional).
 
-The FinOps Billing Agent provides a conversational interface to your Google Cloud Billing data. It can:
-*   Query SKU-level granularity costs.
-*   Analyze billing trends and anomalies.
-*   Log detected anomalies directly to Cloud Logging.
-*   Provide insights into cost drivers.
+### 📊 Billing Export Setup
+Recommended: Enable a BigQuery billing export to provide the agent with real data. Otherwise, the setup can create a sample table for testing.
 
----
+- Official Documentation: Set up Cloud Billing data export to BigQuery
+- Key Requirement: You must have the Billing Account Administrator role on the Cloud Billing account to enable this export.
+- Latency Note: Once enabled, it can take 24 to 48 hours for the first data points to appear in BigQuery. Ensure the export is "Standard" or "Detailed" for SKU-level granularity.
+
 
 ## 🚀 Getting Started
 
-### Recommended: Using Agent Starter Pack
-
-The [Agent Starter Pack](https://github.com/GoogleCloudPlatform/agent-starter-pack) is the recommended way to create and deploy this agent.
+1. Initialize the Project
+Use the Agent Starter Pack to scaffold your environment. This command copies the FinOps agent into your local directory.
 
 ```bash
-export AGENT_NAME=my-billing-agent
+export agent_name=gcp_billing_agent
 export GOOGLE_CLOUD_PROJECT=your-project-id
 
-# 1. Create your project using agent-starter-pack
-uvx agent-starter-pack create ${AGENT_NAME} \
-  -d agent_engine \
-  -ag \
-  -a local@Cloud-AI-FinOps-Agent
-
-cd ${AGENT_NAME}
-
-# 2. Setup billing data and IAM permissions
-# This will prompt you to use existing data or create a sample dataset
-make install
-
-# 3. Deploy to Vertex AI Agent Engine
-make backend
+export AGENT_NAME=billing-concierge-${RANDOM} && uvx agent-starter-pack=>0.40.0 create ${AGENT_NAME} -d agent_engine -ag -a pemujo/Cloud-AI-FinOps-Agent/ && cd ${AGENT_NAME} && make install && make backend
 ```
 
----
+2. Enable Required APIs
+Run the following command to enable the necessary Google Cloud services:
 
-## 📋 Prerequisites
-
-Before running the setup, ensure you have:
-
-1.  **Python 3.10+** and `uv` installed (`pip install uv`).
-2.  **gcloud CLI** authenticated:
-    ```bash
-    gcloud auth login
-    gcloud auth application-default login
-    ```
-3.  **Billing Export:** A functional BigQuery billing export enabled.
-    *   [Official Documentation](https://cloud.google.com/billing/docs/how-to/export-data-bigquery)
-    *   **Note:** It can take 24-48 hours for data to appear after enablement.
-
----
-
-## 🛠️ Manual Setup & Configuration
-
-If you are not using the Agent Starter Pack, follow these steps:
-
-### 1. Enable APIs
 ```bash
 gcloud services enable \
     compute.googleapis.com \
@@ -73,44 +46,69 @@ gcloud services enable \
     geminidataanalytics.googleapis.com \
     discoveryengine.googleapis.com \
     cloudresourcemanager.googleapis.com \
-    serviceusage.googleapis.com \
+    telemetry.googleapis.com \
     --project=$GOOGLE_CLOUD_PROJECT
 ```
 
-### 2. Configure Environment
-Copy the example environment file and fill in your details:
-```bash
-cp Cloud_AI_FinOps_Agent/.env.example Cloud_AI_FinOps_Agent/.env
+3. Installation & Deployment
+Run the installation command to choose your billing export source and prepare IAM permissions:
+
+``` Bash
+make install
+```
+Deploy the agent to Vertex AI Reasoning Engine:
+``` Bash
+make deploy
+```
+Note: This command generates deployment_metadata.json, which is required for automation.
+
+🤖 Automation (Terraform)
+Once the agent is deployed, use Terraform to schedule daily audits and set up email alerts for billing anomalies.
+
+Initialize Terraform:
+
+```Bash
+cd terraform
+terraform init
 ```
 
-### 3. Run Setup Scripts
-```bash
-# Setup BigQuery data (Sample or Existing)
-make setup_billing_data
+Configure Variables:
+Create a my-ai-agent.tfvars file:
 
-# Create and configure the Agent Service Account
-make create_sa
+```bash
+Terraform
+project_id  = "your-project-id"
+region      = "us-central1"
+alert_email = "your-email@company.com"
 ```
 
----
+Deploy Automation:
+
+```Bash
+terraform apply -var-file="my-ai-agent.tfvars"
+```
+
 
 ## 🔑 Permissions & Roles
+### For the Admin (Deployment User)
+* roles/resourcemanager.projectIamAdmin: To manage Service Account roles.
+* roles/iam.serviceAccountAdmin: To create the agent identity.
+* roles/bigquery.admin: To configure datasets and verify schemas.
 
-The `make create_sa` script creates a dedicated service account `cloud-ai-finops-agent-sa` with the following minimum required roles:
+### For the Agent (Service Account)
+The make install script creates cloud-ai-finops-agent-sa with the following:
 
-*   **Execution Project:**
-    *   `roles/bigquery.jobUser`
-    *   `roles/aiplatform.user`
-    *   `roles/serviceusage.serviceUsageConsumer`
-    *   `roles/geminidataanalytics.dataAgentStatelessUser`
-    *   `roles/telemetry.writer`
-*   **Billing Project (if different):**
-    *   `roles/bigquery.dataViewer`
+* Execution Project (where the agent runs): 
+  - roles/bigquery.jobUser, 
+  - roles/aiplatform.user, 
+  - roles/serviceusage.serviceUsageConsumer, 
+  - roles/geminidataanalytics.dataAgentStatelessUser,
+  - roles/telemetry.writer.
 
----
+* Billing Project: 
+  - roles/bigquery.dataViewer.
 
-## ⚠️ Disclaimer
+## 📝 Disclaimer
+This agent sample is provided for illustrative purposes only and is not intended for production use. It serves as a foundational starting point for teams to develop their own agents.
 
-This agent sample is provided for illustrative purposes only and is not intended for production use. It serves as a basic example of an agent and a foundational starting point for development. 
-
-Users are solely responsible for further development, testing, and security hardening before deployment in a live environment.
+This sample has not been rigorously tested and does not include production-grade features like robust error handling, advanced security measures, or scalability optimizations. Users are solely responsible for the development, testing, and security hardening of any agents derived from this sample.
