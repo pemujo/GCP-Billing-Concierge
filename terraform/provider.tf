@@ -5,13 +5,10 @@ terraform {
       version = "~> 7.0" 
     }
   }
-  backend "gcs" {
-    bucket = "opm-tests-tfstate" # <--- Change this to your bucket!
-    prefix = "terraform/state"
-  }
 }
 
 provider "google" {
   project = var.project_id
   region  = var.region
 }
+
