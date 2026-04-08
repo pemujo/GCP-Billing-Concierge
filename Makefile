@@ -26,6 +26,7 @@ enable_apis: check-env
 		discoveryengine.googleapis.com \
 		cloudresourcemanager.googleapis.com \
 		telemetry.googleapis.com \
+		secretmanager.googleapis.com \
 		--project=$(GOOGLE_CLOUD_PROJECT)
 
 setup_billing_data:
@@ -55,7 +56,7 @@ deploy:
 
 # --- Variables ---
 AGENT_ID_SECRET_NAME = finops-agent-id
-METADATA_FILE = Cloud_AI_FinOps_Agent/deployment_metadata.json
+METADATA_FILE = deployment_metadata.json
 
 # --- New Target: Store Agent ID in Secret Manager ---
 store_agent_id:

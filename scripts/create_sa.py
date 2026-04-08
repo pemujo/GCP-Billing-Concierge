@@ -86,6 +86,10 @@ def main():
         "roles/geminidataanalytics.dataAgentStatelessUser",
         "roles/telemetry.writer",
         "roles/secretmanager.secretAccessor",
+        "roles/monitoring.alertPolicyEditor",
+        "roles/monitoring.notificationChannelEditor",
+        "roles/logging.logWriter",
+        "roles/logging.configWriter",
 
     ]
     for role in local_roles:
