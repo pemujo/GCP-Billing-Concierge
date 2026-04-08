@@ -78,13 +78,14 @@ def main():
     # 1. Create the SA
     email_address = create_service_account(local_project, sa_id)
 
-    # 2. Grant Local Execution Roles (Required to run the Agent and use API Quota)
+    # 2. Grant Local Execution Roles (Required to run the Agent)
     local_roles = [
         "roles/bigquery.jobUser", 
         "roles/aiplatform.user",
         "roles/serviceusage.serviceUsageConsumer",
         "roles/geminidataanalytics.dataAgentStatelessUser",
         "roles/telemetry.writer",
+        "roles/secretmanager.secretAccessor",
 
     ]
     for role in local_roles:

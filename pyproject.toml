@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "google-adk>=1.28.1",
     "google-cloud-logging>=3.14.0",
+    "google-cloud-scheduler>=2.19.0",
 ]
 
 [tool.agent-starter-pack]
