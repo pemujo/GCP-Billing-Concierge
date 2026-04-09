@@ -1,0 +1,234 @@
+[
+  {
+    "question": "What was the total cost recorded in the dataset?",
+    "ground_truth": "The total cost recorded in the dataset was approximately 716.97 USD."
+  },
+  {
+    "question": "What was the top spending service?",
+    "ground_truth": "Vertex AI was the top spending service with a total cost of approximately 340.37 USD."
+  },
+  {
+    "question": "How much did Cloud Filestore cost?",
+    "ground_truth": "Cloud Filestore cost approximately 149.31 USD."
+  },
+  {
+    "question": "Which project had the highest spend?",
+    "ground_truth": "The project with the highest spend was finops-prod-app with a total cost of approximately 243.01 USD."
+  },
+  {
+    "question": "How much did the shared-infra-core project cost?",
+    "ground_truth": "The shared-infra-core project cost approximately 235.39 USD."
+  },
+  {
+    "question": "How much did the SKU 'Feature Store Bigtable online serving node for us-central1' cost?",
+    "ground_truth": "The SKU 'Feature Store Bigtable online serving node for us-central1' cost approximately 169.22 USD."
+  },
+  {
+    "question": "How much did the SKU 'Filestore Capacity Basic HDD (Standard) Iowa/South Carolina/Oregon' cost?",
+    "ground_truth": "The SKU 'Filestore Capacity Basic HDD (Standard) Iowa/South Carolina/Oregon' cost approximately 149.31 USD."
+  },
+  {
+    "question": "How much did the SKU 'Feature Store online serving node.' cost?",
+    "ground_truth": "The SKU 'Feature Store online serving node.' cost approximately 88.53 USD."
+  },
+  {
+    "question": "How much did the SKU 'Feature Store optimized online serving node in us-central1' cost?",
+    "ground_truth": "The SKU 'Feature Store optimized online serving node in us-central1' cost approximately 38.03 USD."
+  },
+  {
+    "question": "How much did the SKU 'Redis Capacity Basic M1 Iowa/South Carolina/Oregon' cost?",
+    "ground_truth": "The SKU 'Redis Capacity Basic M1 Iowa/South Carolina/Oregon' cost approximately 32.43 USD."
+  },
+  {
+    "question": "How much did the SKU 'Workbench Instances Storage for GCE usage - Balanced Persistent Disk in us-central1' cost?",
+    "ground_truth": "The SKU 'Workbench Instances Storage for GCE usage - Balanced Persistent Disk in us-central1' cost approximately 29.66 USD."
+  },
+  {
+    "question": "How much did the SKU 'Gemini Enterprise Standard: Subscription - one month term' cost?",
+    "ground_truth": "The SKU 'Gemini Enterprise Standard: Subscription - one month term' cost approximately 28.40 USD."
+  },
+  {
+    "question": "How much did the SKU 'Vertex Colab Storage for GCE usage - SSD Persistent Disk in us-central1' cost?",
+    "ground_truth": "The SKU 'Vertex Colab Storage for GCE usage - SSD Persistent Disk in us-central1' cost approximately 25.79 USD."
+  },
+  {
+    "question": "How much did the SKU 'Gemini Code Assist monthly subscription' cost?",
+    "ground_truth": "The SKU 'Gemini Code Assist monthly subscription' cost approximately 19.89 USD."
+  },
+  {
+    "question": "How much did the SKU 'Autopilot Kubernetes Clusters' cost?",
+    "ground_truth": "The SKU 'Autopilot Kubernetes Clusters' cost approximately 18.41 USD."
+  },
+  {
+    "question": "How much did the SKU 'Active Logical Storage' cost?",
+    "ground_truth": "The SKU 'Active Logical Storage' cost approximately 9.72 USD."
+  },
+  {
+    "question": "How much did the SKU 'Cloud SQL for MySQL: Zonal - vCPU in Americas' cost?",
+    "ground_truth": "The SKU 'Cloud SQL for MySQL: Zonal - vCPU in Americas' cost approximately 8.96 USD."
+  },
+  {
+    "question": "How much did the SKU 'Autopilot Pod mCPU Requests (us-central1)' cost?",
+    "ground_truth": "The SKU 'Autopilot Pod mCPU Requests (us-central1)' cost approximately 8.64 USD."
+  },
+  {
+    "question": "How much did the SKU 'Balanced PD Capacity' cost?",
+    "ground_truth": "The SKU 'Balanced PD Capacity' cost approximately 8.09 USD."
+  },
+  {
+    "question": "How much did the SKU 'Prometheus Samples Ingested' cost?",
+    "ground_truth": "The SKU 'Prometheus Samples Ingested' cost approximately 7.49 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-22?",
+    "ground_truth": "The total cost on 2026-02-22 was approximately 34.72 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-21?",
+    "ground_truth": "The total cost on 2026-02-21 was approximately 30.97 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-27?",
+    "ground_truth": "The total cost on 2026-02-27 was approximately 30.75 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-25?",
+    "ground_truth": "The total cost on 2026-02-25 was approximately 30.17 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-23?",
+    "ground_truth": "The total cost on 2026-02-23 was approximately 27.59 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-24?",
+    "ground_truth": "The total cost on 2026-02-24 was approximately 26.29 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-19?",
+    "ground_truth": "The total cost on 2026-02-19 was approximately 25.38 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-20?",
+    "ground_truth": "The total cost on 2026-02-20 was approximately 24.52 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-26?",
+    "ground_truth": "The total cost on 2026-02-26 was approximately 23.47 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-28?",
+    "ground_truth": "The total cost on 2026-02-28 was approximately 22.86 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-03-01?",
+    "ground_truth": "The total cost on 2026-03-01 was approximately 20.90 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-02-18?",
+    "ground_truth": "The total cost on 2026-02-18 was approximately 16.87 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-03-02?",
+    "ground_truth": "The total cost on 2026-03-02 was approximately 14.62 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-03-04?",
+    "ground_truth": "The total cost on 2026-03-04 was approximately 8.84 USD."
+  },
+  {
+    "question": "What was the total cost on 2026-03-05?",
+    "ground_truth": "The total cost on 2026-03-05 was approximately 7.47 USD."
+  },
+  {
+    "question": "What was the spend for project 'finops-prod-app'?",
+    "ground_truth": "The spend for project 'finops-prod-app' was approximately 243.01 USD."
+  },
+  {
+    "question": "What was the spend for project 'data-warehouse-dev'?",
+    "ground_truth": "The spend for project 'data-warehouse-dev' was approximately 238.57 USD."
+  },
+  {
+    "question": "What was the spend for project 'shared-infra-core'?",
+    "ground_truth": "The spend for project 'shared-infra-core' was approximately 235.39 USD."
+  },
+  {
+    "question": "How much did Vertex AI cost in project 'data-warehouse-dev'?",
+    "ground_truth": "In project 'data-warehouse-dev', Vertex AI cost approximately 118.22 USD."
+  },
+  {
+    "question": "How much did Vertex AI cost in project 'finops-prod-app'?",
+    "ground_truth": "In project 'finops-prod-app', Vertex AI cost approximately 117.58 USD."
+  },
+  {
+    "question": "How much did Vertex AI cost in project 'shared-infra-core'?",
+    "ground_truth": "In project 'shared-infra-core', Vertex AI cost approximately 104.57 USD."
+  },
+  {
+    "question": "How much did Cloud Filestore cost in project 'shared-infra-core'?",
+    "ground_truth": "In project 'shared-infra-core', Cloud Filestore cost approximately 50.75 USD."
+  },
+  {
+    "question": "How much did Cloud Filestore cost in project 'finops-prod-app'?",
+    "ground_truth": "In project 'finops-prod-app', Cloud Filestore cost approximately 50.19 USD."
+  },
+  {
+    "question": "How much did Cloud Filestore cost in project 'data-warehouse-dev'?",
+    "ground_truth": "In project 'data-warehouse-dev', Cloud Filestore cost approximately 48.36 USD."
+  },
+  {
+    "question": "How much did Compute Engine cost in project 'finops-prod-app'?",
+    "ground_truth": "In project 'finops-prod-app', Compute Engine cost approximately 13.33 USD."
+  },
+  {
+    "question": "How much did Compute Engine cost in project 'shared-infra-core'?",
+    "ground_truth": "In project 'shared-infra-core', Compute Engine cost approximately 13.33 USD."
+  },
+  {
+    "question": "How much did Compute Engine cost in project 'data-warehouse-dev'?",
+    "ground_truth": "In project 'data-warehouse-dev', Compute Engine cost approximately 13.14 USD."
+  },
+  {
+    "question": "How much did Cloud Memorystore for Redis cost in project 'shared-infra-core'?",
+    "ground_truth": "In project 'shared-infra-core', Cloud Memorystore for Redis cost approximately 11.72 USD."
+  },
+  {
+    "question": "How much did Notebooks cost in project 'shared-infra-core'?",
+    "ground_truth": "In project 'shared-infra-core', Notebooks cost approximately 11.13 USD."
+  },
+  {
+    "question": "How much did Kubernetes Engine cost in project 'shared-infra-core'?",
+    "ground_truth": "In project 'shared-infra-core', Kubernetes Engine cost approximately 11.06 USD."
+  },
+  {
+    "question": "How much did Cloud Memorystore for Redis cost in project 'finops-prod-app'?",
+    "ground_truth": "In project 'finops-prod-app', Cloud Memorystore for Redis cost approximately 10.61 USD."
+  },
+  {
+    "question": "How much did Notebooks cost in project 'finops-prod-app'?",
+    "ground_truth": "In project 'finops-prod-app', Notebooks cost approximately 10.25 USD."
+  },
+  {
+    "question": "How much did Cloud Memorystore for Redis cost in project 'data-warehouse-dev'?",
+    "ground_truth": "In project 'data-warehouse-dev', Cloud Memorystore for Redis cost approximately 10.10 USD."
+  },
+  {
+    "question": "How much did Notebooks cost in project 'data-warehouse-dev'?",
+    "ground_truth": "In project 'data-warehouse-dev', Notebooks cost approximately 10.07 USD."
+  },
+  {
+    "question": "How much did Vertex AI Search cost in project 'shared-infra-core'?",
+    "ground_truth": "In project 'shared-infra-core', Vertex AI Search cost approximately 9.99 USD."
+  },
+  {
+    "question": "How much did Vertex AI Search cost in project 'finops-prod-app'?",
+    "ground_truth": "In project 'finops-prod-app', Vertex AI Search cost approximately 9.53 USD."
+  },
+  {
+    "question": "How much did Kubernetes Engine cost in project 'finops-prod-app'?",
+    "ground_truth": "In project 'finops-prod-app', Kubernetes Engine cost approximately 9.31 USD."
+  },
+  {
+    "question": "How much did Kubernetes Engine cost in project 'data-warehouse-dev'?",
+    "ground_truth": "In project 'data-warehouse-dev', Kubernetes Engine cost approximately 9.06 USD."
+  }
+]

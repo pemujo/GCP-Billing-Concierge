@@ -1,0 +1,197 @@
+[
+  {
+    "prompt": "What was the total cost recorded in the dataset?",
+    "reference": "The total cost recorded in the dataset was approximately 716.97 USD.",
+    "context": "The total cost recorded in the dataset is 716.9679860000002 USD."
+  },
+  {
+    "prompt": "What was the top spending service?",
+    "reference": "Vertex AI was the top spending service with a total cost of approximately 340.37 USD.",
+    "context": "The top spending service is Vertex AI with a cost of 340.36887799999994 USD."
+  },
+  {
+    "prompt": "How much did Cloud Filestore cost?",
+    "reference": "Cloud Filestore cost approximately 149.31 USD.",
+    "context": "The cost of Cloud Filestore was 149.31008900000003 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Feature Store Bigtable online serving node for us-central1' cost?",
+    "reference": "The SKU 'Feature Store Bigtable online serving node for us-central1' cost approximately 169.22 USD.",
+    "context": "The SKU 'Feature Store Bigtable online serving node for us-central1' cost 169.22265299999998 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Filestore Capacity Basic HDD (Standard) Iowa/South Carolina/Oregon' cost?",
+    "reference": "The SKU 'Filestore Capacity Basic HDD (Standard) Iowa/South Carolina/Oregon' cost approximately 149.31 USD.",
+    "context": "The SKU 'Filestore Capacity Basic HDD (Standard) Iowa/South Carolina/Oregon' cost 149.31008900000003 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Feature Store online serving node.' cost?",
+    "reference": "The SKU 'Feature Store online serving node.' cost approximately 88.53 USD.",
+    "context": "The SKU 'Feature Store online serving node.' cost 88.534115 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Feature Store optimized online serving node in us-central1' cost?",
+    "reference": "The SKU 'Feature Store optimized online serving node in us-central1' cost approximately 38.03 USD.",
+    "context": "The SKU 'Feature Store optimized online serving node in us-central1' cost 38.034505 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Redis Capacity Basic M1 Iowa/South Carolina/Oregon' cost?",
+    "reference": "The SKU 'Redis Capacity Basic M1 Iowa/South Carolina/Oregon' cost approximately 32.43 USD.",
+    "context": "The SKU 'Redis Capacity Basic M1 Iowa/South Carolina/Oregon' cost 32.42756899999999 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Workbench Instances Storage for GCE usage - Balanced Persistent Disk in us-central1' cost?",
+    "reference": "The SKU 'Workbench Instances Storage for GCE usage - Balanced Persistent Disk in us-central1' cost approximately 29.66 USD.",
+    "context": "The SKU 'Workbench Instances Storage for GCE usage - Balanced Persistent Disk in us-central1' cost 29.65816900000002 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Gemini Enterprise Standard: Subscription - one month term' cost?",
+    "reference": "The SKU 'Gemini Enterprise Standard: Subscription - one month term' cost approximately 28.40 USD.",
+    "context": "The SKU 'Gemini Enterprise Standard: Subscription - one month term' cost 28.399897999999993 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Vertex Colab Storage for GCE usage - SSD Persistent Disk in us-central1' cost?",
+    "reference": "The SKU 'Vertex Colab Storage for GCE usage - SSD Persistent Disk in us-central1' cost approximately 25.79 USD.",
+    "context": "The SKU 'Vertex Colab Storage for GCE usage - SSD Persistent Disk in us-central1' cost 25.78997200000001 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Gemini Code Assist monthly subscription' cost?",
+    "reference": "The SKU 'Gemini Code Assist monthly subscription' cost approximately 19.89 USD.",
+    "context": "The SKU 'Gemini Code Assist monthly subscription' cost 19.890281999999992 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Autopilot Kubernetes Clusters' cost?",
+    "reference": "The SKU 'Autopilot Kubernetes Clusters' cost approximately 18.41 USD.",
+    "context": "The SKU 'Autopilot Kubernetes Clusters' cost 18.408045 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Active Logical Storage' cost?",
+    "reference": "The SKU 'Active Logical Storage' cost approximately 9.72 USD.",
+    "context": "The SKU 'Active Logical Storage' cost 9.719257999999998 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Cloud SQL for MySQL: Zonal - vCPU in Americas' cost?",
+    "reference": "The SKU 'Cloud SQL for MySQL: Zonal - vCPU in Americas' cost approximately 8.96 USD.",
+    "context": "The SKU 'Cloud SQL for MySQL: Zonal - vCPU in Americas' cost 8.964646000000002 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Autopilot Pod mCPU Requests (us-central1)' cost?",
+    "reference": "The SKU 'Autopilot Pod mCPU Requests (us-central1)' cost approximately 8.64 USD.",
+    "context": "The SKU 'Autopilot Pod mCPU Requests (us-central1)' cost 8.637884999999999 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Balanced PD Capacity' cost?",
+    "reference": "The SKU 'Balanced PD Capacity' cost approximately 8.09 USD.",
+    "context": "The SKU 'Balanced PD Capacity' cost 8.093705000000002 USD."
+  },
+  {
+    "prompt": "How much did the SKU 'Prometheus Samples Ingested' cost?",
+    "reference": "The SKU 'Prometheus Samples Ingested' cost approximately 7.49 USD.",
+    "context": "The SKU 'Prometheus Samples Ingested' cost 7.493562000000001 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-22?",
+    "reference": "The total cost on 2026-02-22 was approximately 34.72 USD.",
+    "context": "The total cost on 2026-02-22 was 34.719702000000005 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-21?",
+    "reference": "The total cost on 2026-02-21 was approximately 30.97 USD.",
+    "context": "The total cost on 2026-02-21 was 30.965863000000006 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-27?",
+    "reference": "The total cost on 2026-02-27 was approximately 30.75 USD.",
+    "context": "The total cost on 2026-02-27 was 30.750173000000007 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-25?",
+    "reference": "The total cost on 2026-02-25 was approximately 30.17 USD.",
+    "context": "The total cost on 2026-02-25 was 30.17371700000001 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-23?",
+    "reference": "The total cost on 2026-02-23 was approximately 27.59 USD.",
+    "context": "The total cost on 2026-02-23 was 27.588997 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-24?",
+    "reference": "The total cost on 2026-02-24 was approximately 26.29 USD.",
+    "context": "The total cost on 2026-02-24 was 26.294960000000007 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-19?",
+    "reference": "The total cost on 2026-02-19 was approximately 25.38 USD.",
+    "context": "The total cost on 2026-02-19 was 25.375551000000005 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-20?",
+    "reference": "The total cost on 2026-02-20 was approximately 24.52 USD.",
+    "context": "The total cost on 2026-02-20 was 24.524534000000006 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-26?",
+    "reference": "The total cost on 2026-02-26 was approximately 23.47 USD.",
+    "context": "The total cost on 2026-02-26 was 23.469292000000006 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-28?",
+    "reference": "The total cost on 2026-02-28 was approximately 22.86 USD.",
+    "context": "The total cost on 2026-02-28 was 22.85742100000001 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-03-01?",
+    "reference": "The total cost on 2026-03-01 was approximately 20.90 USD.",
+    "context": "The total cost on 2026-03-01 was 20.900205999999997 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-02-18?",
+    "reference": "The total cost on 2026-02-18 was approximately 16.87 USD.",
+    "context": "The total cost on 2026-02-18 was 16.87289499999999 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-03-02?",
+    "reference": "The total cost on 2026-03-02 was approximately 14.62 USD.",
+    "context": "The total cost on 2026-03-02 was 14.621215999999997 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-03-04?",
+    "reference": "The total cost on 2026-03-04 was approximately 8.84 USD.",
+    "context": "The total cost on 2026-03-04 was 8.841403999999994 USD."
+  },
+  {
+    "prompt": "What was the total cost on 2026-03-05?",
+    "reference": "The total cost on 2026-03-05 was approximately 7.47 USD.",
+    "context": "The total cost on 2026-03-05 was 7.470417999999998 USD."
+  },
+  {
+    "prompt": "How much did Vertex AI cost?",
+    "reference": "Vertex AI cost approximately 340.37 USD.",
+    "context": "The cost of Vertex AI was 340.36887800000005 USD."
+  },
+  {
+    "prompt": "How much did Compute Engine cost?",
+    "reference": "Compute Engine cost approximately 39.8 USD.",
+    "context": "The cost of Compute Engine was 39.799454000000004 USD."
+  },
+  {
+    "prompt": "How much did Cloud Memorystore for Redis cost?",
+    "reference": "Cloud Memorystore for Redis cost approximately 32.43 USD.",
+    "context": "The cost of Cloud Memorystore for Redis was 32.427569000000005 USD."
+  },
+  {
+    "prompt": "How much did Notebooks cost?",
+    "reference": "Notebooks cost approximately 31.44 USD.",
+    "context": "The cost of Notebooks was 31.44303800000002 USD."
+  },
+  {
+    "prompt": "How much did Kubernetes Engine cost?",
+    "reference": "Kubernetes Engine cost approximately 29.43 USD.",
+    "context": "The cost of Kubernetes Engine was 29.433448000000002 USD."
+  },
+  {
+    "prompt": "How much did Vertex AI Search cost?",
+    "reference": "Vertex AI Search cost approximately 28.57 USD.",
+    "context": "The cost of Vertex AI Search was 28.566563000000006 USD."
+  }
+]
