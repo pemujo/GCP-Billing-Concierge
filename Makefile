@@ -61,16 +61,20 @@ METADATA_FILE = deployment_metadata.json
 # --- New Target: Store Agent ID in Secret Manager ---
 store_agent_id:
 	@echo "🔐 Extracting Agent ID and storing in Secret Manager..."
-	$(eval G_PROJECT := $(shell grep "^GOOGLE_CLOUD_PROJECT=" Cloud_AI_FinOps_Agent/.env | cut -d'=' -f2))
-	$(eval AGENT_ID := $(shell python3 -c "import json; print(json.load(open('$(METADATA_FILE)'))['remote_agent_engine_id'])" 2>/dev/null))
-	@if [ -z "$(AGENT_ID)" ]; then \
-		echo "❌ Error: Could not extract agent ID from $(METADATA_FILE). Did the deployment fail?"; \
+	@G_PROJECT=$$(grep "^GOOGLE_CLOUD_PROJECT=" Cloud_AI_FinOps_Agent/.env | cut -d'=' -f2); \
+	AGENT_ID=$$(python3 -c "import json; print(json.load(open('$(METADATA_FILE)'))['remote_agent_engine_id'])" 2>/dev/null); \
+	if [ -z "$$AGENT_ID" ]; then \
+		echo "❌ Error: Could not extract agent ID from $(METADATA_FILE)."; \
 		exit 1; \
 	fi; \
-	# Check if secret exists, if not create it \
-	gcloud secrets describe $(AGENT_ID_SECRET_NAME) --project=$(G_PROJECT) > /dev/null 2>&1 || \
-		gcloud secrets create $(AGENT_ID_SECRET_NAME) --replication-policy="automatic" --project=$(G_PROJECT); \
-	# Add the ID as a new version \
-	echo -n "$(AGENT_ID)" | gcloud secrets versions add $(AGENT_ID_SECRET_NAME) --data-file=- --project=$(G_PROJECT)
-	@echo "✅ Agent ID [$(AGENT_ID)] stored in secret: $(AGENT_ID_SECRET_NAME)"
+	if [ -z "$$G_PROJECT" ]; then \
+		echo "❌ Error: Could not find GOOGLE_CLOUD_PROJECT in .env"; \
+		exit 1; \
+	fi; \
+	if ! gcloud secrets describe $(AGENT_ID_SECRET_NAME) --project=$$G_PROJECT > /dev/null 2>&1; then \
+		echo "🆕 Creating secret $(AGENT_ID_SECRET_NAME)..."; \
+		gcloud secrets create $(AGENT_ID_SECRET_NAME) --replication-policy="automatic" --project=$$G_PROJECT; \
+	fi; \
+	printf "%s" "$$AGENT_ID" | gcloud secrets versions add $(AGENT_ID_SECRET_NAME) --data-file=- --project=$$G_PROJECT; \
+	echo "\n✅ Agent ID successfully stored in secret: $(AGENT_ID_SECRET_NAME)"
 

@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Any
 
 import google.auth
 import google.cloud.logging
@@ -14,16 +15,9 @@ from google.auth.transport.requests import Request
 
 # Internal Imports
 from .prompt import get_instructions
+from .sub_agents.finops_infra_agent.agent import finops_infra_agent
 from .tools.tools import (
     log_billing_anomaly,
-    get_agent_id_from_secrets,
-    list_active_schedulers,
-    list_notification_channels,
-    list_alert_policies,
-    create_billing_notification_channel,
-    create_billing_alert_policy,
-    schedule_audit,
-    delete_finops_resource
 )
 
 # Initialization
@@ -33,7 +27,16 @@ logger = logging.getLogger(__name__)
 
 # Environment & Auth
 try:
-    credentials, project_id = google.auth.default(
+    """
+    Global initialization block for GCP credentials and environment variables.
+    
+    This block:
+    1. Authenticates using Application Default Credentials (ADC).
+    2. Configures BigQuery credentials for the toolset.
+    3. Validates required Project ID and Location environment variables.
+    4. Initializes the Cloud Logging client.
+    """
+    credentials, _ = google.auth.default(
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
 
@@ -46,7 +49,7 @@ try:
         raise ValueError(
             "GOOGLE_CLOUD_PROJECT is not set in environment or .env file."
         )
-    
+
     GOOGLE_CLOUD_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION")
     if not GOOGLE_CLOUD_LOCATION:
         raise ValueError(
@@ -57,17 +60,7 @@ try:
         project=AGENT_PROJECT_ID, credentials=credentials
     )
 
-    # Fetch Agent ID for Scheduler tools
-    try:
-        AGENT_ENGINE_ID = get_agent_id_from_secrets(AGENT_PROJECT_ID)
-    except Exception as e:
-        # During local dev, this will likely fail. We log it and move on.
-        logger.warning("""Running in local/dev mode: 
-                       AGENT_ENGINE_ID not found in Secret Manager.""")
-        AGENT_ENGINE_ID = "PENDING_DEPLOYMENT"
-
 except Exception:
-    # This captures the full traceback, not just the error message
     logger.exception("Failed to initialize GCP environment or credentials.")
     raise
 
@@ -77,6 +70,7 @@ BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID")
 BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET")
 BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE")
 FULL_TABLE_PATH = f"{BILLING_PROJECT}.{BILLING_DATASET}.{BILLING_TABLE}"
+AGENT_NAME = "GCP_billing_concierge"
 
 # Toolset Setup
 bq_read_only_config = BigQueryToolConfig(write_mode=WriteMode.BLOCKED)
@@ -90,10 +84,24 @@ bigquery_toolset = BigQueryToolset(
     ],
 )
 
-# --- Functional Wrappers (Hiding Metadata from LLM) ---
+# --- Tool Wrappers
 
-def log_anomaly_wrapper(anomaly_type: str, severity: str, details: str):
-    """Logs a detected billing anomaly to Cloud Logging."""
+
+def log_anomaly(anomaly_type: str, severity: str, details: str) -> Any:
+    """
+    Logs a detected billing anomaly to Cloud Logging for audit and alerting.
+
+    This function acts as a wrapper for `log_billing_anomaly`, allowing the agent
+    to record specific findings that can later trigger alert policies.
+
+    Args:
+        anomaly_type (str): The category of the anomaly (e.g., 'Sudden Spike', 'New Service').
+        severity (str): The severity level (e.g., 'INFO', 'WARNING', 'CRITICAL').
+        details (str): A descriptive explanation of the billing anomaly detected.
+
+    Returns:
+        Any: The result of the logging operation (typically a log entry reference or status).
+    """
     return log_billing_anomaly(
         logging_client,
         AGENT_PROJECT_ID,
@@ -103,67 +111,29 @@ def log_anomaly_wrapper(anomaly_type: str, severity: str, details: str):
         details,
     )
 
-def list_schedulers_wrapper():
-    """Lists all active billing audit schedules and their states."""
-    return list_active_schedulers(AGENT_PROJECT_ID, GOOGLE_CLOUD_LOCATION)
-
-def list_channels_wrapper():
-    """Lists all configured notification channels (emails) in the project."""
-    return list_notification_channels(AGENT_PROJECT_ID)
-
-def list_policies_wrapper():
-    """Lists all active monitoring alert policies."""
-    return list_alert_policies(AGENT_PROJECT_ID)
-
-def setup_notification_wrapper(email_address: str):
-    """Creates a new email notification channel for billing alerts."""
-    return create_billing_notification_channel(AGENT_PROJECT_ID, email_address)
-
-def setup_alert_policy_wrapper(channel_ids: list[str]):
-    """Links billing log alerts to specific notification channel IDs."""
-    return create_billing_alert_policy(AGENT_PROJECT_ID, channel_ids)
-
-def schedule_audit_wrapper(schedule: str):
-    """
-    Schedules or updates a recurring billing audit job.
-    Args:
-        schedule: A cron expression (e.g., '0 9 * * 1' for Mondays at 9am).
-    """
-    return schedule_audit(
-        AGENT_PROJECT_ID, 
-        GOOGLE_CLOUD_LOCATION, 
-        AGENT_ENGINE_ID, 
-        schedule
-    )
-
-def delete_resource_wrapper(resource_name: str, resource_type: str):
-    """
-    Deletes a FinOps infrastructure resource (scheduler, channel, or policy).
-    Args:
-        resource_name: The full resource name/ID.
-        resource_type: Must be 'scheduler', 'channel', or 'policy'.
-    """
-    return delete_finops_resource(resource_name, resource_type)
-
-
 
 # Final Agent Definition
-billing_agent = Agent(
+"""
+billing_concierge_agent (Agent): The main entry point for the Billing Concierge solution. 
+
+It combines:
+- BigQuery Toolset: To query and analyze billing export data.
+- log_anomaly Tool: To report findings to GCP Monitoring.
+- alerting_agent: A sub-agent dedicated to managing infrastructure lifecycle 
+  (schedulers and notification channels).
+"""
+billing_concierge_agent = Agent(
     model=GEMINI_MODEL,
-    name="gcp_billing_concierge",
+    name=AGENT_NAME,
     description="FinOps agent for GCP Billing analysis and anomaly logging.",
-    instruction=get_instructions(FULL_TABLE_PATH, AGENT_PROJECT_ID, GOOGLE_CLOUD_LOCATION),
+    instruction=get_instructions(
+        FULL_TABLE_PATH, AGENT_PROJECT_ID, GOOGLE_CLOUD_LOCATION
+    ),
+    sub_agents=[finops_infra_agent],
     tools=[
-        bigquery_toolset, 
-        log_anomaly_wrapper,
-        list_schedulers_wrapper,
-        list_channels_wrapper,
-        list_policies_wrapper,
-        setup_notification_wrapper,
-        setup_alert_policy_wrapper,
-        schedule_audit_wrapper,
-        delete_resource_wrapper
+        bigquery_toolset,
+        log_anomaly,
     ],
 )
 
-root_agent = billing_agent
+root_agent = billing_concierge_agent

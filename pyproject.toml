@@ -22,7 +22,7 @@ deployment_targets = ["agent_engine"]
 agent_directory = "Cloud_AI_FinOps_Agent"
 
 [tool.ruff]
-line-length = 79  # Flake8 default
+line-length = 99  # Flake8 default
 target-version = "py310" # Example
 
 [tool.ruff.lint]

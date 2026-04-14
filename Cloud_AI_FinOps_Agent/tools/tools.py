@@ -1,34 +1,37 @@
 from datetime import date
-from google.cloud import secretmanager
-import json
-from google.cloud import scheduler_v1
-from google.cloud import monitoring_v3
-from google.cloud import resourcemanager_v3
-from google.api_core import exceptions
-
-def get_agent_id_from_secrets(project_id: str) -> str:
-    """Fetches the latest Agent ID from Secret Manager."""
-    client = secretmanager.SecretManagerServiceClient()
-    # The 'latest' alias always points to the most recent deployment
-    name = f"projects/{project_id}/secrets/finops-agent-id/versions/latest"
-    
-    response = client.access_secret_version(request={"name": name})
-    return response.payload.data.decode("UTF-8")
+from typing import Any
 
 
 def log_billing_anomaly(
-    logging_client,
-    agent_project_id,
-    full_table_path,
+    logging_client: Any,
+    project_id: str,
+    full_table_path: str,
     anomaly_type: str,
     severity: str,
     details: str,
 ) -> str:
     """
-    Logs a billing anomaly or high-cost event to Google Cloud Logging.
+    Logs a structured billing anomaly or high-cost event to Google Cloud Logging.
+
+    This function maps human-readable severity strings to GCP-specific logging levels
+     and writes a structured JSON payload to the 'billing-anomaly-detector' log. This 
+    log is intended to be picked up by the alerting policies created by the sub-agent.
+
+    Args:
+        logging_client (google.cloud.logging.Client): The initialized GCP Logging client.
+        project_id (str): The GCP Project ID where the log should be recorded.
+        full_table_path (str): The BigQuery table path used as the data source for context.
+        anomaly_type (str): The category of the anomaly (e.g., 'Spike', 'Unauthorized Usage').
+        severity (str): The input severity level ('HIGH', 'MEDIUM', 'LOW', or 'URGENT').
+        details (str): A detailed description of the anomaly findings.
+
+    Returns:
+        str: A confirmation message indicating the anomaly type and the final 
+             mapped severity level written to Cloud Logging.
     """
     logging_logger = logging_client.logger("billing-anomaly-detector")
 
+    # Map user/agent severity strings to Cloud Logging Severity levels
     severity_map = {
         "HIGH": "ERROR",
         "MEDIUM": "WARNING",
@@ -37,6 +40,7 @@ def log_billing_anomaly(
     }
 
     final_severity = severity_map.get(severity.upper(), "WARNING")
+    
     payload = {
         "message": f"FinOps Anomaly: {anomaly_type}",
         "details": details,
@@ -48,171 +52,10 @@ def log_billing_anomaly(
         payload,
         resource={
             "type": "global",
-            "labels": {"project_id": agent_project_id},
+            "labels": {"project_id": project_id},
         },
         severity=final_severity,
     )
+    
     return f"""Successfully logged {anomaly_type} 
-    to project {agent_project_id} with severity {final_severity}."""
-
-
-
-# --- 1. METADATA HELPERS ---
-
-def get_project_number(project_id: str) -> str:
-    """Retrieves the numeric Project ID required for default service account construction."""
-    client = resourcemanager_v3.ProjectsClient()
-    res = client.get_project(name=f"projects/{project_id}")
-    return res.name.split('/')[-1]
-
-# --- 2. LISTING TOOLS  ---
-
-def list_active_schedulers(project_id: str, region: str) -> list:
-    """Lists all Cloud Scheduler jobs in a specific region."""
-    client = scheduler_v1.CloudSchedulerClient()
-    parent = f"projects/{project_id}/locations/{region}"
-    jobs = client.list_jobs(parent=parent)
-    return [{"name": j.name, "schedule": j.schedule, "state": j.state.name} for j in jobs]
-
-def list_notification_channels(project_id: str) -> list:
-    """Lists all configured monitoring notification channels."""
-    client = monitoring_v3.NotificationChannelServiceClient()
-    project_name = f"projects/{project_id}"
-    channels = client.list_notification_channels(name=project_name)
-    return [{"display_name": c.display_name, "type": c.type, "id": c.name, "email": c.labels.get("email_address")} for c in channels]
-
-def list_alert_policies(project_id: str) -> list:
-    """Lists all active monitoring alert policies."""
-    client = monitoring_v3.AlertPolicyServiceClient()
-    project_name = f"projects/{project_id}"
-    policies = client.list_alert_policies(name=project_name)
-    return [{"display_name": p.display_name, "enabled": p.enabled, "id": p.name} for p in policies]
-
-# --- 3. CREATING TOOLS  ---
-
-def create_billing_notification_channel(project_id: str, email_address: str) -> str:
-    """Creates an email notification channel. Checks for duplicates first."""
-    client = monitoring_v3.NotificationChannelServiceClient()
-    project_name = f"projects/{project_id}"
-    
-    # Duplicate check to prevent spamming channels
-    existing = list_notification_channels(project_id)
-    for channel in existing:
-        if channel["email"] == email_address:
-            return f"SKIP: Notification channel for {email_address} already exists ({channel['id']})."
-
-    try:
-        channel_data = {
-            "display_name": f"FinOps Alert: {email_address}",
-            "type": "email",
-            "labels": {"email_address": email_address},
-        }
-        response = client.create_notification_channel(name=project_name, notification_channel=channel_data)
-        return f"SUCCESS: Created channel {response.name}"
-    except Exception as e:
-        return f"ERROR: Failed to create channel: {str(e)}"
-
-def create_billing_alert_policy(project_id: str, channel_ids: list) -> str:
-    """Creates a log-based alert policy and links it to provided channel IDs."""
-    client = monitoring_v3.AlertPolicyServiceClient()
-    project_name = f"projects/{project_id}"
-    
-    # Duplicate Check
-    existing = list_alert_policies(project_id)
-    if any(p["display_name"] == "billing-anomaly-detector" for p in existing):
-        return "SKIP: Alert policy 'billing-anomaly-detector' already exists."
-
-    alert_policy = {
-        "display_name": "billing-anomaly-detector",
-        "combiner": monitoring_v3.AlertPolicy.ConditionCombinerType.OR,
-        "conditions": [{
-            "display_name": "Log match: billing-anomaly-detector",
-            "condition_matched_log": {
-                "filter": f'logName="projects/{project_id}/logs/billing-anomaly-detector"',
-            },
-        }],
-        "notification_channels": channel_ids,
-        "alert_strategy": {
-            "notification_rate_limit": {"period": {"seconds": 300}},
-            "auto_close": {"seconds": 604800},
-        },
-    }
-    try:
-        response = client.create_alert_policy(name=project_name, alert_policy=alert_policy)
-        return f"SUCCESS: Created Alert Policy {response.name}"
-    except Exception as e:
-        return f"ERROR: Failed to create alert policy: {str(e)}"
-
-def schedule_audit(project_id: str, region: str, agent_full_id: str, schedule: str) -> str:
-    """
-    Schedules or updates the Cloud Scheduler to trigger Agent in Agent Engine.
-    
-    Args:
-        project_id: The GCP Project ID.
-        region: The region (e.g., 'us-central1').
-        agent_full_id: The full resource name of the Reasoning Engine.
-        schedule: A cron expression (e.g., "0 9 * * *" for daily, "0 9 * * 1" for weekly).
-    """
-    client = scheduler_v1.CloudSchedulerClient()
-    parent = f"projects/{project_id}/locations/{region}"
-    job_name = f"{parent}/jobs/finops-agent-trigger"
-    
-    project_num = get_project_number(project_id)
-    compute_sa = f"{project_num}-compute@developer.gserviceaccount.com"
-
-    job = {
-        "name": job_name,
-        "schedule": schedule,  # Dynamic cron string passed by the Agent
-        "http_target": {
-            "uri": f"https://{region}-aiplatform.googleapis.com/v1/{agent_full_id}:streamQuery",
-            "http_method": scheduler_v1.HttpMethod.POST,
-            "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({
-                "class_method": "async_stream_query",
-                "input": {"user_id": "scheduler_bot", 
-                "message": f"Run billing audit for schedule: {schedule}"}
-            }).encode("utf-8"),
-            "oauth_token": {
-                "service_account_email": compute_sa,
-                "scope": "https://www.googleapis.com/auth/cloud-platform"
-            }
-        }
-    }
-
-    try:
-        # Try to create the job first
-        response = client.create_job(parent=parent, job=job)
-        return f"SUCCESS: Created scheduler job with schedule '{schedule}'"
-    except exceptions.AlreadyExists:
-        # If it exists, update it so the new schedule takes effect
-        update_mask = {"paths": ["schedule", "http_target"]}
-        response = client.update_job(job=job, update_mask=update_mask)
-        return f"SUCCESS: Updated existing job to new schedule '{schedule}'"
-    except Exception as e:
-        return f"ERROR: Failed to schedule audit: {str(e)}"
-
-# --- 4. DELETE TOOLS  ---
-
-def delete_finops_resource(resource_name: str, resource_type: str) -> str:
-    """
-    Deletes a specific GCP resource. 
-    resource_type should be: 'scheduler', 'channel', or 'policy'
-    """
-    try:
-        if resource_type == 'scheduler':
-            client = scheduler_v1.CloudSchedulerClient()
-            client.delete_job(name=resource_name)
-        elif resource_type == 'channel':
-            client = monitoring_v3.NotificationChannelServiceClient()
-            client.delete_notification_channel(name=resource_name, force=True)
-        elif resource_type == 'policy':
-            client = monitoring_v3.AlertPolicyServiceClient()
-            client.delete_alert_policy(name=resource_name)
-        else:
-            return f"ERROR: Unknown resource type '{resource_type}'"
-        
-        return f"SUCCESS: Deleted {resource_type}: {resource_name}"
-    except exceptions.NotFound:
-        return f"SKIP: Resource {resource_name} not found."
-    except Exception as e:
-        return f"ERROR: Failed to delete {resource_name}: {str(e)}"
+    to project {project_id} with severity {final_severity}."""
