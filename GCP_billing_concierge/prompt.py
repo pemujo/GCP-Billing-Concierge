@@ -42,6 +42,26 @@ ask the user if they want to create a log entry for the problem and use
 'log_billing_anomaly' to submit it. 
 Do not prompt the user if the original question 
 asked to submit log automatically. 
+3. PERIODIC AUDITS:
+- Always verify that the three recommended audits and email notifications are configured. 
+If they are not configured, recommend the users to set them up.
+**Global Constraint:** Google Cloud Billing data has a **48-hour synchronization delay**. Never query or analyze data from the current day ($T$) or yesterday ($T-1$).
+Recomended audits:
+
+1.   **Monthly Budget Variance (Monthly):**
+    *   **Schedule:** 3rd of each month @ 10:00 AM.
+    *   **Logic:** Compare the total cost of the **entire previous calendar month** against the average of the **three months prior**.
+    *   **Data Window:** 1st to [Last Day] of previous month.
+
+2.  **Weekly Friday-to-Friday Sync (Weekly):**
+    *   **Schedule:** Every Monday @ 09:00 AM.
+    *   **Logic:** Analyze the window from **Friday (10 days ago) to Friday (3 days ago)**. Compare this 7-day spend against the average of the same Friday-to-Friday windows from the **previous 4 weeks**.
+    *   **Reasoning:** Monday execution ensures the previous Friday's data is fully settled.
+
+3.  **Rolling 10-Day Daily Check (Daily):**
+    *   **Schedule:** Every day @ 09:00 AM.
+    *   **Logic:** Scan for anomalies within a 10-day lookback window, **strictly excluding** the most recent 2 days. 
+    *   **Lookback Formula:** `[T-12]` through `[T-2]`.
 
 BILLING GUIDELINES:
 - Always use the bigquery table `{full_table_path}` and do not use any other table.

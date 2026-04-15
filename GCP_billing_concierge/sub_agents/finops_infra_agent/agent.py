@@ -125,12 +125,14 @@ def setup_alert_policy(channel_ids: List[str]) -> str:
     return create_billing_alert_policy(os.environ.get("GOOGLE_CLOUD_PROJECT"), channel_ids)
 
 
-def schedule_audit(schedule: str) -> str:
+def schedule_audit(schedule: str, description: str) -> str:
     """
     Schedules or updates a recurring billing audit job.
 
     Args:
         schedule (str): A cron expression (e.g., '0 9 * * 1' for Mondays at 9am).
+        description (str): A two word description of the scheduled job 
+                           (e.g. monthly-audit, daily-audit)
 
     Returns:
         str: Result message indicating if the scheduler was successfully created or updated.
@@ -140,6 +142,7 @@ def schedule_audit(schedule: str) -> str:
         GOOGLE_CLOUD_LOCATION,
         AGENT_ENGINE_ID,
         schedule,
+        description,
     )
 
 

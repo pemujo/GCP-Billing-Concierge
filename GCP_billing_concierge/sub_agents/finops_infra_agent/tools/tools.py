@@ -199,7 +199,7 @@ def create_billing_alert_policy(project_id: str, channel_ids: List[str]) -> str:
 
 
 def create_scheduler(
-    project_id: str, region: str, agent_full_id: str, schedule: str
+    project_id: str, region: str, agent_full_id: str, schedule: str, description: str
 ) -> str:
     """
     Schedules or updates the Cloud Scheduler to trigger Agent in Agent Engine.
@@ -209,13 +209,15 @@ def create_scheduler(
         region (str): The region (e.g., 'us-central1').
         agent_full_id (str): The full resource name of the Reasoning Engine.
         schedule (str): A cron expression (e.g., "0 9 * * *" for daily).
+        description (str): A two word description of the scheduled job 
+                           (e.g. monthly-audit, daily-audit)
 
     Returns:
         str: A status message indicating success (created or updated) or error.
     """
     client = scheduler_v1.CloudSchedulerClient()
     parent = f"projects/{project_id}/locations/{region}"
-    job_name = f"{parent}/jobs/finops-agent-trigger"
+    job_name = f"{parent}/jobs/billing-concierge-{description}"
 
     project_num = get_project_number(project_id)
 
