@@ -77,7 +77,7 @@ Initialize the project:
 uvx agent-starter-pack@latest create ${AGENT_NAME} \
     -d agent_engine \
     -ag \
-    -a pemujo/Cloud-AI-FinOps-Agent
+    -a pemujo/GCP-Billing-Concierge
 
 cd ${AGENT_NAME}
 ```
@@ -126,7 +126,7 @@ Once the agent is deployed, use Terraform to schedule daily audits and set up em
 * `roles/bigquery.admin`: To configure datasets and verify schemas.
 
 ### For the Agent (Service Account)
-The `make install` script creates `cloud-ai-finops-agent-sa` with the following:
+The `make install` script creates `gcp-billing-concierge-sa` with the following:
 
 * **Execution Project** (where the agent runs): 
   - `roles/bigquery.jobUser`

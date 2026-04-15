@@ -74,7 +74,7 @@ def create_service_account(project_id: str, sa_id: str) -> str:
                 "name": project_path,
                 "account_id": sa_id,
                 "service_account": {
-                    "display_name": "Cloud AI FinOps Agent SA"
+                    "display_name": "GCP Billing Concierge"
                 },
             }
         )
@@ -206,7 +206,7 @@ def main() -> None:
     Returns:
         None: Execution entry point.
     """
-    agent_env = Path("Cloud_AI_FinOps_Agent/.env")
+    agent_env = Path("GCP_billing_concierge/.env")
     load_dotenv(agent_env)
 
     local_project = os.getenv("GOOGLE_CLOUD_PROJECT")
@@ -218,7 +218,7 @@ def main() -> None:
             print("❌ ERROR: Missing project or table variables in .env.")
             return
 
-    sa_id = "cloud-ai-finops-agent-sa"
+    sa_id = "gcp-billing-concierge-sa"
     sa_member = (
         f"serviceAccount:{sa_id}@{local_project}.iam.gserviceaccount.com"
     )

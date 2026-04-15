@@ -67,7 +67,7 @@ def main() -> None:
     Returns:
         None: Entry point for the setup script.
     """
-    agent_env = Path("Cloud_AI_FinOps_Agent/.env")
+    agent_env = Path("GCP_billing_concierge/.env")
 
     # Load existing .env to use as defaults
     load_dotenv(agent_env)

@@ -1,5 +1,5 @@
 [project]
-name = "cloud-ai-finops-agent"
+name = "gcp-billing-concierge"
 version = "0.1.0"
 description = "A billing concierge powered by Gemini and ADK"
 readme = "README.md"
@@ -19,7 +19,7 @@ base_template = "adk"
 # This template will only support the 'agent_engine' deployment target
 deployment_targets = ["agent_engine"]
 # Optional: Customize the directory name for agent files (default: "app")
-agent_directory = "Cloud_AI_FinOps_Agent"
+agent_directory = "GCP_billing_concierge"
 
 [tool.ruff]
 line-length = 99  # Flake8 default
