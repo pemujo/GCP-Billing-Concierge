@@ -1,11 +1,11 @@
 # --- Load env file ---
-ENV_FILE := Cloud_AI_FinOps_Agent/.env
+ENV_FILE := GCP_billing_concierge/.env
 -include $(ENV_FILE)
 
 # ---  Verified Location ---
 ifeq ($(strip $(GOOGLE_CLOUD_LOCATION)),)
     # We add the current directory to PYTHONPATH so the import works
-	ASP_LOCATION := $(shell PYTHONPATH=. python3 -c "import click; from Cloud_AI_FinOps_Agent.app_utils.deploy import deploy_agent_engine_app; print(next(o.default for o in deploy_agent_engine_app.params if o.name == 'location'))" 2>/dev/null)
+	ASP_LOCATION := $(shell PYTHONPATH=. python3 -c "import click; from GCP_billing_concierge.app_utils.deploy import deploy_agent_engine_app; print(next(o.default for o in deploy_agent_engine_app.params if o.name == 'location'))" 2>/dev/null)
     ifneq ($(strip $(ASP_LOCATION)),)
         GOOGLE_CLOUD_LOCATION := $(ASP_LOCATION)
         _sync := $(shell echo "GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION)" >> $(ENV_FILE))
@@ -70,17 +70,17 @@ create_sa:
 
 deploy:
 	# Extract the SA from .env at runtime
-	$(eval AGENT_SA := $(shell grep "^AGENT_SERVICE_ACCOUNT=" Cloud_AI_FinOps_Agent/.env | cut -d'=' -f2))
-	$(eval G_PROJECT := $(shell grep "^GOOGLE_CLOUD_PROJECT=" Cloud_AI_FinOps_Agent/.env | cut -d'=' -f2))
+	$(eval AGENT_SA := $(shell grep "^AGENT_SERVICE_ACCOUNT=" GCP_billing_concierge/.env | cut -d'=' -f2))
+	$(eval G_PROJECT := $(shell grep "^GOOGLE_CLOUD_PROJECT=" GCP_billing_concierge/.env | cut -d'=' -f2))
 	@echo "🚀 Deploying as $(AGENT_SA)..."
-	(uv export --no-hashes --no-header --no-dev --no-emit-project --no-annotate > Cloud_AI_FinOps_Agent/app_utils/.requirements.txt 2>/dev/null || \
-	uv export --no-hashes --no-header --no-dev --no-emit-project > Cloud_AI_FinOps_Agent/app_utils/.requirements.txt) && \
-	uv run -m Cloud_AI_FinOps_Agent.app_utils.deploy \
+	(uv export --no-hashes --no-header --no-dev --no-emit-project --no-annotate > GCP_billing_concierge/app_utils/.requirements.txt 2>/dev/null || \
+	uv export --no-hashes --no-header --no-dev --no-emit-project > GCP_billing_concierge/app_utils/.requirements.txt) && \
+	uv run -m GCP_billing_concierge.app_utils.deploy \
 		--project="$(G_PROJECT)" \
-		--source-packages=./Cloud_AI_FinOps_Agent \
-		--entrypoint-module=Cloud_AI_FinOps_Agent.agent_engine_app \
+		--source-packages=./GCP_billing_concierge \
+		--entrypoint-module=GCP_billing_concierge.agent_engine_app \
 		--entrypoint-object=agent_engine \
-		--requirements-file=Cloud_AI_FinOps_Agent/app_utils/.requirements.txt \
+		--requirements-file=GCP_billing_concierge/app_utils/.requirements.txt \
 		--service-account="$(AGENT_SA)" \
 		$(if $(AGENT_IDENTITY),--agent-identity) \
 		$(if $(filter command line,$(origin SECRETS)),--set-secrets="$(SECRETS)")
@@ -94,7 +94,7 @@ METADATA_FILE = deployment_metadata.json
 # --- New Target: Store Agent ID in Secret Manager ---
 store_agent_id:
 	@echo "🔐 Extracting Agent ID and storing in Secret Manager..."
-	@G_PROJECT=$$(grep "^GOOGLE_CLOUD_PROJECT=" Cloud_AI_FinOps_Agent/.env | cut -d'=' -f2); \
+	@G_PROJECT=$$(grep "^GOOGLE_CLOUD_PROJECT=" GCP_billing_concierge/.env | cut -d'=' -f2); \
 	AGENT_ID=$$(python3 -c "import json; print(json.load(open('$(METADATA_FILE)'))['remote_agent_engine_id'])" 2>/dev/null); \
 	if [ -z "$$AGENT_ID" ]; then \
 		echo "❌ Error: Could not extract agent ID from $(METADATA_FILE)."; \
