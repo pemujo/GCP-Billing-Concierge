@@ -1,57 +1,136 @@
 # 💰 Billing Concierge Agent
-This agent allows users to query Google Cloud billing and cost data using natural language. It is built with Google ADK, Vertex AI Reasoning Engine (formerly Generative AI Service Agent), and BigQuery.
+An intelligent automation agent that simplifies Google Cloud cost management. Starting with answering billing questions, this agent also acts as a FinOps concierge—capable of auditing environments, detecting anomalies, and provisioning monitoring infrastructure using natural language. Built with Google ADK and Gemini on Vertex AI.
+
+🛠️ Integrated Cloud Ecosystem:
+The agent seamlessly orchestrates the following Google Cloud services:
+- BigQuery: Analysis of Standard/Detailed Billing Exports.
+- Cloud Scheduler: Automation of recurring cost audits and reporting.
+- Cloud Monitoring: Dynamic provisioning of Alert Policies and Notification Channels.
+- Cloud Logging: Recording of detected billing anomalies.
+- Secret Manager: Secure management of Agent metadata and IDs.
 
 ## 📋 Prerequisites
 Before running the setup, ensure you have:
 
-* **Python 3.10+** and `uv` installed (`pip install uv`).
-* **gcloud CLI** installed and configured.
+* **Python 3.10+** and **uv package manager** [(uv Installation guide)](https://docs.astral.sh/uv/getting-started/installation/)
+* **gcloud CLI** installed and authenticated. [(Google SDK Installation guide)](https://docs.cloud.google.com/sdk/docs/install-sdk)
 * **Application Default Credentials** set with `gcloud auth application-default login`.
-* **Google ADK** installed.
-* **Agent Starter Pack** (Recommended).
-* **Google Workspace** with Gemini Enterprise or Business licenses (Optional).
+* **Google ADK** installed. [(ADK Installation guide)](https://adk.dev/get-started/installation/)
+* Optional: **Gemini Enterprise application** with Gemini Enterprise or Business licenses. [(Gemini Enterprise Quickstart Guide)](https://docs.cloud.google.com/gemini/enterprise/docs/quickstart-gemini-enterprise).
 
 ### 📊 Billing Export Setup
-**Recommended:** Enable a BigQuery billing export to provide the agent with real data. Otherwise, the setup can create a sample table for testing.
+**Recommended:** Enabling a BigQuery billing export is a highly common and recommended FinOps best practice. The GCP Billing concierge relies on this Billing export for real use.
+If you do not have an existing export, the Agent Starter Pack setup includes an option to generate a sample table for testing purposes.
 
 - [Official Documentation: Set up Cloud Billing data export to BigQuery](https://cloud.google.com/billing/docs/how-to/export-data-bigquery)
 - **Key Requirement:** You must have the `Billing Account Administrator` role on the Cloud Billing account to enable this export.
-- **Latency Note:** Once enabled, it can take 24 to 48 hours for the first data points to appear in BigQuery. Ensure the export is "Standard" or "Detailed" for SKU-level granularity.
+- **Latency Note:** Once enabled, it can take 24 to 48 hours for the first data points to appear in BigQuery. 
+
 
 ## 📂 Project Structure
 
 ```text
 .
-├── Cloud_AI_FinOps_Agent/   # Python source code for the FinOps Agent
-│   ├── agent.py             # Main agent logic and definition
-│   ├── prompt.py            # System prompts and instructions
-│   ├── deploy_agent.py      # Script to deploy to Vertex AI Reasoning Engine
-│   └── utils/
-│       └── tools.py         # Custom tools for Cloud Logging
-├── scripts/                 # Setup and provisioning scripts
-│   ├── setup_billing_data.py # Configures BQ dataset (Real or Mock)
-│   └── create_sa.py         # Provisions the Agent Service Account
-├── terraform/               # Infrastructure as Code for automation
-│   ├── main.tf              # Automation logic (Scheduler/Alerts)
-│   ├── provider.tf          # GCS Backend & Provider config
-│   └── variables.tf         # Root variable definitions
-├── Makefile                 # Shortcuts for installation and deployment
+├── GCP_billing_concierge /        # Root directory for Agent Logic
+│   ├── agent.py                   # Main Orchestrator Agent (Billing Concierge)
+│   ├── prompt.py                  # Orchestrator system instructions
+│   ├── deploy_agent.py            # Vertex AI Reasoning Engine deployment script
+│   ├── tools/
+│   │   └── tools.py               # Custom tools for Logging
+│   └── sub_agents/
+│       └── finops_infra_agent/    # Specialized agent for Platform Ops
+│           ├── agent.py           # Sub-agent: Handles infrastructure tasks
+│           ├── prompt.py          # Sub-agent: Instructions for CRON and Monitoring
+│           └── tools/
+│                └── tools.py      # Custom tools (Scheduler, Alerts, Notifications)
+├── scripts/                 
+│   ├── setup_billing_data.py      # Configures BQ dataset (Real or Mock)
+│   └── create_sa.py               # Provisions the Agent Service Account & IAM
+├── Makefile                       # One-stop shop for Install, Deploy, and Cleanup
 └── README.md
 ```
 
-## 🚀 Getting Started
+### Agent Architecture
+![Agent Architecture](agent_architecture.png)
 
-### 1. Enable Required APIs
-Set environment variables with your project ID and the desired name for your agent:
+
+## 🔑 Permissions & Roles used
+
+### For the Admin (You)
+* `roles/resourcemanager.projectIamAdmin`: To manage Service Account roles.
+* `roles/iam.serviceAccountAdmin`: To create the agent identity.
+* `roles/bigquery.admin`: To configure datasets and verify schemas.
+* `roles/aiplatform.admin`: To deploy agent to Vertex AI
+* `roles/secretmanager.admin`: To create and manage the Agent ID secret.
+* `roles/bigquery.dataViewer`: Minimum access needed to the existing **Billing Export table**
+
+
+### For the Agent (Service Account)
+The `make install` script creates `gcp-billing-concierge-sa` (Service Account used by the agent) and grants the following roles:
+
+**Agent Project (Local Execution):**
+- BigQuery: `roles/bigquery.jobUser` (To run analysis jobs).
+- AI & Vertex: `roles/aiplatform.user` and `roles/geminidataanalytics.dataAgentStatelessUser`.
+- Infrastructure Ops: 
+  * `roles/cloudscheduler.admin`: To manage recurring audit schedules.
+  * `roles/monitoring.alertPolicyEditor`: To create and edit billing alerts.
+  * `roles/monitoring.notificationChannelEditor`: To manage email notification targets.
+- Logging: `roles/logging.logWriter` and `roles/logging.configWriter` (For anomaly logging).
+- Secrets: `roles/secretmanager.secretAccessor` (To retrieve its own Agent ID).
+- Utility: `roles/serviceusage.serviceUsageConsumer` and `roles/telemetry.writer`.
+- Identity: `roles/iam.serviceAccountUser `(Granted on the service account itself to allow Scheduler to act as its own identity).
+
+**Billing Project (Data Access)**
+Access is granted following the Principle of Least Privilege, targeting only the specific billing export table:
+
+* `roles/bigquery.dataViewer`: Granted at the Table level for the Billing Export data.
+
+
+## 🚀 Using the agent
+
+There are two primary ways to deploy and use the agent:
+
+1. Fast Track: Deploy directly using the Agent Starter Pack.
+2. Custom: Clone the repository for manual customization and deployment.
+
+### Using Agent Starter Pack (Fast Track)
+
+This is the most streamlined option. it allows you to initialize the project structure, provision IAM, and deploy to Vertex AI using a single command chain.
+
+#### Step 1: Set Google Cloud Application Default Credentials
+Ensure your local environment is authenticated to your GCP project:
+```bash
+gcloud auth application-default login
+```
+
+#### Step 2: Execute Agent Starter Pack
+This command creates a new project directory, installs dependencies, and initiates the backend deployment.
+```bash
+export AGENT_NAME=billing-concierge-${RANDOM} && \
+uvx agent-starter-pack@latest create ${AGENT_NAME} -d agent_engine -ag -a pemujo/GCP-Billing-Concierge && \
+cd ${AGENT_NAME} && make install && \
+make backend
+```
+
+#### Step 3: Post-Deployment & Testing
+Once the deployment is complete:
+* Test the agent immediately via the Agent Engine Playground in the Google Cloud Console.
+* Optionally, to register the agent for use within Gemini Enterprise, run:
+```bash
+make register-gemini-enterprise
+```
+
+
+### GitHub clone and deploy (Work in progress)
+
+This method is better suited for developers who want to customize the agent logic, modify the underlying tools, or integrate with existing infrastructure.
+
+### Step 1: Enable Required APIs
+Set your project ID and enable the necessary Google Cloud services:
 
 ```bash
 export GOOGLE_CLOUD_PROJECT="your-project-id"
-export AGENT_NAME="billing-concierge"
-```
 
-Run the following command to enable the necessary Google Cloud services:
-
-```bash
 gcloud services enable \
     compute.googleapis.com \
     aiplatform.googleapis.com \
@@ -64,79 +143,96 @@ gcloud services enable \
     discoveryengine.googleapis.com \
     cloudresourcemanager.googleapis.com \
     telemetry.googleapis.com \
+    secretmanager.googleapis.com \
     --project=$GOOGLE_CLOUD_PROJECT
+
 ```
+### Step 2: Environment Configuration
 
-### 2. Installation & Configuration
-
-To initialize your FinOps agent project, use the `agent-starter-pack`. This command will create a new project directory using this repository as a template, setting up the necessary structure and dependencies.
-
-Initialize the project:
+Initialize your environment variables and install the required Python dependencies:
 
 ```bash
+# Install dependencies
+uv sync
+
+# Create your .env file
+cp .env.example .env
+```
+Update the `.env` file with your specific project and region details. If you already have a BigQuery billing export enabled, enter its details here to skip the sample data step.
+
+
+
+```bash
+# Vertex AI Agent Engine Configuration
+GOOGLE_CLOUD_PROJECT="your-project-id"
+GOOGLE_CLOUD_LOCATION="us-central1"
+
+# Billing Data Source (BigQuery)
+BILLING_EXPORT_PROJECT_ID="your-billing-project"
+BILLING_EXPORT_DATASET="your_dataset"
+BILLING_EXPORT_TABLE="your_table"
+
+```
+
+### Step 3: Provision Billing Data (Optional)
+If you do not have a live billing export and wish to test with sample data, run the setup script and follow the prompts to create a mock dataset:
+
+
+```bash
+uv run scripts/setup_billing_data.py
+```
+
+
+### Step 4: Provision Identity & Permissions
+Run the provisioning script to create the agent's Service Account (`gcp-billing-concierge-sa@<project-id>.iam.gserviceaccount.com.iam.gserviceaccount.com`) and grant the required IAM roles across your project(s):
+
+```bash
+uv run scripts/create_sa.py
+```
+
+### Step 5: Deployment (Still to complete script)
+Deploy the agent to Vertex AI Agent Engine:
+
+```bash
+uv run scripts/deploy.py
+```
+
+#### Appendix: Detailed Agent Starter Pack Flow
+
+If you choose the agent-starter-pack route, here is a brief overview of what happens under the hood:
+
+**Initialization**
+The `uvx agent-starter-pack create` command creates a new directory using this repository as a source template. It sets up a standardized project structure for agent_engine deployment, and installs the necessary Python dependencies.
+
+
+```bash
+export AGENT_NAME="billing-concierge"
 uvx agent-starter-pack@latest create ${AGENT_NAME} \
     -d agent_engine \
     -ag \
     -a pemujo/GCP-Billing-Concierge
-
-cd ${AGENT_NAME}
 ```
 
-Once initialized, run the installation script to configure your billing export source and prepare IAM permissions. This script will prompt you for your project IDs and dataset names, then create and authorize a dedicated Service Account for the agent:
+**Configuration (make install)**
+This will verify the environmental variables are set, it will enable APIs, then execute `setup_billing_data.py` that prompts you for your BILLING_EXPORT_PROJECT_ID and DATASET_ID orif you want to create a sample dataset. It then executes `create_sa.py` to:
+
+* Create a dedicated Service Account.
+
+* Grant the necessary IAM roles (listed above) for both local execution and cross-project billing access.
+
+* Update your .env file with these values.
 
 ```bash
 make install
 ```
 
 ### 3. Deployment
-Deploy the agent to **Vertex AI Agent Engine**:
+Use `make backend` to package the agent and deploy it to **Vertex AI Agent Engine** using Agent Starter Pack deploy script. It takes a few minutes to complete.
 
 ```bash
-make deploy
+make backend
 ```
-*Note: This command package the agent and registers it in the Agent Engine. It may take a few minutes to complete.*
 
-### 4. 🤖 Automation (Terraform)
-Once the agent is deployed, use Terraform to schedule daily audits and set up email alerts for billing anomalies.
-
-1. **Initialize Terraform:**
-   ```bash
-   cd terraform
-   terraform init
-   ```
-
-2. **Configure Variables:**
-   Create a `my-ai-agent.tfvars` file:
-   ```hcl
-   project_id  = "your-project-id"
-   region      = "us-central1"
-   alert_email = "your-email@company.com"
-   ```
-
-3. **Deploy Automation:**
-   ```bash
-   terraform apply -var-file="my-ai-agent.tfvars"
-   ```
-
-## 🔑 Permissions & Roles
-
-### For the Admin (Deployment User)
-* `roles/resourcemanager.projectIamAdmin`: To manage Service Account roles.
-* `roles/iam.serviceAccountAdmin`: To create the agent identity.
-* `roles/bigquery.admin`: To configure datasets and verify schemas.
-
-### For the Agent (Service Account)
-The `make install` script creates `gcp-billing-concierge-sa` with the following:
-
-* **Execution Project** (where the agent runs): 
-  - `roles/bigquery.jobUser`
-  - `roles/aiplatform.user`
-  - `roles/serviceusage.serviceUsageConsumer`
-  - `roles/geminidataanalytics.dataAgentStatelessUser`
-  - `roles/telemetry.writer`
-
-* **Billing Project**: 
-  - `roles/bigquery.dataViewer`
 
 ## 📝 Disclaimer
 This agent sample is provided for illustrative purposes only and is not intended for production use. It serves as a foundational starting point for teams to develop their own agents.
