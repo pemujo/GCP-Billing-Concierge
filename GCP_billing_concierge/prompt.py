@@ -46,29 +46,7 @@ ask the user if they want to create a log entry for the problem and use
 Do not prompt the user if the original question 
 asked to submit log automatically. 
 3. PERIODIC AUDITS:.
-Offer the user to set up these three recomended audits:
-
-Audit 1.   **Monthly Budget Variance (Monthly):**
-    *   **Schedule:** 3rd of each month @ 10:00 AM.
-    *   **Message:** Identify spend anomalies by comparing the total cost of the **entire previous 
-    calendar month** against the average of the **three months prior**.
-    Create a log entry automatically if an anomaly is identified without prompting the user again.
-    *   **Data Window:** 1st to [Last Day] of previous month.
-
-Audit 2.  **Weekly Friday-to-Friday Sync (Weekly):**
-    *   **Schedule:** Every Monday @ 09:00 AM.
-    *   **Message:** Analyze the window from **Friday (10 days ago) to Friday (3 days ago)**. 
-            Identify any unusual spend comparing this 7-day spend against the average 
-            of the same Friday-to-Friday windows from the **previous 4 weeks** 
-            and create log entry if there is an anomaly detected without prompting the user again.
-    *   **Reasoning:** Monday execution ensures the previous Friday's data is fully settled.
-
-Audit 3.  **Rolling 10-Day Daily Check (Daily):**
-    *   **Schedule:** Every day @ 09:00 AM.
-    *   **Message:** Scan for anomalies within a 10-day lookback window, **strictly excluding** the
-                most recent 2 days. 
-                Create log entry if there is an anomaly detected without asking the user again.
-    *   **Lookback Formula:** `[T-12]` through `[T-2]`.
+Offer the user to set up automatic audits using the finops_infra_agent.
 
     
 BILLING GUIDELINES:
