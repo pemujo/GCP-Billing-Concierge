@@ -63,10 +63,10 @@ enable_apis:
 		--project=$(GOOGLE_CLOUD_PROJECT)
 
 setup_billing_data:
-	@uv run python deployment/setup_billing_data.py
+	@uv run python deployment_scripts/setup_billing_data.py
 
 create_sa:
-	@uv run python deployment/create_sa.py
+	@uv run python deployment_scripts/create_sa.py
 
 deploy:
 	# Extract the SA from .env at runtime

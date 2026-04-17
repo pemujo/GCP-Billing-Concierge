@@ -43,7 +43,7 @@ If you do not have an existing export, the Agent Starter Pack setup includes an 
 │           ├── prompt.py              # Sub-agent: Instructions for CRON and Monitoring
 │           └── tools/
 │                └── tools.py          # Custom tools (Scheduler, Alerts, Notifications)
-├── deployment/                
+├── deployment_scripts/                
 │   ├── deploy_agent.py                # Vertex AI Reasoning Engine deployment script 
 │   ├── setup_billing_data.py          # Configures BQ dataset (Real or Mock)
 │   └── create_sa.py                   # Provisions the Agent Service Account & IAM
@@ -185,7 +185,7 @@ If you do not have a live billing export and wish to test with sample data, run 
 
 
 ```bash
-uv run deployment/setup_billing_data.py
+uv run deployment_scripts/setup_billing_data.py
 ```
 
 
@@ -193,14 +193,14 @@ uv run deployment/setup_billing_data.py
 Run the provisioning script to create the agent's Service Account (`gcp-billing-concierge-sa@<project-id>.iam.gserviceaccount.com.iam.gserviceaccount.com`) and grant the required IAM roles across your project(s):
 
 ```bash
-uv run deployment/create_sa.py
+uv run deployment_scripts/create_sa.py
 ```
 
 #### Step 5: Deployment (Still to complete script)
 Deploy the agent to Vertex AI Agent Engine:
 
 ```bash
-uv run deployment/deploy_agent.py
+uv run deployment_scripts/deploy_agent.py
 ```
 
 ## Appendix: Detailed Agent Starter Pack Flow
