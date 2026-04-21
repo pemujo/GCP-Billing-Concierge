@@ -1,0 +1,38 @@
+[
+  {
+    "name": "eval_case_13",
+    "data": [
+      {
+        "query": "How much did we spend on Cloud SQL in total? Provide ONLY the numeric value.",
+        "reference": "15.80"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_50",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on Duet AI? Provide ONLY the numeric value.",
+        "reference": "6.92"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  }
+]

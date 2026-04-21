@@ -1,0 +1,20 @@
+[
+  {
+    "name": "eval_case_1",
+    "data": [
+      {
+        "query": "What is the total cost in the billing data? Provide ONLY the numeric value.",
+        "reference": "716.97"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  }
+]
