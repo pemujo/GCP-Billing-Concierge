@@ -1,6 +1,6 @@
 import os
-import time
 from pathlib import Path
+import time
 from typing import List, Union
 
 from dotenv import load_dotenv
@@ -19,9 +19,6 @@ def draw_header(title: str, width: int = 80) -> None:
     Args:
         title (str): The text to display inside the header.
         width (int): The total character width of the header box.
-
-    Returns:
-        None: This function prints to stdout and does not return a value.
     """
     print("=" * width)
     print(f"| {title}".ljust(width - 1) + "|")
@@ -36,9 +33,6 @@ def update_env(filepath: Union[str, Path], key: str, value: str) -> None:
         filepath (Union[str, Path]): Path to the .env file.
         key (str): The environment variable name.
         value (str): The value to assign to the key.
-
-    Returns:
-        None: This function modifies a file on disk and does not return a value.
     """
     lines = []
     if os.path.exists(filepath):
@@ -59,14 +53,13 @@ def create_service_account(project_id: str, sa_id: str) -> str:
         sa_id (str): The account ID (prefix) for the service account.
 
     Returns:
-        str: The full email address of the created or existing service account
-             (e.g., 'name@project.iam.gserviceaccount.com').
+        str: The full email address of the created or existing service account.
     """
     client = iam_admin_v1.IAMClient()
     project_path = f"projects/{project_id}"
     sa_email = f"{sa_id}@{project_id}.iam.gserviceaccount.com"
     sa_resource_name = f"projects/{project_id}/serviceAccounts/{sa_email}"
-    
+
     try:
         print(f"-> Creating Service Account: {sa_id}...")
         client.create_service_account(
@@ -81,7 +74,7 @@ def create_service_account(project_id: str, sa_id: str) -> str:
     except exceptions.AlreadyExists:
         print(f"  (Note: Service account {sa_id} already exists)")
 
-    # Wait for Propagation (
+    # Wait for IAM Propagation
     max_retries = 5
     wait_interval = 3  # seconds
     time.sleep(1)
@@ -93,7 +86,6 @@ def create_service_account(project_id: str, sa_id: str) -> str:
             print("  🚀 Service account is now active and ready.")
             return sa_email
         except (exceptions.NotFound, exceptions.InvalidArgument):
-            # These exceptions are expected while the SA is propagating
             if i < max_retries - 1:
                 print(f"  ...still propagating (attempt {i+1}/{max_retries})...")
                 time.sleep(wait_interval)
@@ -118,12 +110,7 @@ def add_iam_member(project_id: str, roles: List[str], member: str) -> None:
     Args:
         project_id (str): The GCP Project ID where roles are being granted.
         roles (List[str]): A list of GCP role strings (e.g., 'roles/viewer').
-        member (str): The member identifier 
-        (e.g., 'serviceAccount:email@project.com').
-
-    Returns:
-        None: This function makes API calls to update IAM policy and 
-        does not return a value.
+        member (str): The member identifier (e.g., 'serviceAccount:email@project.com').
     """
     client = resourcemanager_v3.ProjectsClient()
     project_path = f"projects/{project_id}"
@@ -149,16 +136,16 @@ def add_iam_member(project_id: str, roles: List[str], member: str) -> None:
             request={"resource": project_path, "policy": policy}
         )
     else:
-        print("  (Note: All roles already assigned)")
+        print("  (Note: All project roles already assigned)")
+
 
 def grant_sa_user_role_on_self(project_id: str, sa_email: str) -> None:
     """
     Grants the 'Service Account User' role to the service account on its own 
-    resource. This is often required for Cloud Scheduler or other services 
-    to 'act as' this specific account.
+    resource. This is required for Cloud Scheduler or other services to 'act as' 
+    this specific account.
     """
     client = iam_admin_v1.IAMClient()
-    # The resource name is the SA itself
     resource = f"projects/{project_id}/serviceAccounts/{sa_email}"
     member = f"serviceAccount:{sa_email}"
     role = "roles/iam.serviceAccountUser"
@@ -167,8 +154,6 @@ def grant_sa_user_role_on_self(project_id: str, sa_email: str) -> None:
 
     try:
         policy = client.get_iam_policy(request={"resource": resource})
-        
-        # Check if the binding already exists
         binding = next((b for b in policy.bindings if b.role == role), None)
         if binding:
             if member in binding.members:
@@ -197,48 +182,37 @@ def add_bigquery_table_iam_member(
         table_id (str): Table ID.
         role (str): The role to grant (e.g., 'roles/bigquery.dataViewer').
         member (str): The member identifier.
-
-    Returns:
-        None: Updates table-level IAM policy.
     """
     client = bigquery.Client(project=project_id)
     table_ref = client.dataset(dataset_id).table(table_id)
-    
+
     print(f"-> Granting {role} specifically on table: {project_id}.{dataset_id}.{table_id}...")
-    
+
     policy = client.get_iam_policy(table_ref)
-    binding = next((b for b in policy.bindings if b['role'] == role), None)
-    
+    binding = next((b for b in policy.bindings if b["role"] == role), None)
+
     if binding:
-        if member in binding['members']:
+        if member in binding["members"]:
             print("  (Note: Member already has access to this table)")
             return
 
-        if isinstance(binding['members'], list):
-            binding['members'].append(member)
+        if isinstance(binding["members"], list):
+            binding["members"].append(member)
         else:
-            binding['members'].add(member)
+            binding["members"].add(member)
     else:
-
         policy.bindings.append({
-            "role": role, 
-            "members": {member}
+            "role": role,
+            "members": [member],
         })
-        
+
     client.set_iam_policy(table_ref, policy)
+    print("  ✅ Table IAM permissions configured.")
+
 
 def main() -> None:
     """
-    Orchestrates the provisioning of the FinOps Agent.
-
-    Flow:
-    1. Loads project settings from .env.
-    2. Provisions the Service Account.
-    3. Assigns local and cross-project permissions.
-    4. Records the SA email back to the .env file.
-
-    Returns:
-        None: Execution entry point.
+    Orchestrates the provisioning of the FinOps Agent service account and permissions.
     """
     agent_env = Path("GCP_billing_concierge/.env")
     load_dotenv(agent_env)
@@ -249,13 +223,11 @@ def main() -> None:
     billing_table = os.getenv("BILLING_EXPORT_TABLE")
 
     if not all([local_project, billing_project, billing_dataset, billing_table]):
-            print("❌ ERROR: Missing project or table variables in .env.")
-            return
+        print("❌ ERROR: Missing project or table variables in .env.")
+        return
 
     sa_id = "gcp-billing-concierge-sa"
-    sa_member = (
-        f"serviceAccount:{sa_id}@{local_project}.iam.gserviceaccount.com"
-    )
+    sa_member = f"serviceAccount:{sa_id}@{local_project}.iam.gserviceaccount.com"
 
     draw_header("🔑 Provisioning Agent Service Account")
 
@@ -278,15 +250,16 @@ def main() -> None:
     ]
     add_iam_member(local_project, local_roles, sa_member)
 
-    # 3. Grant Billing Data Access to the table (It could be cross-Project)
+    # 3. Grant Billing Data Access to the table (supports cross-project)
     add_bigquery_table_iam_member(
-            billing_project, 
-            billing_dataset, 
-            billing_table, 
-            "roles/bigquery.dataViewer", 
-            sa_member
-        )
+        billing_project,
+        billing_dataset,
+        billing_table,
+        "roles/bigquery.dataViewer",
+        sa_member,
+    )
     grant_sa_user_role_on_self(local_project, email_address)
+
     # 4. Update .env
     update_env(agent_env, "AGENT_SERVICE_ACCOUNT", email_address)
 

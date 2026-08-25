@@ -2,26 +2,17 @@
 ENV_FILE := GCP_billing_concierge/.env
 -include $(ENV_FILE)
 
-# ---  Verified Location ---
-ifeq ($(strip $(GOOGLE_CLOUD_LOCATION)),)
-    # We add the current directory to PYTHONPATH so the import works
-	ASP_LOCATION := $(shell PYTHONPATH=. python3 -c "import click; from GCP_billing_concierge.app_utils.deploy import deploy_agent_engine_app; print(next(o.default for o in deploy_agent_engine_app.params if o.name == 'location'))" 2>/dev/null)
-    ifneq ($(strip $(ASP_LOCATION)),)
-        GOOGLE_CLOUD_LOCATION := $(ASP_LOCATION)
-        _sync := $(shell echo "GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION)" >> $(ENV_FILE))
-        SOURCE_MSG := "Discovered from ASP run and saved to .env"
-    else
-        GOOGLE_CLOUD_LOCATION := UNKNOWN
-        SOURCE_MSG := "NOT FOUND"
-    endif
-else
-    SOURCE_MSG := "Loaded from .env"
-endif
+# --- Default Fallback Region ---
+GOOGLE_CLOUD_LOCATION ?= us-central1
 
 # --- Get gcloud active Project ID ---
 G_SUGGESTION := $(shell gcloud config get-value project 2>/dev/null)
 
-.PHONY: install check-env enable_apis setup_billing_data create_sa
+# --- Variables ---
+AGENT_ID_SECRET_NAME = billing-concierge-agent-id
+METADATA_FILE = deployment_metadata.json
+
+.PHONY: install check-env enable_apis setup_billing_data create_sa run deploy eval store_agent_id clean
 
 install:
 	@$(MAKE) check-env
@@ -29,9 +20,7 @@ install:
 	@$(MAKE) setup_billing_data
 	@$(MAKE) create_sa
 
-
 check-env:
-	@# Interactive Project Check
 	@if [ -z "$(GOOGLE_CLOUD_PROJECT)" ]; then \
 		read -p "GOOGLE_CLOUD_PROJECT variable not set. Use gcloud active project ID: [$(G_SUGGESTION)]? (Hit Enter for yes, or type the Project ID): " input; \
 		FINAL_ID=$${input:-$(G_SUGGESTION)}; \
@@ -41,9 +30,12 @@ check-env:
 	else \
 		echo "✅ Project: $(GOOGLE_CLOUD_PROJECT)"; \
 	fi
-	@if [ "$(GOOGLE_CLOUD_LOCATION)" = "UNKNOWN" ]; then echo "❌ Location not set"; exit 1; fi
-	@echo "✅ Region:  $(GOOGLE_CLOUD_LOCATION)"
-
+	@if [ -z "$(GOOGLE_CLOUD_LOCATION)" ]; then \
+		echo "GOOGLE_CLOUD_LOCATION=us-central1" >> $(ENV_FILE); \
+		echo "✅ Set default Region: us-central1 in .env"; \
+	else \
+		echo "✅ Region:  $(GOOGLE_CLOUD_LOCATION)"; \
+	fi
 
 enable_apis:
 	@echo "Enabling Google Cloud APIs..."
@@ -68,46 +60,43 @@ setup_billing_data:
 create_sa:
 	@uv run python deployment_scripts/create_sa.py
 
+# --- Local Run / Chat with Agent ---
+run:
+	@echo "💬 Starting local interactive session with GCP Billing Concierge..."
+	@uvx google-agents-cli run || uv run agents-cli run
+
+# --- Deployment using agents-cli to Vertex AI Agent Runtime ---
 deploy:
-	# Extract the SA from .env at runtime
-	$(eval AGENT_SA := $(shell grep "^AGENT_SERVICE_ACCOUNT=" GCP_billing_concierge/.env | cut -d'=' -f2))
-	$(eval G_PROJECT := $(shell grep "^GOOGLE_CLOUD_PROJECT=" GCP_billing_concierge/.env | cut -d'=' -f2))
-	@echo "🚀 Deploying as $(AGENT_SA)..."
-	(uv export --no-hashes --no-header --no-dev --no-emit-project --no-annotate > GCP_billing_concierge/app_utils/.requirements.txt 2>/dev/null || \
-	uv export --no-hashes --no-header --no-dev --no-emit-project > GCP_billing_concierge/app_utils/.requirements.txt) && \
-	uv run -m GCP_billing_concierge.app_utils.deploy \
-		--project="$(G_PROJECT)" \
-		--source-packages=./GCP_billing_concierge \
-		--entrypoint-module=GCP_billing_concierge.agent_engine_app \
-		--entrypoint-object=agent_engine \
-		--requirements-file=GCP_billing_concierge/app_utils/.requirements.txt \
-		--service-account="$(AGENT_SA)" \
-		$(if $(AGENT_IDENTITY),--agent-identity) \
-		$(if $(filter command line,$(origin SECRETS)),--set-secrets="$(SECRETS)")
-	# Trigger the secret storage 
+	$(eval AGENT_SA := $(shell grep "^AGENT_SERVICE_ACCOUNT=" $(ENV_FILE) 2>/dev/null | cut -d'=' -f2))
+	$(eval G_PROJECT := $(shell grep "^GOOGLE_CLOUD_PROJECT=" $(ENV_FILE) 2>/dev/null | cut -d'=' -f2))
+	$(eval G_LOCATION := $(shell grep "^GOOGLE_CLOUD_LOCATION=" $(ENV_FILE) 2>/dev/null | cut -d'=' -f2))
+	@echo "🚀 Deploying GCP Billing Concierge to Vertex AI Agent Runtime..."
+	@if [ -n "$(AGENT_SA)" ]; then \
+		uvx google-agents-cli deploy --project="$(G_PROJECT)" --region="$(G_LOCATION)" --service-account="$(AGENT_SA)" || \
+		uv run agents-cli deploy --project="$(G_PROJECT)" --region="$(G_LOCATION)" --service-account="$(AGENT_SA)"; \
+	else \
+		uvx google-agents-cli deploy --project="$(G_PROJECT)" --region="$(G_LOCATION)" || \
+		uv run agents-cli deploy --project="$(G_PROJECT)" --region="$(G_LOCATION)"; \
+	fi
 	@$(MAKE) store_agent_id
 
-# --- Variables ---
-AGENT_ID_SECRET_NAME = billing-concierge-agent-id
-METADATA_FILE = deployment_metadata.json
-
-# --- New Target: Store Agent ID in Secret Manager ---
+# --- Store Agent ID in Secret Manager for Cloud Scheduler Integration ---
 store_agent_id:
 	@echo "🔐 Extracting Agent ID and storing in Secret Manager..."
-	@G_PROJECT=$$(grep "^GOOGLE_CLOUD_PROJECT=" GCP_billing_concierge/.env | cut -d'=' -f2); \
-	AGENT_ID=$$(python3 -c "import json; print(json.load(open('$(METADATA_FILE)'))['remote_agent_engine_id'])" 2>/dev/null); \
+	@G_PROJECT=$$(grep "^GOOGLE_CLOUD_PROJECT=" $(ENV_FILE) | cut -d'=' -f2); \
+	AGENT_ID=$$(python3 -c "import json; data=json.load(open('$(METADATA_FILE)')); print(data.get('remote_agent_engine_id') or data.get('resource_name') or data.get('agent_id', ''))" 2>/dev/null); \
 	if [ -z "$$AGENT_ID" ]; then \
-		echo "❌ Error: Could not extract agent ID from $(METADATA_FILE)."; \
-		exit 1; \
-	fi; \
-	if [ -z "$$G_PROJECT" ]; then \
-		echo "❌ Error: Could not find GOOGLE_CLOUD_PROJECT in .env"; \
-		exit 1; \
-	fi; \
-	if ! gcloud secrets describe $(AGENT_ID_SECRET_NAME) --project=$$G_PROJECT > /dev/null 2>&1; then \
-		echo "🆕 Creating secret $(AGENT_ID_SECRET_NAME)..."; \
-		gcloud secrets create $(AGENT_ID_SECRET_NAME) --replication-policy="automatic" --project=$$G_PROJECT; \
-	fi; \
-	printf "%s" "$$AGENT_ID" | gcloud secrets versions add $(AGENT_ID_SECRET_NAME) --data-file=- --project=$$G_PROJECT; \
-	echo "\n✅ Agent ID successfully stored in secret: $(AGENT_ID_SECRET_NAME)"
+		echo "⚠️ Note: Could not extract agent ID from $(METADATA_FILE). Verify deployment output."; \
+	else \
+		if ! gcloud secrets describe $(AGENT_ID_SECRET_NAME) --project=$$G_PROJECT > /dev/null 2>&1; then \
+			echo "🆕 Creating secret $(AGENT_ID_SECRET_NAME)..."; \
+			gcloud secrets create $(AGENT_ID_SECRET_NAME) --replication-policy="automatic" --project=$$G_PROJECT; \
+		fi; \
+		printf "%s" "$$AGENT_ID" | gcloud secrets versions add $(AGENT_ID_SECRET_NAME) --data-file=- --project=$$G_PROJECT; \
+		echo "✅ Agent ID successfully stored in secret: $(AGENT_ID_SECRET_NAME) ($$AGENT_ID)"; \
+	fi
 
+# --- Run Evals ---
+eval:
+	@echo "🧪 Running evaluations..."
+	@cd gcp_billing_concierge_agent_evals && uv run python run_eval.py

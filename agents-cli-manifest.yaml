@@ -1,0 +1,9 @@
+name: GCP_billing_concierge
+agent_directory: GCP_billing_concierge
+entrypoint:
+  module: agent
+  object: root_agent
+create_params:
+  deployment_target: agent_runtime
+  agent_framework: google-adk
+  model: gemini-2.5-flash

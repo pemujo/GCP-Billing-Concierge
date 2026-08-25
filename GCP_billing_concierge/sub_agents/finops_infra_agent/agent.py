@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import google.auth
 from dotenv import load_dotenv
@@ -23,44 +23,29 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Environment & Auth
+# Config Constants & Environment Variables
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+AGENT_PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "")
+GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID", AGENT_PROJECT_ID)
+BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET", "")
+BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE", "")
+
+if BILLING_PROJECT and BILLING_DATASET and BILLING_TABLE:
+    FULL_TABLE_PATH = f"{BILLING_PROJECT}.{BILLING_DATASET}.{BILLING_TABLE}"
+else:
+    FULL_TABLE_PATH = "billing_export_table_not_configured"
+
+AGENT_NAME = "Finops_infra_agent"
+
+# Auth Check / Initialization
+credentials: Optional[Any] = None
 try:
     credentials, _ = google.auth.default(
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
-
-    AGENT_PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
-    if not AGENT_PROJECT_ID:
-        raise ValueError(
-            "GOOGLE_CLOUD_PROJECT is not set in environment or .env file."
-        )
-
-    GOOGLE_CLOUD_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION")
-    if not GOOGLE_CLOUD_LOCATION:
-        raise ValueError(
-            "GOOGLE_CLOUD_LOCATION is not set in environment or .env file."
-        )
-
-    # # Fetch Agent ID for Scheduler tools
-    # try:
-    #     AGENT_ENGINE_ID = get_agent_id_from_secrets(AGENT_PROJECT_ID)
-    # except Exception:
-    #     # During local dev, this will likely fail. We log it and move on.
-    #     logger.warning("""Running in local/dev mode: 
-    #                    AGENT_ENGINE_ID not found in Secret Manager.""")
-    #     AGENT_ENGINE_ID = "PENDING_DEPLOYMENT"
-
-except Exception:
-    logger.exception("Failed to initialize GCP environment or credentials.")
-    raise
-
-# Config Constants
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID")
-BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET")
-BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE")
-FULL_TABLE_PATH = f"{BILLING_PROJECT}.{BILLING_DATASET}.{BILLING_TABLE}"
-AGENT_NAME = "Finops_infra_agent"
+except Exception as e:
+    logger.warning("Running in local/offline mode or credentials not found: %s", e)
 
 
 # --- Tool Wrappers
@@ -73,9 +58,9 @@ def list_schedulers() -> List[Dict[str, str]]:
     Returns:
         List[Dict[str, str]]: A list of scheduler jobs including name, schedule (cron), and state.
     """
-    return list_active_schedulers(
-        os.environ.get("GOOGLE_CLOUD_PROJECT"), GOOGLE_CLOUD_LOCATION
-    )
+    if not AGENT_PROJECT_ID:
+        return [{"error": "GOOGLE_CLOUD_PROJECT is not set."}]
+    return list_active_schedulers(AGENT_PROJECT_ID, GOOGLE_CLOUD_LOCATION)
 
 
 def list_channels() -> List[Dict[str, Any]]:
@@ -85,6 +70,8 @@ def list_channels() -> List[Dict[str, Any]]:
     Returns:
         List[Dict[str, Any]]: A list of channels including display names and email addresses.
     """
+    if not AGENT_PROJECT_ID:
+        return [{"error": "GOOGLE_CLOUD_PROJECT is not set."}]
     return list_notification_channels(AGENT_PROJECT_ID)
 
 
@@ -95,6 +82,8 @@ def list_policies() -> List[Dict[str, Any]]:
     Returns:
         List[Dict[str, Any]]: A list of alert policies including status and resource IDs.
     """
+    if not AGENT_PROJECT_ID:
+        return [{"error": "GOOGLE_CLOUD_PROJECT is not set."}]
     return list_alert_policies(AGENT_PROJECT_ID)
 
 
@@ -108,6 +97,8 @@ def setup_notification(email_address: str) -> str:
     Returns:
         str: A message indicating the success or failure of the channel creation.
     """
+    if not AGENT_PROJECT_ID:
+        return "ERROR: GOOGLE_CLOUD_PROJECT is not set."
     return create_billing_notification_channel(AGENT_PROJECT_ID, email_address)
 
 
@@ -121,7 +112,9 @@ def setup_alert_policy(channel_ids: List[str]) -> str:
     Returns:
         str: Status message confirming the creation or skip-status of the policy.
     """
-    return create_billing_alert_policy(os.environ.get("GOOGLE_CLOUD_PROJECT"), channel_ids)
+    if not AGENT_PROJECT_ID:
+        return "ERROR: GOOGLE_CLOUD_PROJECT is not set."
+    return create_billing_alert_policy(AGENT_PROJECT_ID, channel_ids)
 
 
 def schedule_audit(message: str, schedule: str, description: str) -> str:
@@ -129,19 +122,20 @@ def schedule_audit(message: str, schedule: str, description: str) -> str:
     Schedules or updates a recurring billing audit job.
 
     Args:
-        message: The prompt sent to the agent (e.g., Compare the total cost of 
-                 the **entire previous calendar month** against the average of the **three months prior**.)
+        message (str): The prompt sent to the agent (e.g., Compare the total cost of 
+                       the entire previous calendar month against the average of the three months prior.)
         schedule (str): A cron expression (e.g., '0 9 * * 1' for Mondays at 9am).
-        description (str): A two word description of the scheduled job 
-                           (e.g. monthly-audit, daily-audit)
+        description (str): A short description ID of the scheduled job 
+                           (e.g. monthly-audit, weekly-audit, daily-audit)
 
     Returns:
         str: Result message indicating if the scheduler was successfully created or updated.
     """
+    if not AGENT_PROJECT_ID:
+        return "ERROR: GOOGLE_CLOUD_PROJECT is not set."
     return create_scheduler(
-        os.environ.get("GOOGLE_CLOUD_PROJECT"),
+        AGENT_PROJECT_ID,
         GOOGLE_CLOUD_LOCATION,
-        # AGENT_ENGINE_ID,
         message,
         schedule,
         description,
@@ -166,9 +160,10 @@ def delete_resource(resource_name: str, resource_type: str) -> str:
 finops_infra_agent = Agent(
     model=GEMINI_MODEL,
     name=AGENT_NAME,
-    description="""Agent specialized to manage audit lifecycle 
-including Cloud Schedulers, Alerts, and Notifications of the billing 
-anomalies reported by the Billing concierge agent.""",
+    description=(
+        "Agent specialized to manage audit lifecycle including Cloud Schedulers, "
+        "Alerts, and Notifications of the billing anomalies reported by the Billing concierge agent."
+    ),
     instruction=get_instructions(
         FULL_TABLE_PATH, AGENT_PROJECT_ID, GOOGLE_CLOUD_LOCATION
     ),
