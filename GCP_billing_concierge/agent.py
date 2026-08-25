@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any
+from typing import Any, Optional
 
 import google.auth
 import google.cloud.logging
@@ -16,61 +16,54 @@ from google.auth.transport.requests import Request
 # Internal Imports
 from .prompt import get_instructions
 from .sub_agents.finops_infra_agent.agent import finops_infra_agent
-from .tools.tools import (
-    log_billing_anomaly,
-)
+from .tools.tools import log_billing_anomaly
 
 # Initialization
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Environment & Auth
+# Config Constants & Environment Variables
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+AGENT_PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "")
+GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID", AGENT_PROJECT_ID)
+BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET", "")
+BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE", "")
+
+if BILLING_PROJECT and BILLING_DATASET and BILLING_TABLE:
+    FULL_TABLE_PATH = f"{BILLING_PROJECT}.{BILLING_DATASET}.{BILLING_TABLE}"
+else:
+    FULL_TABLE_PATH = "billing_export_table_not_configured"
+    logger.warning(
+        "Billing export table environment variables (BILLING_EXPORT_PROJECT_ID, "
+        "BILLING_EXPORT_DATASET, BILLING_EXPORT_TABLE) are not fully set."
+    )
+
+AGENT_NAME = "GCP_billing_concierge"
+
+# Environment & Auth Initialization with Safe Fallback
+credentials: Optional[Any] = None
+bq_credentials_config: Optional[BigQueryCredentialsConfig] = None
+logging_client: Optional[google.cloud.logging.Client] = None
+
 try:
-    """
-    Global initialization block for GCP credentials and environment variables.
-    
-    This block:
-    1. Authenticates using Application Default Credentials (ADC).
-    2. Configures BigQuery credentials for the toolset.
-    3. Validates required Project ID and Location environment variables.
-    4. Initializes the Cloud Logging client.
-    """
     credentials, _ = google.auth.default(
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
-
-    bq_credentials_config = BigQueryCredentialsConfig(credentials=credentials)
     auth_request = Request()
     credentials.refresh(auth_request)
+    bq_credentials_config = BigQueryCredentialsConfig(credentials=credentials)
 
-    AGENT_PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
-    if not AGENT_PROJECT_ID:
-        raise ValueError(
-            "GOOGLE_CLOUD_PROJECT is not set in environment or .env file."
+    if AGENT_PROJECT_ID:
+        logging_client = google.cloud.logging.Client(
+            project=AGENT_PROJECT_ID, credentials=credentials
         )
-
-    GOOGLE_CLOUD_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION")
-    if not GOOGLE_CLOUD_LOCATION:
-        raise ValueError(
-            "GOOGLE_CLOUD_LOCATION is not set in environment or .env file."
-        )
-
-    logging_client = google.cloud.logging.Client(
-        project=AGENT_PROJECT_ID, credentials=credentials
+except Exception as e:
+    logger.warning(
+        "Running in local/offline mode or credentials could not be initialized: %s",
+        e,
     )
-
-except Exception:
-    logger.exception("Failed to initialize GCP environment or credentials.")
-    raise
-
-# Config Constants
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID")
-BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET")
-BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE")
-FULL_TABLE_PATH = f"{BILLING_PROJECT}.{BILLING_DATASET}.{BILLING_TABLE}"
-AGENT_NAME = "GCP_billing_concierge"
 
 # Toolset Setup
 bq_read_only_config = BigQueryToolConfig(write_mode=WriteMode.BLOCKED)
@@ -87,7 +80,7 @@ bigquery_toolset = BigQueryToolset(
 # --- Tool Wrappers
 
 
-def log_anomaly(anomaly_type: str, severity: str, details: str) -> Any:
+def log_anomaly(anomaly_type: str, severity: str, details: str) -> str:
     """
     Logs a detected billing anomaly to Cloud Logging for audit and alerting.
 
@@ -95,33 +88,36 @@ def log_anomaly(anomaly_type: str, severity: str, details: str) -> Any:
     to record specific findings that can later trigger alert policies.
 
     Args:
-        anomaly_type (str): The category of the anomaly (e.g., 'Sudden Spike', 'New Service').
-        severity (str): The severity level (e.g., 'INFO', 'WARNING', 'CRITICAL').
+        anomaly_type (str): The category of the anomaly (e.g., 'Sudden Spike', 'New Service', 'Cost Anomaly').
+        severity (str): The severity level ('CRITICAL', 'HIGH', 'ERROR', 'MEDIUM', 'WARNING', 'LOW', 'INFO', 'URGENT').
         details (str): A descriptive explanation of the billing anomaly detected.
 
     Returns:
-        Any: The result of the logging operation (typically a log entry reference or status).
+        str: Confirmation message or error status of the logging operation.
     """
+    global logging_client
+    if logging_client is None and AGENT_PROJECT_ID and credentials:
+        try:
+            logging_client = google.cloud.logging.Client(
+                project=AGENT_PROJECT_ID, credentials=credentials
+            )
+        except Exception as e:
+            return f"ERROR: Logging client unavailable: {e}"
+
+    if logging_client is None:
+        return "ERROR: Cloud Logging client is not initialized. Please verify credentials and GOOGLE_CLOUD_PROJECT."
+
     return log_billing_anomaly(
-        logging_client,
-        AGENT_PROJECT_ID,
-        FULL_TABLE_PATH,
-        anomaly_type,
-        severity,
-        details,
+        logging_client=logging_client,
+        project_id=AGENT_PROJECT_ID,
+        full_table_path=FULL_TABLE_PATH,
+        anomaly_type=anomaly_type,
+        severity=severity,
+        details=details,
     )
 
 
 # Final Agent Definition
-"""
-billing_concierge_agent (Agent): The main entry point for the Billing Concierge solution. 
-
-It combines:
-- BigQuery Toolset: To query and analyze billing export data.
-- log_anomaly Tool: To report findings to GCP Monitoring.
-- alerting_agent: A sub-agent dedicated to managing infrastructure lifecycle 
-  (schedulers and notification channels).
-"""
 billing_concierge_agent = Agent(
     model=GEMINI_MODEL,
     name=AGENT_NAME,
