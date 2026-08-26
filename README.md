@@ -14,7 +14,7 @@ The agent seamlessly orchestrates the following Google Cloud services:
 ## 📋 Prerequisites
 Before running the setup, ensure you have:
 
-* **Python 3.10+** and **uv package manager** [(uv Installation guide)](https://docs.astral.sh/uv/getting-started/installation/)
+* **Python 3.11+** and **uv package manager** [(uv Installation guide)](https://docs.astral.sh/uv/getting-started/installation/)
 * **gcloud CLI** installed and authenticated. [(Google SDK Installation guide)](https://docs.cloud.google.com/sdk/docs/install-sdk)
 * **Application Default Credentials** set with `gcloud auth application-default login`.
 * **Google Agents CLI & ADK** installed via `uvx google-agents-cli setup` [(ADK Docs)](https://adk.dev/get-started/installation/)

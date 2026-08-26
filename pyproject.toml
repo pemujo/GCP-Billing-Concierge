@@ -3,7 +3,7 @@ name = "gcp-billing-concierge"
 version = "0.2.0"
 description = "FinOps GCP Billing Concierge agent powered by Gemini and Google ADK"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "google-adk>=1.28.1",
     "google-agents-cli>=0.1.0",
@@ -12,7 +12,8 @@ dependencies = [
     "google-cloud-monitoring>=2.26.0",
     "google-cloud-scheduler>=2.19.0",
     "google-cloud-secret-manager>=2.20.0",
-    "google-cloud-resourcemanager>=1.12.0",
+    "google-cloud-iam>=2.15.0",
+    "google-cloud-resource-manager>=1.12.0",
     "python-dotenv>=1.0.1",
     "ruff>=0.15.10",
     "tzlocal>=5.3.1",

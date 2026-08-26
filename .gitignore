@@ -41,7 +41,7 @@ share/python-wheels/
 MANIFEST
 
 # ====================================================================
-# AGENT DEVELOPMENT (ADK / AI / LLM)
+# AGENT DEVELOPMENT & DEPLOYMENT (ADK / AI / LLM)
 # ====================================================================
 # Secrets (CRITICAL: Never commit these)
 .env
@@ -50,6 +50,16 @@ MANIFEST
 secrets.yaml
 credentials.json
 auth.json
+
+# Assistant & Toolchain Artifact Sidecars
+*.metadata.json
+.agent_engine_metadata*
+
+# Agent Deployment & Runtime State (Dynamic / Environment-Specific)
+deployment_metadata.json
+*deployment_metadata*.json
+.requirements.txt
+**/app_utils/.requirements.txt
 
 # Agent State & Memory
 **/state/
@@ -70,7 +80,7 @@ indices/
 *.gguf
 *.onnx
 
-# Testing & Traces
+# Testing, Evals & Traces (Ignore run results, keep golden datasets)
 .pytest_cache/
 .coverage
 .coverage.*
@@ -82,6 +92,9 @@ htmlcov/
 .hypothesis/
 **/traces/
 **/eval_results/
+*eval_results*.json
+*eval_report*.json
+eval_metadata.json
 
 # ====================================================================
 # TERRAFORM (INFRASTRUCTURE)
@@ -118,7 +131,10 @@ terraform.rc
 *.sublime-workspace
 .ipynb_checkpoints/
 
-
-# Exception: Allow .env.example to be tracked
+# ====================================================================
+# EXCEPTIONS (Explicitly Tracked Test Fixtures & Schemas)
+# ====================================================================
 !.env.example
 !**/Makefile
+!gcp_billing_concierge_agent_evals/golden_dataset*.json
+!mock_data/billing_schema.json
