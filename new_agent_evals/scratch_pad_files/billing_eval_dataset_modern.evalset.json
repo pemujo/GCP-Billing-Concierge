@@ -1,0 +1,1557 @@
+{
+  "eval_set_id": "billing_eval_dataset",
+  "name": "Billing Evaluation Dataset",
+  "eval_cases": [
+    {
+      "eval_id": "case_0",
+      "conversation": [
+        {
+          "invocation_id": "18856c7f-ac12-430c-ac6b-1ec753cfc050",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "What is the total cost in the billing data? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "716.97"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5087264
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5087276
+    },
+    {
+      "eval_id": "case_1",
+      "conversation": [
+        {
+          "invocation_id": "462cc357-e045-494f-a565-07edadacc770",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "What was the total cost for project finops-prod-app? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "243.01"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5087523
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5087528
+    },
+    {
+      "eval_id": "case_2",
+      "conversation": [
+        {
+          "invocation_id": "091c1bb0-d925-4b07-b2fc-649e9367e183",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "What was the total cost for project data-warehouse-dev? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "238.57"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.508765
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5087652
+    },
+    {
+      "eval_id": "case_3",
+      "conversation": [
+        {
+          "invocation_id": "18f5fb88-ec28-45d1-a73f-c2757cdc9091",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "What was the total cost for project shared-infra-core? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "235.39"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5087757
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.508776
+    },
+    {
+      "eval_id": "case_4",
+      "conversation": [
+        {
+          "invocation_id": "4921445a-7e13-49a6-b9f2-f49e3a9f7955",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Vertex AI in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "340.37"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5087798
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5088067
+    },
+    {
+      "eval_id": "case_5",
+      "conversation": [
+        {
+          "invocation_id": "fa760257-560f-4c72-865f-3e3c8275f482",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Cloud Filestore in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "149.31"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5088239
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5088243
+    },
+    {
+      "eval_id": "case_6",
+      "conversation": [
+        {
+          "invocation_id": "cf1b45e4-cc9d-4d31-81b0-25dc8a31ad2e",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Compute Engine in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "39.80"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5088317
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5088346
+    },
+    {
+      "eval_id": "case_7",
+      "conversation": [
+        {
+          "invocation_id": "358a4081-b841-49de-85a6-da364f721928",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Cloud Memorystore for Redis in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "32.43"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5088387
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.508839
+    },
+    {
+      "eval_id": "case_8",
+      "conversation": [
+        {
+          "invocation_id": "ead6f6da-45b9-4955-9e7f-813842af2b8b",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Notebooks in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "31.44"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.508849
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5088491
+    },
+    {
+      "eval_id": "case_9",
+      "conversation": [
+        {
+          "invocation_id": "74d76a9f-888c-42d6-9a43-6be1092ad125",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Kubernetes Engine in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "29.43"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.508873
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5088732
+    },
+    {
+      "eval_id": "case_10",
+      "conversation": [
+        {
+          "invocation_id": "6111f26f-1714-4761-b694-4d841c6ae0b8",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Vertex AI Search in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "28.57"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5088773
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5088775
+    },
+    {
+      "eval_id": "case_11",
+      "conversation": [
+        {
+          "invocation_id": "1ad524ea-2f50-4626-a2c8-48424eaa89f3",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Duet AI in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "19.89"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5092094
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.50921
+    },
+    {
+      "eval_id": "case_12",
+      "conversation": [
+        {
+          "invocation_id": "2e44eabe-2592-467d-8e5d-4201da8c8b2d",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Cloud SQL in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "15.80"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5092263
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5092304
+    },
+    {
+      "eval_id": "case_13",
+      "conversation": [
+        {
+          "invocation_id": "e08b8d04-a6ef-4182-ac53-66d91cc1523e",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Networking in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "11.47"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5092454
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5092824
+    },
+    {
+      "eval_id": "case_14",
+      "conversation": [
+        {
+          "invocation_id": "b594f25d-a532-415b-a5b6-689202ad1735",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on BigQuery in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "9.75"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5092957
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509296
+    },
+    {
+      "eval_id": "case_15",
+      "conversation": [
+        {
+          "invocation_id": "dfe7936c-2f52-4f19-9f6c-af5724d0a7b2",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Cloud Monitoring in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "7.49"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093033
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5093036
+    },
+    {
+      "eval_id": "case_16",
+      "conversation": [
+        {
+          "invocation_id": "91e405cd-3b79-412c-b105-e075212466f8",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Artifact Registry in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "0.70"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093102
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509324
+    },
+    {
+      "eval_id": "case_17",
+      "conversation": [
+        {
+          "invocation_id": "614c4fb8-2fe7-4dba-b31e-65912e1bc145",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project data-warehouse-dev spend on Vertex AI in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "118.22"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093327
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509333
+    },
+    {
+      "eval_id": "case_18",
+      "conversation": [
+        {
+          "invocation_id": "0ee54ae1-990b-44de-988c-432f0c7088fc",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project data-warehouse-dev spend on Cloud Filestore in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "48.36"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093527
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5093532
+    },
+    {
+      "eval_id": "case_19",
+      "conversation": [
+        {
+          "invocation_id": "bf42cf9b-856f-4b74-ba18-3966412e4656",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project data-warehouse-dev spend on Compute Engine in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "13.14"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.509363
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5093632
+    },
+    {
+      "eval_id": "case_20",
+      "conversation": [
+        {
+          "invocation_id": "0b1f0d84-f95e-4583-8359-0259fb77ea8e",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project data-warehouse-dev spend on Cloud Memorystore for Redis in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "10.10"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093665
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509367
+    },
+    {
+      "eval_id": "case_21",
+      "conversation": [
+        {
+          "invocation_id": "2ec0c37e-a901-427b-ab41-ff9f7cb9c4b0",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project data-warehouse-dev spend on Notebooks in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "10.07"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093772
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5093777
+    },
+    {
+      "eval_id": "case_22",
+      "conversation": [
+        {
+          "invocation_id": "14860844-e007-415d-844a-1136a521589c",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on Vertex AI in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "104.57"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093813
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509387
+    },
+    {
+      "eval_id": "case_23",
+      "conversation": [
+        {
+          "invocation_id": "dd088073-89e1-4d77-8680-9e1dd8978608",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on Cloud Filestore in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "50.75"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093944
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5093946
+    },
+    {
+      "eval_id": "case_24",
+      "conversation": [
+        {
+          "invocation_id": "df8be832-ccd1-4e50-9779-7adba7dcb40c",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on Compute Engine in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "13.33"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5093975
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5093977
+    },
+    {
+      "eval_id": "case_25",
+      "conversation": [
+        {
+          "invocation_id": "d325e52f-e2db-4a90-b44f-0cebb40d2f49",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on Cloud Memorystore for Redis in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "11.72"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5094073
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094075
+    },
+    {
+      "eval_id": "case_26",
+      "conversation": [
+        {
+          "invocation_id": "835e2d62-ffa9-42cb-95ec-9384c014eadb",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on Notebooks in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "11.13"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.509411
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094113
+    },
+    {
+      "eval_id": "case_27",
+      "conversation": [
+        {
+          "invocation_id": "c76edfa7-d0d8-4b91-8684-6b8474952192",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project finops-prod-app spend on Vertex AI in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "117.58"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.509425
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094252
+    },
+    {
+      "eval_id": "case_28",
+      "conversation": [
+        {
+          "invocation_id": "c7849149-c353-4e68-bf88-7b800e2580da",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project finops-prod-app spend on Cloud Filestore in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "50.19"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5094333
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094335
+    },
+    {
+      "eval_id": "case_29",
+      "conversation": [
+        {
+          "invocation_id": "32804946-7273-48cc-980e-0f6154936208",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project finops-prod-app spend on Compute Engine in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "13.33"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5094364
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094366
+    },
+    {
+      "eval_id": "case_30",
+      "conversation": [
+        {
+          "invocation_id": "baf81333-4ee6-4142-be66-253e9ae2ed2f",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project finops-prod-app spend on Cloud Memorystore for Redis in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "10.61"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5094395
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094397
+    },
+    {
+      "eval_id": "case_31",
+      "conversation": [
+        {
+          "invocation_id": "a33c8df6-4f15-4a41-826d-4d4545c00783",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project finops-prod-app spend on Notebooks in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "10.25"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5094426
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094428
+    },
+    {
+      "eval_id": "case_32",
+      "conversation": [
+        {
+          "invocation_id": "d96301ff-f4d1-4026-a821-b3fa75fd4106",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project data-warehouse-dev spend on BigQuery in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "3.15"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5094507
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509451
+    },
+    {
+      "eval_id": "case_33",
+      "conversation": [
+        {
+          "invocation_id": "e7e5b9e9-f2f8-400e-9777-389f0305f62a",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on BigQuery in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "3.48"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.509454
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094543
+    },
+    {
+      "eval_id": "case_34",
+      "conversation": [
+        {
+          "invocation_id": "c61be454-eb58-463a-a109-ed7dd4d30501",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project finops-prod-app spend on BigQuery in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "3.12"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5094728
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5094733
+    },
+    {
+      "eval_id": "case_35",
+      "conversation": [
+        {
+          "invocation_id": "ae8fdc47-2458-45af-93a4-8bea0bb7bf6e",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Which project spent the most? Provide ONLY the project ID."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "finops-prod-app"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5094829
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509483
+    },
+    {
+      "eval_id": "case_36",
+      "conversation": [
+        {
+          "invocation_id": "17f9f9d7-1ded-4334-b1dc-a86c29c15f80",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Which service was the most expensive? Provide ONLY the service name."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Vertex AI"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095038
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509504
+    },
+    {
+      "eval_id": "case_37",
+      "conversation": [
+        {
+          "invocation_id": "630177a5-d6ba-4350-a9a6-3d5a2dbe5c1f",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Which service was the second most expensive? Provide ONLY the service name."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Cloud Filestore"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095115
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095117
+    },
+    {
+      "eval_id": "case_38",
+      "conversation": [
+        {
+          "invocation_id": "702707fd-f47d-4c9f-aabc-8767c8c4c676",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Which service was the third most expensive? Provide ONLY the service name."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "Compute Engine"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.509518
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095181
+    },
+    {
+      "eval_id": "case_39",
+      "conversation": [
+        {
+          "invocation_id": "0716b933-3179-415a-b013-561f3884d637",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Which project spent the least? Provide ONLY the project ID."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "shared-infra-core"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095212
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095215
+    },
+    {
+      "eval_id": "case_40",
+      "conversation": [
+        {
+          "invocation_id": "b649a91e-9bb9-49fd-9490-f9a87dbd878f",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much was spent on the SKU 'Feature Store Bigtable online serving node for us-central1'? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "169.22"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095394
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095396
+    },
+    {
+      "eval_id": "case_41",
+      "conversation": [
+        {
+          "invocation_id": "2860293a-ad49-4bd1-8dc6-27257bb2b90c",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much was spent on the SKU 'Filestore Capacity Basic HDD (Standard) Iowa/South Carolina/Oregon'? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "149.31"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095565
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095568
+    },
+    {
+      "eval_id": "case_42",
+      "conversation": [
+        {
+          "invocation_id": "41fec094-323b-4894-bfcc-8a4221d77b43",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much was spent on the SKU 'Feature Store online serving node.'? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "88.53"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.509563
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095632
+    },
+    {
+      "eval_id": "case_43",
+      "conversation": [
+        {
+          "invocation_id": "f5b934da-5a59-48c3-8609-ec3b98bf5acb",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much was spent on the SKU 'Feature Store optimized online serving node in us-central1'? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "38.03"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095704
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095706
+    },
+    {
+      "eval_id": "case_44",
+      "conversation": [
+        {
+          "invocation_id": "e91db13f-7a6d-4af3-ba0c-e21952c7e8f9",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much was spent on the SKU 'Redis Capacity Basic M1 Iowa/South Carolina/Oregon'? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "32.43"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095732
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095735
+    },
+    {
+      "eval_id": "case_45",
+      "conversation": [
+        {
+          "invocation_id": "9bbb6d02-ea08-4d8e-aab0-36025e9301a7",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project data-warehouse-dev spend on Kubernetes Engine in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "9.06"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095825
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.509588
+    },
+    {
+      "eval_id": "case_46",
+      "conversation": [
+        {
+          "invocation_id": "5e66c464-cef6-47cc-9444-759751729a24",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on Kubernetes Engine in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "11.06"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095913
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095916
+    },
+    {
+      "eval_id": "case_47",
+      "conversation": [
+        {
+          "invocation_id": "71f238e5-d0c2-4985-bcf9-03ac67536a8e",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project finops-prod-app spend on Kubernetes Engine in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "9.31"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095944
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095947
+    },
+    {
+      "eval_id": "case_48",
+      "conversation": [
+        {
+          "invocation_id": "f61435a4-79c6-459c-a236-328e2e7bf9f5",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project data-warehouse-dev spend on Duet AI in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "6.40"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5095973
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5095975
+    },
+    {
+      "eval_id": "case_49",
+      "conversation": [
+        {
+          "invocation_id": "7847a14b-9281-4809-af61-4b7175e739a4",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on Duet AI in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "6.92"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5096002
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5096004
+    }
+  ],
+  "creation_timestamp": 1776708283.5096014
+}

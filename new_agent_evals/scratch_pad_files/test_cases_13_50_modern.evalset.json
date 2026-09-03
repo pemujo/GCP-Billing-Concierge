@@ -1,0 +1,69 @@
+{
+  "eval_set_id": "test_cases_13_50_modern",
+  "name": "Test Cases 13 and 50 Modernized",
+  "eval_cases": [
+    {
+      "eval_id": "eval_case_13",
+      "conversation": [
+        {
+          "invocation_id": "18856c7f-ac12-430c-ac6b-1ec753cfc050",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did we spend on Cloud SQL in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "15.80"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5087264
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5087276
+    },
+    {
+      "eval_id": "eval_case_50",
+      "conversation": [
+        {
+          "invocation_id": "462cc357-e045-494f-a565-07edadacc770",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "How much did project shared-infra-core spend on Duet AI in total? Provide ONLY the numeric value."
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "6.92"
+              }
+            ]
+          },
+          "creation_timestamp": 1776708283.5087264
+        }
+      ],
+      "session_input": {
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {}
+      },
+      "creation_timestamp": 1776708283.5087276
+    }
+  ],
+  "creation_timestamp": 1776708283.5087276
+}

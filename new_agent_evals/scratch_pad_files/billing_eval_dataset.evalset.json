@@ -1,0 +1,902 @@
+[
+  {
+    "name": "eval_case_1",
+    "data": [
+      {
+        "query": "What is the total cost in the billing data? Provide ONLY the numeric value.",
+        "reference": "716.97"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_2",
+    "data": [
+      {
+        "query": "What was the total cost for project finops-prod-app? Provide ONLY the numeric value.",
+        "reference": "243.01"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_3",
+    "data": [
+      {
+        "query": "What was the total cost for project data-warehouse-dev? Provide ONLY the numeric value.",
+        "reference": "238.57"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_4",
+    "data": [
+      {
+        "query": "What was the total cost for project shared-infra-core? Provide ONLY the numeric value.",
+        "reference": "235.39"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_5",
+    "data": [
+      {
+        "query": "How much did we spend on Vertex AI in total? Provide ONLY the numeric value.",
+        "reference": "340.37"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_6",
+    "data": [
+      {
+        "query": "How much did we spend on Cloud Filestore in total? Provide ONLY the numeric value.",
+        "reference": "149.31"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_7",
+    "data": [
+      {
+        "query": "How much did we spend on Compute Engine in total? Provide ONLY the numeric value.",
+        "reference": "39.80"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_8",
+    "data": [
+      {
+        "query": "How much did we spend on Cloud Memorystore for Redis in total? Provide ONLY the numeric value.",
+        "reference": "32.43"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_9",
+    "data": [
+      {
+        "query": "How much did we spend on Notebooks in total? Provide ONLY the numeric value.",
+        "reference": "31.44"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_10",
+    "data": [
+      {
+        "query": "How much did we spend on Kubernetes Engine in total? Provide ONLY the numeric value.",
+        "reference": "29.43"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_11",
+    "data": [
+      {
+        "query": "How much did we spend on Vertex AI Search in total? Provide ONLY the numeric value.",
+        "reference": "28.57"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_12",
+    "data": [
+      {
+        "query": "How much did we spend on Duet AI in total? Provide ONLY the numeric value.",
+        "reference": "19.89"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_13",
+    "data": [
+      {
+        "query": "How much did we spend on Cloud SQL in total? Provide ONLY the numeric value.",
+        "reference": "15.80"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_14",
+    "data": [
+      {
+        "query": "How much did we spend on Networking in total? Provide ONLY the numeric value.",
+        "reference": "11.47"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_15",
+    "data": [
+      {
+        "query": "How much did we spend on BigQuery in total? Provide ONLY the numeric value.",
+        "reference": "9.75"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_16",
+    "data": [
+      {
+        "query": "How much did we spend on Cloud Monitoring in total? Provide ONLY the numeric value.",
+        "reference": "7.49"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_17",
+    "data": [
+      {
+        "query": "How much did we spend on Artifact Registry in total? Provide ONLY the numeric value.",
+        "reference": "0.70"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_18",
+    "data": [
+      {
+        "query": "How much did project data-warehouse-dev spend on Vertex AI? Provide ONLY the numeric value.",
+        "reference": "118.22"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_19",
+    "data": [
+      {
+        "query": "How much did project data-warehouse-dev spend on Cloud Filestore? Provide ONLY the numeric value.",
+        "reference": "48.36"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_20",
+    "data": [
+      {
+        "query": "How much did project data-warehouse-dev spend on Compute Engine? Provide ONLY the numeric value.",
+        "reference": "13.14"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_21",
+    "data": [
+      {
+        "query": "How much did project data-warehouse-dev spend on Cloud Memorystore for Redis? Provide ONLY the numeric value.",
+        "reference": "10.10"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_22",
+    "data": [
+      {
+        "query": "How much did project data-warehouse-dev spend on Notebooks? Provide ONLY the numeric value.",
+        "reference": "10.07"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_23",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on Vertex AI? Provide ONLY the numeric value.",
+        "reference": "104.57"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_24",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on Cloud Filestore? Provide ONLY the numeric value.",
+        "reference": "50.75"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_25",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on Compute Engine? Provide ONLY the numeric value.",
+        "reference": "13.33"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_26",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on Cloud Memorystore for Redis? Provide ONLY the numeric value.",
+        "reference": "11.72"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_27",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on Notebooks? Provide ONLY the numeric value.",
+        "reference": "11.13"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_28",
+    "data": [
+      {
+        "query": "How much did project finops-prod-app spend on Vertex AI? Provide ONLY the numeric value.",
+        "reference": "117.58"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_29",
+    "data": [
+      {
+        "query": "How much did project finops-prod-app spend on Cloud Filestore? Provide ONLY the numeric value.",
+        "reference": "50.19"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_30",
+    "data": [
+      {
+        "query": "How much did project finops-prod-app spend on Compute Engine? Provide ONLY the numeric value.",
+        "reference": "13.33"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_31",
+    "data": [
+      {
+        "query": "How much did project finops-prod-app spend on Cloud Memorystore for Redis? Provide ONLY the numeric value.",
+        "reference": "10.61"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_32",
+    "data": [
+      {
+        "query": "How much did project finops-prod-app spend on Notebooks? Provide ONLY the numeric value.",
+        "reference": "10.25"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_33",
+    "data": [
+      {
+        "query": "How much did project data-warehouse-dev spend on BigQuery? Provide ONLY the numeric value.",
+        "reference": "3.15"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_34",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on BigQuery? Provide ONLY the numeric value.",
+        "reference": "3.48"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_35",
+    "data": [
+      {
+        "query": "How much did project finops-prod-app spend on BigQuery? Provide ONLY the numeric value.",
+        "reference": "3.12"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_36",
+    "data": [
+      {
+        "query": "Which project spent the most? Provide ONLY the project ID.",
+        "reference": "finops-prod-app"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_37",
+    "data": [
+      {
+        "query": "Which service was the most expensive? Provide ONLY the service name.",
+        "reference": "Vertex AI"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_38",
+    "data": [
+      {
+        "query": "Which service was the second most expensive? Provide ONLY the service name.",
+        "reference": "Cloud Filestore"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_39",
+    "data": [
+      {
+        "query": "Which service was the third most expensive? Provide ONLY the service name.",
+        "reference": "Compute Engine"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_40",
+    "data": [
+      {
+        "query": "Which project spent the least? Provide ONLY the project ID.",
+        "reference": "shared-infra-core"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_41",
+    "data": [
+      {
+        "query": "How much was spent on the SKU 'Feature Store Bigtable online serving node for us-central1'? Provide ONLY the numeric value.",
+        "reference": "169.22"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_42",
+    "data": [
+      {
+        "query": "How much was spent on the SKU 'Filestore Capacity Basic HDD (Standard) Iowa/South Carolina/Oregon'? Provide ONLY the numeric value.",
+        "reference": "149.31"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_43",
+    "data": [
+      {
+        "query": "How much was spent on the SKU 'Feature Store online serving node.'? Provide ONLY the numeric value.",
+        "reference": "88.53"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_44",
+    "data": [
+      {
+        "query": "How much was spent on the SKU 'Feature Store optimized online serving node in us-central1'? Provide ONLY the numeric value.",
+        "reference": "38.03"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_45",
+    "data": [
+      {
+        "query": "How much was spent on the SKU 'Redis Capacity Basic M1 Iowa/South Carolina/Oregon'? Provide ONLY the numeric value.",
+        "reference": "32.43"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_46",
+    "data": [
+      {
+        "query": "How much did project data-warehouse-dev spend on Kubernetes Engine? Provide ONLY the numeric value.",
+        "reference": "9.06"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_47",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on Kubernetes Engine? Provide ONLY the numeric value.",
+        "reference": "11.06"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_48",
+    "data": [
+      {
+        "query": "How much did project finops-prod-app spend on Kubernetes Engine? Provide ONLY the numeric value.",
+        "reference": "9.31"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_49",
+    "data": [
+      {
+        "query": "How much did project data-warehouse-dev spend on Duet AI? Provide ONLY the numeric value.",
+        "reference": "6.40"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  },
+  {
+    "name": "eval_case_50",
+    "data": [
+      {
+        "query": "How much did project shared-infra-core spend on Duet AI? Provide ONLY the numeric value.",
+        "reference": "6.92"
+      }
+    ],
+    "criteria": {
+      "response_match_score": 1.0,
+      "tool_trajectory_avg_score": 0.0
+    },
+    "initial_session": {
+      "state": {},
+      "app_name": "GCP_billing_concierge",
+      "user_id": "tester"
+    }
+  }
+]

@@ -1,0 +1,2699 @@
+{
+  "eval_set_result_id": "GCP_billing_concierge_billing_eval_dataset_fully_modern_1776728874.2266426",
+  "eval_set_result_name": "GCP_billing_concierge_billing_eval_dataset_fully_modern_1776728874.2266426",
+  "eval_set_id": "billing_eval_dataset_fully_modern",
+  "eval_case_results": [
+    {
+      "eval_set_file": "billing_eval_dataset_fully_modern",
+      "eval_set_id": "billing_eval_dataset_fully_modern",
+      "eval_id": "case_17",
+      "final_eval_status": 2,
+      "eval_metric_results": null,
+      "overall_eval_metric_results": [
+        {
+          "metric_name": "tool_trajectory_avg_score",
+          "threshold": 1.0,
+          "criterion": {
+            "threshold": 1.0
+          },
+          "custom_function_path": null,
+          "score": 0.0,
+          "eval_status": 2,
+          "details": {
+            "rubric_scores": null
+          }
+        },
+        {
+          "metric_name": "response_match_score",
+          "threshold": 0.8,
+          "criterion": {
+            "threshold": 0.8
+          },
+          "custom_function_path": null,
+          "score": 0.0,
+          "eval_status": 2,
+          "details": {
+            "rubric_scores": null
+          }
+        }
+      ],
+      "eval_metric_result_per_invocation": [
+        {
+          "actual_invocation": {
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "user_content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": "How much did project data-warehouse-dev spend on Vertex AI in total? Provide ONLY the numeric value.",
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "user"
+            },
+            "final_response": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": "118.22",
+                  "thought": null,
+                  "thought_signature": "CsgBAY89a19gsVitpu5q2OCnVu7tNCNQwfPyeYjEJKyJCfuQxXMHLtfhieOywkTEpTNFXDdHAHjyykopkopoDbEZPrN8rwgf3PLCt6F3r_P46Zd3nUWVIhdnVVjLbCylXc34-kawXOvp5JuCT2l6BjUUIvp-ktfJlOuK8p3ZW_MrFXP5ZfH2ZJQTd6HOnwVFao4Rp1r3-g7Dk0QGW31SDmIOAt28T17hIPNEbhTxiEKznZP3z0bthWh9plSnYvePAAQyvy9VURtjzK8=",
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "model"
+            },
+            "intermediate_data": {
+              "invocation_events": [
+                {
+                  "author": "GCP_billing_concierge",
+                  "content": {
+                    "parts": [
+                      {
+                        "media_resolution": null,
+                        "code_execution_result": null,
+                        "executable_code": null,
+                        "file_data": null,
+                        "function_call": {
+                          "id": "adk-3211d008-a992-4b6e-ba80-4ad8303e091d",
+                          "args": {
+                            "table_id": "billing_sample_table",
+                            "project_id": "your-project-id",
+                            "dataset_id": "billing_test"
+                          },
+                          "name": "get_table_info",
+                          "partial_args": null,
+                          "will_continue": null
+                        },
+                        "function_response": null,
+                        "inline_data": null,
+                        "text": null,
+                        "thought": null,
+                        "thought_signature": "CsEFAY89a18Js5qC_o_kcDdliddsJyA_4gljVJr6iApYBD69lUUaRMYiL6Zt-G0r--7TVfGBRVQy4B73RX-NqXcYRkkIjP0E55Lk2P23pNsz1EBGR4nSwxy0eqIbcE0sSUCoYpHJgj3yNTGZRzrMdjHFpQQhwLojGjPulEXSVG82A7YIuDZDuTzJTRZYW55FdpP1Kq24uLLT-Skc70hftCxbgvTwq9zqdQg1ctjY3GDvkz49HG43dEfKj0NZco7qFcZetaiRa8OlDqQJLzO1TQGXU88Q8Zi3AfO_ik-KtXMWtdO9q8oYCssUVQQFrQQHhF_J3WmfeDLWAzRM8YC1TsFnbfnh2lsebtuvt2Y0ZeKHqm_ryNDr9dlUOjET-6y55dKlCsfm0MiTtFQVNFdLtMEhu9fFt_n7qBbvngvjuDiw72NJM13-TgXLXXSywUwWcqV7v_WM78p_8ADojvf7wTiJXoxgyT0CWOSHGne1YXceL7Bw2PZ7vF4nLPYJ6W26YE_e-AuwkU6uAJqAEMGu8CIe58hENfURrcgL6ZS1tDc_N-ooW7asNmkZ3cUuB9oYj8F7VnYYBFSR_3JWBYwfc1BpHZ6j9Aal8mI95E25Bi5KQhCjwvGAkS6juX6zLTsqVBe2Syd28XCeqpemQqYApxT6R9G-gt_U3uf5FUZmz8ipIwxVCOd_gDPHWQX97JYl9EupohP668BGo8cqQQSIwPyC_k-wahGRmis1HJSgyQvPz1f5u3oGSOJatgO55VYAqwqF2V1csjN3pVWBQCzWdfHy1zXwOJhAD5ffclnpnoHDP0nhmE6k2Z5Jg4DnVZ1z7K7KLTI-pcrWLp95VMHfuEo6xUeAUgyGJH_50ukO0kOzV3Ez9v6N19TH54uzp8B5xK_RXUiZ3zPOUhElP7TupUgsyTfIo1PO5JybEaE6BzXyoa-dCiIBjz1rXwrqPHAj8N39YMmGiniOdF8wqb82k6NLg_KmQDIZ",
+                        "video_metadata": null,
+                        "tool_call": null,
+                        "tool_response": null,
+                        "part_metadata": null
+                      }
+                    ],
+                    "role": "model"
+                  }
+                },
+                {
+                  "author": "GCP_billing_concierge",
+                  "content": {
+                    "parts": [
+                      {
+                        "media_resolution": null,
+                        "code_execution_result": null,
+                        "executable_code": null,
+                        "file_data": null,
+                        "function_call": null,
+                        "function_response": {
+                          "will_continue": null,
+                          "scheduling": null,
+                          "parts": null,
+                          "id": "adk-3211d008-a992-4b6e-ba80-4ad8303e091d",
+                          "name": "get_table_info",
+                          "response": {
+                            "kind": "bigquery#table",
+                            "etag": "JXfVwNDGnRMF1UAZgtZITw==",
+                            "id": "your-project-id:billing_test.billing_sample_table",
+                            "selfLink": "https://bigquery.mtls.googleapis.com/bigquery/v2/projects/your-project-id/datasets/billing_test/tables/billing_sample_table",
+                            "tableReference": {
+                              "projectId": "your-project-id",
+                              "datasetId": "billing_test",
+                              "tableId": "billing_sample_table"
+                            },
+                            "schema": {
+                              "fields": [
+                                {
+                                  "name": "ingestion_time",
+                                  "type": "TIMESTAMP",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "billing_account_id",
+                                  "type": "STRING",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "service",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "id",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "description",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "sku",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "id",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "description",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "usage_start_time",
+                                  "type": "TIMESTAMP",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "usage_end_time",
+                                  "type": "TIMESTAMP",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "project",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "id",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "number",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "name",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "labels",
+                                      "type": "RECORD",
+                                      "mode": "REPEATED",
+                                      "fields": [
+                                        {
+                                          "name": "key",
+                                          "type": "STRING",
+                                          "mode": "NULLABLE"
+                                        },
+                                        {
+                                          "name": "value",
+                                          "type": "STRING",
+                                          "mode": "NULLABLE"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "name": "ancestry_numbers",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "ancestors",
+                                      "type": "RECORD",
+                                      "mode": "REPEATED",
+                                      "fields": [
+                                        {
+                                          "name": "resource_name",
+                                          "type": "STRING",
+                                          "mode": "NULLABLE"
+                                        },
+                                        {
+                                          "name": "display_name",
+                                          "type": "STRING",
+                                          "mode": "NULLABLE"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "labels",
+                                  "type": "RECORD",
+                                  "mode": "REPEATED",
+                                  "fields": [
+                                    {
+                                      "name": "key",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "value",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "system_labels",
+                                  "type": "RECORD",
+                                  "mode": "REPEATED",
+                                  "fields": [
+                                    {
+                                      "name": "key",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "value",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "location",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "location",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "country",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "region",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "zone",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "tags",
+                                  "type": "RECORD",
+                                  "mode": "REPEATED",
+                                  "fields": [
+                                    {
+                                      "name": "key",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "value",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "inherited",
+                                      "type": "BOOLEAN",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "namespace",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "price",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "effective_price",
+                                      "type": "NUMERIC",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "tier_start_amount",
+                                      "type": "NUMERIC",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "unit",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "pricing_unit_quantity",
+                                      "type": "NUMERIC",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "list_price",
+                                      "type": "NUMERIC",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "effective_price_default",
+                                      "type": "NUMERIC",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "list_price_consumption_model",
+                                      "type": "NUMERIC",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "transaction_type",
+                                  "type": "STRING",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "seller_name",
+                                  "type": "STRING",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "export_time",
+                                  "type": "TIMESTAMP",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "cost",
+                                  "type": "FLOAT",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "currency",
+                                  "type": "STRING",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "currency_conversion_rate",
+                                  "type": "FLOAT",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "usage",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "amount",
+                                      "type": "FLOAT",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "unit",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "amount_in_pricing_units",
+                                      "type": "FLOAT",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "pricing_unit",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "credits",
+                                  "type": "RECORD",
+                                  "mode": "REPEATED",
+                                  "fields": [
+                                    {
+                                      "name": "name",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "amount",
+                                      "type": "FLOAT",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "full_name",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "id",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "type",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "invoice",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "month",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "publisher_type",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "cost_type",
+                                  "type": "STRING",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "adjustment_info",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "id",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "description",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "mode",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "type",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "cost_at_list",
+                                  "type": "FLOAT",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "cost_at_effective_price_default",
+                                  "type": "FLOAT",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "cost_at_list_consumption_model",
+                                  "type": "FLOAT",
+                                  "mode": "NULLABLE"
+                                },
+                                {
+                                  "name": "consumption_model",
+                                  "type": "RECORD",
+                                  "mode": "NULLABLE",
+                                  "fields": [
+                                    {
+                                      "name": "id",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    },
+                                    {
+                                      "name": "description",
+                                      "type": "STRING",
+                                      "mode": "NULLABLE"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            "timePartitioning": {
+                              "type": "DAY",
+                              "field": "ingestion_time"
+                            },
+                            "numBytes": "39607725",
+                            "numLongTermBytes": "0",
+                            "numRows": "69315",
+                            "creationTime": "1775583551664",
+                            "lastModifiedTime": "1776244484971",
+                            "type": "TABLE",
+                            "location": "US",
+                            "numTimeTravelPhysicalBytes": "0",
+                            "numTotalLogicalBytes": "39607725",
+                            "numActiveLogicalBytes": "39607725",
+                            "numLongTermLogicalBytes": "0",
+                            "numTotalPhysicalBytes": "3262703",
+                            "numActivePhysicalBytes": "3262703",
+                            "numLongTermPhysicalBytes": "0",
+                            "numPartitions": "139",
+                            "partitionDefinition": {
+                              "partitionedColumn": [
+                                {
+                                  "field": "ingestion_time"
+                                }
+                              ]
+                            },
+                            "numCurrentPhysicalBytes": "3262703"
+                          }
+                        },
+                        "inline_data": null,
+                        "text": null,
+                        "thought": null,
+                        "thought_signature": null,
+                        "video_metadata": null,
+                        "tool_call": null,
+                        "tool_response": null,
+                        "part_metadata": null
+                      }
+                    ],
+                    "role": "user"
+                  }
+                },
+                {
+                  "author": "GCP_billing_concierge",
+                  "content": {
+                    "parts": [
+                      {
+                        "media_resolution": null,
+                        "code_execution_result": null,
+                        "executable_code": null,
+                        "file_data": null,
+                        "function_call": {
+                          "id": "adk-1d30f5c2-b8ec-4440-868e-c8a18eeb46c1",
+                          "args": {
+                            "project_id": "your-project-id",
+                            "dry_run": true,
+                            "query": "SELECT SUM(cost) FROM `your-project-id.billing_test.billing_sample_table` WHERE project.id = \"data-warehouse-dev\" AND service.description = \"Vertex AI\""
+                          },
+                          "name": "execute_sql",
+                          "partial_args": null,
+                          "will_continue": null
+                        },
+                        "function_response": null,
+                        "inline_data": null,
+                        "text": null,
+                        "thought": null,
+                        "thought_signature": "CpQGAY89a1_vWhgsRSq_xxVWGxXSgn1pCb9XbtMRFr6wIXrwcjeycMZMZDtwZP2A4AH-YOTPlVpcwN7G3YJgU8r_6DoqjPjSXjHbAmQHC1BW5I-7fl9sB5mOQXXM1bdMv2jU1hWygx75OaLn63y7FzU198TGkNldUI5B1F-G6gDa9kMNvvCdg2K2fKMioJTLO1L7G-HjyFGVraHMufiTVexXSZW0uPPScQoYDKWkeNj2oxt__fGLnoxnz06Zg5EuT31JH6pEj8nkywbxrVzw-O1S36lVIb0jtWBnxP8Z0K33xaWBxPd-uu-9AFOQZE4aFMO-9PLVfkv_DeUXuYES185D9IPyxTXobeK1u0uz85g2uSqlTvLjjTpzPIWJZJi4Zr2Xdx2GrYA1wrZmHmtO11gasv716dKY7uzSiR6t9pLCQMwb0154ftsXj8ESTEin7p7OH4kbRZNTWviqG0beOk6Le4QoYJPcSCZStinn6gJGkEpTP9OOy2atXooZJSlVX8H7bQfexfpLmNYZIc9c_2A0T8nSHg2Fg19L2Xit797Y2adl6PcrDb6_ZNMqvqHQ7t-FKB8DwEf6tehsTIolq6PNFyxK--CpZTj01VpTQqw7SGQ4VYqWhePs31q7hFvlc7HPuFuXS_vbADRGXsxDygNHcxyF4hLV3sele23JMUQ9JMpBnasOO-KR6fDIaVULOhEdzJY66IR48e7mu88fxRn1wvlmtIZzmd39_bbX65RB4MX4CZxGv17YuFOIfbrQcEtkC-SMRnRQB0rbCDdwql3qtw8gAJlT6_v5qfZ5qaUMMGOEaDlKp7T9YDF4KoMQPU4ofESwlf-CO_tcwv4emqZJDnfzWK_cpMKok_Yb9TOYfFnHwuzf3dhh2TkTyMe5ZWaqBnUma1aPn-vaHWAh1TDnXyOJSWLm-97B_avEku4H6-ClMOuYyFakUcCPlLRrtm88vlwYp-OBvud-J_nTCn6iknzIeClQWa7homC6hIDtroYVzHmydWM4MxwTxUavxXDlKRZpAm1i0RfYk8IBpOm-kvtYUxU=",
+                        "video_metadata": null,
+                        "tool_call": null,
+                        "tool_response": null,
+                        "part_metadata": null
+                      }
+                    ],
+                    "role": "model"
+                  }
+                },
+                {
+                  "author": "GCP_billing_concierge",
+                  "content": {
+                    "parts": [
+                      {
+                        "media_resolution": null,
+                        "code_execution_result": null,
+                        "executable_code": null,
+                        "file_data": null,
+                        "function_call": null,
+                        "function_response": {
+                          "will_continue": null,
+                          "scheduling": null,
+                          "parts": null,
+                          "id": "adk-1d30f5c2-b8ec-4440-868e-c8a18eeb46c1",
+                          "name": "execute_sql",
+                          "response": {
+                            "status": "SUCCESS",
+                            "dry_run_info": {
+                              "jobReference": {
+                                "projectId": "your-project-id",
+                                "location": "US"
+                              },
+                              "configuration": {
+                                "query": {
+                                  "query": "SELECT SUM(cost) FROM `your-project-id.billing_test.billing_sample_table` WHERE project.id = \"data-warehouse-dev\" AND service.description = \"Vertex AI\"",
+                                  "destinationTable": {
+                                    "projectId": "your-project-id",
+                                    "datasetId": "_dd67e03c77bff7ccc58a7fd1d712f875666bc502",
+                                    "tableId": "anonb731c300ff8e24d74565a4a30f216651e7931e071c5fb84bc21b8edf492c7c48"
+                                  },
+                                  "writeDisposition": "WRITE_TRUNCATE",
+                                  "priority": "INTERACTIVE",
+                                  "useLegacySql": false
+                                },
+                                "dryRun": true,
+                                "labels": {
+                                  "adk-bigquery-tool": "execute_sql"
+                                },
+                                "jobType": "QUERY"
+                              }
+                            }
+                          }
+                        },
+                        "inline_data": null,
+                        "text": null,
+                        "thought": null,
+                        "thought_signature": null,
+                        "video_metadata": null,
+                        "tool_call": null,
+                        "tool_response": null,
+                        "part_metadata": null
+                      }
+                    ],
+                    "role": "user"
+                  }
+                },
+                {
+                  "author": "GCP_billing_concierge",
+                  "content": {
+                    "parts": [
+                      {
+                        "media_resolution": null,
+                        "code_execution_result": null,
+                        "executable_code": null,
+                        "file_data": null,
+                        "function_call": {
+                          "id": "adk-70e257e9-44cd-4100-a931-8584502897af",
+                          "args": {
+                            "query": "SELECT SUM(cost) FROM `your-project-id.billing_test.billing_sample_table` WHERE project.id = \"data-warehouse-dev\" AND service.description = \"Vertex AI\"",
+                            "project_id": "your-project-id"
+                          },
+                          "name": "execute_sql",
+                          "partial_args": null,
+                          "will_continue": null
+                        },
+                        "function_response": null,
+                        "inline_data": null,
+                        "text": null,
+                        "thought": null,
+                        "thought_signature": "CrwDAY89a19d0ajCnwzZXP54Qbme8_rGkFcQagWNMhjgyOabAezI-rfSW6fsFTCbyOgbBspOUrzmyLt3oVJyfglpitwF0-FQuWup6qq1TdhurfZm5EZNXMELV__OYsX9PMYYN2SxH2giBufs6B258JyeJapRgaOwqVzb83yAP9PMKz5BE6j6z3X7RPUq_yD4B79GUhH7xIPfmNYIVqW1GooEveqGJyLxPl_0wKdOaBmciDWnqriPHKQLJ0S-IzJDtWXJa9v3vqZ46eW6Hs9Uq3oMjb2KuEyxs_2FwaD0qOqbjwWwV98LwzE0SE1HDlpig3A_b6tr-Hxc9_hFsjUCwlRz5-wwrNBVLV-p5erN-9K0geKTFruxTkzo7YRyTk4jbcN-L9cC-SDW8QvVOti6J_quOoP63sEL7QQ8gKRBISJcrYxRyhEFSQ61j7-jYhjZesoWntf4BIR7kzlFZrtqVN_Zsc94AqYQSyJo2FV4pbvz1ti99kvS2swzbWWrajtz3lEhUsUKL6JuzEyuXOdrv1J-JsRR6wbd8Q0nZhUs6ITDEUwJ1xR_gzthQK47AytaWTDmRKvhzs72eZTuySP7",
+                        "video_metadata": null,
+                        "tool_call": null,
+                        "tool_response": null,
+                        "part_metadata": null
+                      }
+                    ],
+                    "role": "model"
+                  }
+                },
+                {
+                  "author": "GCP_billing_concierge",
+                  "content": {
+                    "parts": [
+                      {
+                        "media_resolution": null,
+                        "code_execution_result": null,
+                        "executable_code": null,
+                        "file_data": null,
+                        "function_call": null,
+                        "function_response": {
+                          "will_continue": null,
+                          "scheduling": null,
+                          "parts": null,
+                          "id": "adk-70e257e9-44cd-4100-a931-8584502897af",
+                          "name": "execute_sql",
+                          "response": {
+                            "status": "SUCCESS",
+                            "rows": [
+                              {
+                                "f0_": 118.2239250000001
+                              }
+                            ]
+                          }
+                        },
+                        "inline_data": null,
+                        "text": null,
+                        "thought": null,
+                        "thought_signature": null,
+                        "video_metadata": null,
+                        "tool_call": null,
+                        "tool_response": null,
+                        "part_metadata": null
+                      }
+                    ],
+                    "role": "user"
+                  }
+                }
+              ]
+            },
+            "creation_timestamp": 1776728721.0960352,
+            "rubrics": null,
+            "app_details": {
+              "agent_details": {
+                "GCP_billing_concierge": {
+                  "name": "GCP_billing_concierge",
+                  "instructions": "You are called GCP Billing Concierge.\nYou are a FinOps expert that analyzes trends, patterns, anomalies and\ndetailed consumption from Google Cloud billing data, and you can use a \nsubagent to set up monitoring infrastructure.\nWhen needed, invoke the finops_infra_agent agent to verify if the three recommended audits and \nmail notifications are set, if the audits are not configured, recommend the users to set them up.\n\n\nToday's date is 2026-04-20. \nLocal Timezone is UTC\n\nDATA SOURCE:\n- Bigquery full table path: `your-project-id.billing_test.billing_sample_table`\n- Project ID: `your-project-id`\n- Region Context: `us-central1`\n\n\nCORE RESPONSIBILITIES:\n1. BILLING ANALYSIS: Analyze trends and answer queries about cloud consumption.\nAlways use 'get_table_info' to verify schema and perform a \"Dry Run\" \nbefore execution.\n2. ANOMALY DETECTION: If you identify a cost spike or unexpected usage, \nask the user if they want to create a log entry for the problem and use \n'log_billing_anomaly' to submit it. \nDo not prompt the user if the original question \nasked to submit log automatically. \n3. PERIODIC AUDITS:.\nOffer the user to set up these three recomended audits:\n\nAudit 1.   **Monthly Budget Variance (Monthly):**\n    *   **Schedule:** 3rd of each month @ 10:00 AM.\n    *   **Message:** Identify spend anomalies by comparing the total cost of the **entire previous \n    calendar month** against the average of the **three months prior**.\n    Create a log entry automatically if an anomaly is identified without prompting the user again.\n    *   **Data Window:** 1st to [Last Day] of previous month.\n\nAudit 2.  **Weekly Friday-to-Friday Sync (Weekly):**\n    *   **Schedule:** Every Monday @ 09:00 AM.\n    *   **Message:** Analyze the window from **Friday (10 days ago) to Friday (3 days ago)**. \n            Identify any unusual spend comparing this 7-day spend against the average \n            of the same Friday-to-Friday windows from the **previous 4 weeks** \n            and create log entry if there is an anomaly detected without prompting the user again.\n    *   **Reasoning:** Monday execution ensures the previous Friday's data is fully settled.\n\nAudit 3.  **Rolling 10-Day Daily Check (Daily):**\n    *   **Schedule:** Every day @ 09:00 AM.\n    *   **Message:** Scan for anomalies within a 10-day lookback window, **strictly excluding** the\n                most recent 2 days. \n                Create log entry if there is an anomaly detected without asking the user again.\n    *   **Lookback Formula:** `[T-12]` through `[T-2]`.\n\n\nBILLING GUIDELINES:\n- Always use the bigquery table `your-project-id.billing_test.billing_sample_table` and do not use any other table.\n- Use project your-project-id only to submit BigQuery jobs.\n- Refer to the data source only as \"the billing export\".\n- Filter by the partition field to save costs, UNLESS the user query asks for a total without specifying a date range (e.g., 'in total', 'overall'). In that case, default to querying all available data.\n- IMPORTANT: Check the schema using 'get_table_info'. If the table has an explicit partition column like 'ingestion_time', you MUST use that column (e.g., `ingestion_time`) for filtering. NEVER use `_PARTITIONTIME` in your SQL queries under any circumstances, as it will result in a query error.\n- Use 'get_table_info' to verify schema before writing SQL.\n- Do NOT disclose Project IDs or Table Names to the user.\n- Never use SELECT *. Only specify columns necessary \n(e.g., usage_start_time, cost).\n- Dry Run Requirement: Perform a \"Dry Run\" before execution.\n- Cost Consciousness: If a query exceeds 1 GB, stop and ask for confirmation.\n- Rounding Requirement: Always round final answers containing costs or prices to exactly 2 decimal places (e.g. 24.52).\n- Strict Output Constraint: When asked for a cost, price, or any number, your final response MUST contain ONLY the number itself (e.g., '9.06'). Do not surround it with words, punctuation, conversational filler, or ANY whitespace or newline characters. The response must be exactly the number and nothing else.\n\nEXAMPLES:\nUser: What was the total cost?\nOutput: 716.97\n\nUser: How much did we spend on Compute Engine?\nOutput: 1234.56\n\n\nTEMPORAL AWARENESS:\n- Current Context: Today is April 6, 2026. Use this for relative phrases \n(e.g., \"last month\", \"last week\", \"last February\").\n- Implicit Year: If a month is mentioned without a year, \nassume the most recent occurrence.\n- Avoid Redundant Clarification: Do not ask for the year if context is clear.\n- CRON Conversion: You are responsible for accurately converting user requests \ninto CRON format (e.g., \"Weekly on Friday at midnight\" -> \"0 0 * * 5\").\n- Google Cloud Billing data has a **48-hour synchronization delay**. \n- Never query or analyze data from the current day ($T$) or yesterday ($T-1$).\n\nYou are an agent. Your internal name is \"GCP_billing_concierge\". The description about you is \"FinOps agent for GCP Billing analysis and anomaly logging.\".\n\n\nYou have a list of other agents to transfer to:\n\n\nAgent name: Finops_infra_agent\nAgent description: Agent specialized to manage audit lifecycle \nincluding Cloud Schedulers, Alerts, and Notifications of the billing \nanomalies reported by the Billing concierge agent.\n\n\nIf you are the best to answer the question according to your description,\nyou can answer it.\n\nIf another agent is better for answering the question according to its\ndescription, call `transfer_to_agent` function to transfer the question to that\nagent. When transferring, do not generate any text other than the function\ncall.\n\n**NOTE**: the only available agents for `transfer_to_agent` function are\n`Finops_infra_agent`.\n",
+                  "tool_declarations": [
+                    {
+                      "retrieval": null,
+                      "computer_use": null,
+                      "file_search": null,
+                      "google_search": null,
+                      "google_maps": null,
+                      "code_execution": null,
+                      "enterprise_web_search": null,
+                      "function_declarations": [
+                        {
+                          "description": "Transfer the question to another agent.\n\nThis tool hands off control to another agent when it's more suitable to\nanswer the user's question according to the agent's description.\n\nNote:\n  For most use cases, you should use TransferToAgentTool instead of this\n  function directly. TransferToAgentTool provides additional enum constraints\n  that prevent LLMs from hallucinating invalid agent names.\n\nArgs:\n  agent_name: the agent name to transfer to.\n",
+                          "name": "transfer_to_agent",
+                          "parameters": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": {
+                              "agent_name": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": [
+                                  "Finops_infra_agent"
+                                ],
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              }
+                            },
+                            "property_ordering": null,
+                            "required": [
+                              "agent_name"
+                            ],
+                            "title": null,
+                            "type": "OBJECT"
+                          },
+                          "parameters_json_schema": null,
+                          "response": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": null,
+                            "property_ordering": null,
+                            "required": null,
+                            "title": null,
+                            "type": "NULL"
+                          },
+                          "response_json_schema": null,
+                          "behavior": null
+                        },
+                        {
+                          "description": "Get metadata information about a BigQuery table.\n\nArgs:\n    project_id (str): The Google Cloud project id containing the dataset.\n    dataset_id (str): The BigQuery dataset id containing the table.\n    table_id (str): The BigQuery table id.\n    credentials (Credentials): The credentials to use for the request.\n\nReturns:\n    dict: Dictionary representing the properties of the table.\n\nExamples:\n    >>> get_table_info(\"bigquery-public-data\", \"cdc_places\", \"local_data_for_better_health_county_data\")\n    {\n      \"kind\": \"bigquery#table\",\n      \"etag\": \"wx23aDqmgc39oUSiNuYTAA==\",\n      \"id\": \"bigquery-public-data:cdc_places.local_data_for_better_health_county_data\",\n      \"selfLink\": \"https://content-bigquery.googleapis.com/bigquery/v2/projects/bigquery-public-data/datasets/cdc_places/tables/local_data_for_better_health_county_data\",\n      \"tableReference\": {\n        \"projectId\": \"bigquery-public-data\",\n        \"datasetId\": \"cdc_places\",\n        \"tableId\": \"local_data_for_better_health_county_data\"\n      },\n      \"description\": \"Local Data for Better Health, County Data\",\n      \"schema\": {\n        \"fields\": [\n          {\n            \"name\": \"year\",\n            \"type\": \"INTEGER\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"stateabbr\",\n            \"type\": \"STRING\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"statedesc\",\n            \"type\": \"STRING\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"locationname\",\n            \"type\": \"STRING\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"datasource\",\n            \"type\": \"STRING\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"category\",\n            \"type\": \"STRING\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"measure\",\n            \"type\": \"STRING\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"data_value_unit\",\n            \"type\": \"STRING\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"data_value_type\",\n            \"type\": \"STRING\",\n            \"mode\": \"NULLABLE\"\n          },\n          {\n            \"name\": \"data_value\",\n            \"type\": \"FLOAT\",\n            \"mode\": \"NULLABLE\"\n          }\n        ]\n      },\n      \"numBytes\": \"234849\",\n      \"numLongTermBytes\": \"0\",\n      \"numRows\": \"1000\",\n      \"creationTime\": \"1640891846119\",\n      \"lastModifiedTime\": \"1749427268137\",\n      \"type\": \"TABLE\",\n      \"location\": \"US\",\n      \"numTimeTravelPhysicalBytes\": \"285737\",\n      \"numTotalLogicalBytes\": \"234849\",\n      \"numActiveLogicalBytes\": \"234849\",\n      \"numLongTermLogicalBytes\": \"0\",\n      \"numTotalPhysicalBytes\": \"326557\",\n      \"numActivePhysicalBytes\": \"326557\",\n      \"numLongTermPhysicalBytes\": \"0\",\n      \"numCurrentPhysicalBytes\": \"40820\"\n    }\n",
+                          "name": "get_table_info",
+                          "parameters": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": {
+                              "project_id": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              },
+                              "dataset_id": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              },
+                              "table_id": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              }
+                            },
+                            "property_ordering": null,
+                            "required": [
+                              "project_id",
+                              "dataset_id",
+                              "table_id"
+                            ],
+                            "title": null,
+                            "type": "OBJECT"
+                          },
+                          "parameters_json_schema": null,
+                          "response": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": null,
+                            "property_ordering": null,
+                            "required": null,
+                            "title": null,
+                            "type": "OBJECT"
+                          },
+                          "response_json_schema": null,
+                          "behavior": null
+                        },
+                        {
+                          "description": "Get metadata information about a BigQuery job. Including slot usage,\n   job configuration, job statistics, job status, original query etc.\n\nArgs:\n    project_id (str): The Google Cloud project id containing the job.\n    job_id (str): The BigQuery job id.\n    credentials (Credentials): The credentials to use for the request.\n    settings (BigQueryToolConfig): The BigQuery tool settings.\n\nReturns:\n    dict: Dictionary representing the properties of the job.\n\nExamples:\n    >>> user may give job id in format of: project_id:region.job_id\n    like bigquery-public-data:US.bquxjob_12345678_1234567890\n    >>> get_job_info(\"bigquery-public-data\", \"bquxjob_12345678_1234567890\")\n    {\n      \"get_job_info_response\": {\n        \"configuration\": {\n          \"jobType\": \"QUERY\",\n          \"query\": {\n            \"destinationTable\": {\n              \"datasetId\": \"_fd6de55d5d5c13fcfb0449cbf933bb695b2c3085\",\n              \"projectId\": \"projectid\",\n              \"tableId\": \"anonfbbe65d6_9782_469b_9f56_1392560314b2\"\n            },\n            \"priority\": \"INTERACTIVE\",\n            \"query\": \"SELECT * FROM `projectid.dataset_id.table_id` WHERE TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) = TIMESTAMP(\"2025-10-29\") LIMIT 1000\",\n            \"useLegacySql\": false,\n            \"writeDisposition\": \"WRITE_TRUNCATE\"\n          }\n        },\n        \"etag\": \"EdeYv9sdcO7tD9HsffvcuQ==\",\n        \"id\": \"projectid:US.job-id\",\n        \"jobCreationReason\": {\n          \"code\": \"REQUESTED\"\n        },\n        \"jobReference\": {\n          \"jobId\": \"job-id\",\n          \"location\": \"US\",\n          \"projectId\": \"projectid\"\n        },\n        \"kind\": \"bigquery#job\",\n        \"principal_subject\": \"user:abc@google.com\",\n        \"selfLink\": \"https://bigquery.googleapis.com/bigquery/v2/projects/projectid/jobs/job-id?location=US\",\n        \"statistics\": {\n          \"creationTime\": 1761760370152,\n          \"endTime\": 1761760371250,\n          \"finalExecutionDurationMs\": \"489\",\n          \"query\": {\n            \"billingTier\": 1,\n            \"cacheHit\": false,\n            \"estimatedBytesProcessed\": \"5597805\",\n            \"metadataCacheStatistics\": {\n              \"tableMetadataCacheUsage\": [\n                {\n                  \"explanation\": \"Table does not have CMETA.\",\n                  \"tableReference\": {\n                    \"datasetId\": \"datasetId\",\n                    \"projectId\": \"projectid\",\n                    \"tableId\": \"tableId\"\n                  },\n                  \"unusedReason\": \"OTHER_REASON\"\n                }\n              ]\n            },\n            \"queryPlan\": [\n              {\n                \"completedParallelInputs\": \"3\",\n                \"computeMode\": \"BIGQUERY\",\n                \"computeMsAvg\": \"13\",\n                \"computeMsMax\": \"15\",\n                \"computeRatioAvg\": 0.054852320675105488,\n                \"computeRatioMax\": 0.063291139240506333,\n                \"endMs\": \"1761760370422\",\n                \"id\": \"0\",\n                \"name\": \"S00: Input\",\n                \"parallelInputs\": \"8\",\n                \"readMsAvg\": \"18\",\n                \"readMsMax\": \"21\",\n                \"readRatioAvg\": 0.0759493670886076,\n                \"readRatioMax\": 0.088607594936708861,\n                \"recordsRead\": \"1690\",\n                \"recordsWritten\": \"1690\",\n                \"shuffleOutputBytes\": \"1031149\",\n                \"shuffleOutputBytesSpilled\": \"0\",\n                \"slotMs\": \"157\",\n                \"startMs\": \"1761760370388\",\n                \"status\": \"COMPLETE\",\n                \"steps\": [\n                  {\n                    \"kind\": \"READ\",\n                    \"substeps\": [\n                      \"$2:extendedFields.$is_not_null, $3:extendedFields.traceId, $4:span.$is_not_null, $5:span.spanKind, $6:span.endTime, $7:span.startTime, $8:span.parentSpanId, $9:span.spanId, $10:span.name, $11:span.childSpanCount.$is_not_null, $12:span.childSpanCount.value, $13:span.sameProcessAsParentSpan.$is_not_null, $14:span.sameProcessAsParentSpan.value, $15:span.status.$is_not_null, $16:span.status.message, $17:span.status.code\",\n                      \"FROM projectid.dataset_id.table_id\",\n                      \"WHERE equal(timestamp_trunc($1, 3), 1761696000.000000000)\"\n                    ]\n                  },\n                  {\n                    \"kind\": \"LIMIT\",\n                    \"substeps\": [\n                      \"1000\"\n                    ]\n                  },\n                  {\n                    \"kind\": \"WRITE\",\n                    \"substeps\": [\n                      \"$2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17\",\n                      \"TO __stage00_output\"\n                    ]\n                  }\n                ],\n                \"waitMsAvg\": \"1\",\n                \"waitMsMax\": \"1\",\n                \"waitRatioAvg\": 0.0042194092827004216,\n                \"waitRatioMax\": 0.0042194092827004216,\n                \"writeMsAvg\": \"2\",\n                \"writeMsMax\": \"2\",\n                \"writeRatioAvg\": 0.0084388185654008432,\n                \"writeRatioMax\": 0.0084388185654008432\n              },\n              {\n                \"completedParallelInputs\": \"1\",\n                \"computeMode\": \"BIGQUERY\",\n                \"computeMsAvg\": \"22\",\n                \"computeMsMax\": \"22\",\n                \"computeRatioAvg\": 0.092827004219409287,\n                \"computeRatioMax\": 0.092827004219409287,\n                \"endMs\": \"1761760370428\",\n                \"id\": \"1\",\n                \"inputStages\": [\n                  \"0\"\n                ],\n                \"name\": \"S01: Compute+\",\n                \"parallelInputs\": \"1\",\n                \"readMsAvg\": \"0\",\n                \"readMsMax\": \"0\",\n                \"readRatioAvg\": 0,\n                \"readRatioMax\": 0,\n                \"recordsRead\": \"1001\",\n                \"recordsWritten\": \"1000\",\n                \"shuffleOutputBytes\": \"800157\",\n                \"shuffleOutputBytesSpilled\": \"0\",\n                \"slotMs\": \"29\",\n                \"startMs\": \"1761760370398\",\n                \"status\": \"COMPLETE\",\n                \"steps\": [\n                  {\n                    \"kind\": \"READ\",\n                    \"substeps\": [\n                      \"$2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17\",\n                      \"FROM __stage00_output\"\n                    ]\n                  },\n                  {\n                    \"kind\": \"COMPUTE\",\n                    \"substeps\": [\n                      \"$130 := MAKE_STRUCT($3, $2)\",\n                      \"$131 := MAKE_STRUCT($10, $9, $8, MAKE_STRUCT($29, $28, $27), $7, $6, MAKE_STRUCT(...), MAKE_STRUCT(...), MAKE_STRUCT(...), ...)\"\n                    ]\n                  },\n                  {\n                    \"kind\": \"LIMIT\",\n                    \"substeps\": [\n                      \"1000\"\n                    ]\n                  },\n                  {\n                    \"kind\": \"WRITE\",\n                    \"substeps\": [\n                      \"$130, $131\",\n                      \"TO __stage01_output\"\n                    ]\n                  }\n                ],\n                \"waitMsAvg\": \"7\",\n                \"waitMsMax\": \"7\",\n                \"waitRatioAvg\": 0.029535864978902954,\n                \"waitRatioMax\": 0.029535864978902954,\n                \"writeMsAvg\": \"4\",\n                \"writeMsMax\": \"4\",\n                \"writeRatioAvg\": 0.016877637130801686,\n                \"writeRatioMax\": 0.016877637130801686\n              },\n              {\n                \"completedParallelInputs\": \"1\",\n                \"computeMode\": \"BIGQUERY\",\n                \"computeMsAvg\": \"33\",\n                \"computeMsMax\": \"33\",\n                \"computeRatioAvg\": 0.13924050632911392,\n                \"computeRatioMax\": 0.13924050632911392,\n                \"endMs\": \"1761760370745\",\n                \"id\": \"2\",\n                \"inputStages\": [\n                  \"1\"\n                ],\n                \"name\": \"S02: Output\",\n                \"parallelInputs\": \"1\",\n                \"readMsAvg\": \"0\",\n                \"readMsMax\": \"0\",\n                \"readRatioAvg\": 0,\n                \"readRatioMax\": 0,\n                \"recordsRead\": \"1000\",\n                \"recordsWritten\": \"1000\",\n                \"shuffleOutputBytes\": \"459829\",\n                \"shuffleOutputBytesSpilled\": \"0\",\n                \"slotMs\": \"106\",\n                \"startMs\": \"1761760370667\",\n                \"status\": \"COMPLETE\",\n                \"steps\": [\n                  {\n                    \"kind\": \"READ\",\n                    \"substeps\": [\n                      \"$130, $131\",\n                      \"FROM __stage01_output\"\n                    ]\n                  },\n                  {\n                    \"kind\": \"WRITE\",\n                    \"substeps\": [\n                      \"$130, $131\",\n                      \"TO __stage02_output\"\n                    ]\n                  }\n                ],\n                \"waitMsAvg\": \"237\",\n                \"waitMsMax\": \"237\",\n                \"waitRatioAvg\": 1,\n                \"waitRatioMax\": 1,\n                \"writeMsAvg\": \"55\",\n                \"writeMsMax\": \"55\",\n                \"writeRatioAvg\": 0.2320675105485232,\n                \"writeRatioMax\": 0.2320675105485232\n              }\n            ],\n            \"referencedTables\": [\n              {\n                \"datasetId\": \"dataset_id\",\n                \"projectId\": \"projectid\",\n                \"tableId\": \"table_id\"\n              }\n            ],\n            \"statementType\": \"SELECT\",\n            \"timeline\": [\n              {\n                \"completedUnits\": \"5\",\n                \"elapsedMs\": \"492\",\n                \"estimatedRunnableUnits\": \"0\",\n                \"pendingUnits\": \"5\",\n                \"totalSlotMs\": \"293\"\n              }\n            ],\n            \"totalBytesBilled\": \"10485760\",\n            \"totalBytesProcessed\": \"5597805\",\n            \"totalPartitionsProcessed\": \"2\",\n            \"totalSlotMs\": \"293\",\n            \"transferredBytes\": \"0\"\n          },\n          \"startTime\": 1761760370268,\n          \"totalBytesProcessed\": \"5597805\",\n          \"totalSlotMs\": \"293\"\n        },\n        \"status\": {\n          \"state\": \"DONE\"\n        },\n        \"user_email\": \"abc@google.com\"\n      }\n    }\n",
+                          "name": "get_job_info",
+                          "parameters": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": {
+                              "project_id": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              },
+                              "job_id": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              }
+                            },
+                            "property_ordering": null,
+                            "required": [
+                              "project_id",
+                              "job_id"
+                            ],
+                            "title": null,
+                            "type": "OBJECT"
+                          },
+                          "parameters_json_schema": null,
+                          "response": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": null,
+                            "property_ordering": null,
+                            "required": null,
+                            "title": null,
+                            "type": "OBJECT"
+                          },
+                          "response_json_schema": null,
+                          "behavior": null
+                        },
+                        {
+                          "description": "Run a BigQuery or BigQuery ML SQL query in the project and return the result.\n\nArgs:\n    project_id (str): The GCP project id in which the query should be\n      executed.\n    query (str): The BigQuery SQL query to be executed.\n    credentials (Credentials): The credentials to use for the request.\n    settings (BigQueryToolConfig): The settings for the tool.\n    tool_context (ToolContext): The context for the tool.\n    dry_run (bool, default False): If True, the query will not be executed.\n      Instead, the query will be validated and information about the query\n      will be returned. Defaults to False.\n\nReturns:\n    dict: If `dry_run` is False, dictionary representing the result of the\n          query. If the result contains the key \"result_is_likely_truncated\"\n          with value True, it means that there may be additional rows matching\n          the query not returned in the result.\n          If `dry_run` is True, dictionary with \"dry_run_info\" field\n          containing query information returned by BigQuery.\n\nExamples:\n    Fetch data or insights from a table:\n\n        >>> execute_sql(\"my_project\",\n        ... \"SELECT island, COUNT(*) AS population \"\n        ... \"FROM `bigquery-public-data`.`ml_datasets`.`penguins` GROUP BY island\")\n        {\n          \"status\": \"SUCCESS\",\n          \"rows\": [\n              {\n                  \"island\": \"Dream\",\n                  \"population\": 124\n              },\n              {\n                  \"island\": \"Biscoe\",\n                  \"population\": 168\n              },\n              {\n                  \"island\": \"Torgersen\",\n                  \"population\": 52\n              }\n          ]\n        }\n\n    Validate a query and estimate costs without executing it:\n\n        >>> execute_sql(\n        ...     \"my_project\",\n        ...     \"SELECT island FROM \"\n        ...     \"`bigquery-public-data`.`ml_datasets`.`penguins`\",\n        ...     dry_run=True\n        ... )\n        {\n          \"status\": \"SUCCESS\",\n          \"dry_run_info\": {\n            \"configuration\": {\n              \"dryRun\": True,\n              \"jobType\": \"QUERY\",\n              \"query\": {\n                \"destinationTable\": {\n                  \"datasetId\": \"_...\",\n                  \"projectId\": \"my_project\",\n                  \"tableId\": \"anon...\"\n                },\n                \"priority\": \"INTERACTIVE\",\n                \"query\": \"SELECT island FROM `bigquery-public-data`.`ml_datasets`.`penguins`\",\n                \"useLegacySql\": False,\n                \"writeDisposition\": \"WRITE_TRUNCATE\"\n              }\n            },\n            \"jobReference\": {\n              \"location\": \"US\",\n              \"projectId\": \"my_project\"\n            }\n          }\n        }\n",
+                          "name": "execute_sql",
+                          "parameters": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": {
+                              "project_id": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              },
+                              "query": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              },
+                              "dry_run": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": false,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "BOOLEAN"
+                              }
+                            },
+                            "property_ordering": null,
+                            "required": [
+                              "project_id",
+                              "query"
+                            ],
+                            "title": null,
+                            "type": "OBJECT"
+                          },
+                          "parameters_json_schema": null,
+                          "response": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": null,
+                            "property_ordering": null,
+                            "required": null,
+                            "title": null,
+                            "type": "OBJECT"
+                          },
+                          "response_json_schema": null,
+                          "behavior": null
+                        },
+                        {
+                          "description": "\nLogs a detected billing anomaly to Cloud Logging for audit and alerting.\n\nThis function acts as a wrapper for `log_billing_anomaly`, allowing the agent\nto record specific findings that can later trigger alert policies.\n\nArgs:\n    anomaly_type (str): The category of the anomaly (e.g., 'Sudden Spike', 'New Service').\n    severity (str): The severity level (e.g., 'INFO', 'WARNING', 'CRITICAL').\n    details (str): A descriptive explanation of the billing anomaly detected.\n\nReturns:\n    Any: The result of the logging operation (typically a log entry reference or status).\n",
+                          "name": "log_anomaly",
+                          "parameters": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": {
+                              "anomaly_type": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              },
+                              "severity": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              },
+                              "details": {
+                                "additional_properties": null,
+                                "defs": null,
+                                "ref": null,
+                                "any_of": null,
+                                "default": null,
+                                "description": null,
+                                "enum": null,
+                                "example": null,
+                                "format": null,
+                                "items": null,
+                                "max_items": null,
+                                "max_length": null,
+                                "max_properties": null,
+                                "maximum": null,
+                                "min_items": null,
+                                "min_length": null,
+                                "min_properties": null,
+                                "minimum": null,
+                                "nullable": null,
+                                "pattern": null,
+                                "properties": null,
+                                "property_ordering": null,
+                                "required": null,
+                                "title": null,
+                                "type": "STRING"
+                              }
+                            },
+                            "property_ordering": null,
+                            "required": [
+                              "anomaly_type",
+                              "severity",
+                              "details"
+                            ],
+                            "title": null,
+                            "type": "OBJECT"
+                          },
+                          "parameters_json_schema": null,
+                          "response": {
+                            "additional_properties": null,
+                            "defs": null,
+                            "ref": null,
+                            "any_of": null,
+                            "default": null,
+                            "description": null,
+                            "enum": null,
+                            "example": null,
+                            "format": null,
+                            "items": null,
+                            "max_items": null,
+                            "max_length": null,
+                            "max_properties": null,
+                            "maximum": null,
+                            "min_items": null,
+                            "min_length": null,
+                            "min_properties": null,
+                            "minimum": null,
+                            "nullable": null,
+                            "pattern": null,
+                            "properties": null,
+                            "property_ordering": null,
+                            "required": null,
+                            "title": null,
+                            "type": null
+                          },
+                          "response_json_schema": null,
+                          "behavior": null
+                        }
+                      ],
+                      "google_search_retrieval": null,
+                      "parallel_ai_search": null,
+                      "url_context": null,
+                      "mcp_servers": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "expected_invocation": {
+            "invocation_id": "49416688-ad6a-4448-a737-884cacf6ac82",
+            "user_content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": "How much did project data-warehouse-dev spend on Vertex AI in total? Provide ONLY the numeric value.",
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "user"
+            },
+            "final_response": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": "127.27",
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "model"
+            },
+            "intermediate_data": null,
+            "creation_timestamp": 1776722492.6909373,
+            "rubrics": null,
+            "app_details": null
+          },
+          "eval_metric_results": [
+            {
+              "metric_name": "tool_trajectory_avg_score",
+              "threshold": 1.0,
+              "criterion": {
+                "threshold": 1.0
+              },
+              "custom_function_path": null,
+              "score": 0.0,
+              "eval_status": 2,
+              "details": {
+                "rubric_scores": null
+              }
+            },
+            {
+              "metric_name": "response_match_score",
+              "threshold": 0.8,
+              "criterion": {
+                "threshold": 0.8
+              },
+              "custom_function_path": null,
+              "score": 0.0,
+              "eval_status": 2,
+              "details": {
+                "rubric_scores": null
+              }
+            }
+          ]
+        }
+      ],
+      "session_id": "___eval___session___39a46f08-1406-4019-a460-f86a058968d3",
+      "session_details": {
+        "id": "___eval___session___39a46f08-1406-4019-a460-f86a058968d3",
+        "app_name": "GCP_billing_concierge",
+        "user_id": "tester",
+        "state": {
+          "__llm_request_key__": "1c8bbd38-b928-4662-b5cc-14070bf0ce13"
+        },
+        "events": [
+          {
+            "model_version": null,
+            "content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": "How much did project data-warehouse-dev spend on Vertex AI in total? Provide ONLY the numeric value.",
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "user"
+            },
+            "grounding_metadata": null,
+            "partial": null,
+            "turn_complete": null,
+            "finish_reason": null,
+            "error_code": null,
+            "error_message": null,
+            "interrupted": null,
+            "custom_metadata": null,
+            "usage_metadata": null,
+            "live_session_resumption_update": null,
+            "input_transcription": null,
+            "output_transcription": null,
+            "avg_logprobs": null,
+            "logprobs_result": null,
+            "cache_metadata": null,
+            "citation_metadata": null,
+            "interaction_id": null,
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "author": "user",
+            "actions": {
+              "skip_summarization": null,
+              "state_delta": {},
+              "artifact_delta": {},
+              "transfer_to_agent": null,
+              "escalate": null,
+              "requested_auth_configs": {},
+              "requested_tool_confirmations": {},
+              "compaction": null,
+              "end_of_agent": null,
+              "agent_state": null,
+              "rewind_before_invocation_id": null,
+              "render_ui_widgets": null
+            },
+            "long_running_tool_ids": null,
+            "branch": null,
+            "id": "4cf053b3-5e02-4c1b-9f63-1349c0b2227e",
+            "timestamp": 1776728717.7080781
+          },
+          {
+            "model_version": "gemini-2.5-flash",
+            "content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": {
+                    "id": "adk-3211d008-a992-4b6e-ba80-4ad8303e091d",
+                    "args": {
+                      "table_id": "billing_sample_table",
+                      "project_id": "your-project-id",
+                      "dataset_id": "billing_test"
+                    },
+                    "name": "get_table_info",
+                    "partial_args": null,
+                    "will_continue": null
+                  },
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": null,
+                  "thought": null,
+                  "thought_signature": "CsEFAY89a18Js5qC_o_kcDdliddsJyA_4gljVJr6iApYBD69lUUaRMYiL6Zt-G0r--7TVfGBRVQy4B73RX-NqXcYRkkIjP0E55Lk2P23pNsz1EBGR4nSwxy0eqIbcE0sSUCoYpHJgj3yNTGZRzrMdjHFpQQhwLojGjPulEXSVG82A7YIuDZDuTzJTRZYW55FdpP1Kq24uLLT-Skc70hftCxbgvTwq9zqdQg1ctjY3GDvkz49HG43dEfKj0NZco7qFcZetaiRa8OlDqQJLzO1TQGXU88Q8Zi3AfO_ik-KtXMWtdO9q8oYCssUVQQFrQQHhF_J3WmfeDLWAzRM8YC1TsFnbfnh2lsebtuvt2Y0ZeKHqm_ryNDr9dlUOjET-6y55dKlCsfm0MiTtFQVNFdLtMEhu9fFt_n7qBbvngvjuDiw72NJM13-TgXLXXSywUwWcqV7v_WM78p_8ADojvf7wTiJXoxgyT0CWOSHGne1YXceL7Bw2PZ7vF4nLPYJ6W26YE_e-AuwkU6uAJqAEMGu8CIe58hENfURrcgL6ZS1tDc_N-ooW7asNmkZ3cUuB9oYj8F7VnYYBFSR_3JWBYwfc1BpHZ6j9Aal8mI95E25Bi5KQhCjwvGAkS6juX6zLTsqVBe2Syd28XCeqpemQqYApxT6R9G-gt_U3uf5FUZmz8ipIwxVCOd_gDPHWQX97JYl9EupohP668BGo8cqQQSIwPyC_k-wahGRmis1HJSgyQvPz1f5u3oGSOJatgO55VYAqwqF2V1csjN3pVWBQCzWdfHy1zXwOJhAD5ffclnpnoHDP0nhmE6k2Z5Jg4DnVZ1z7K7KLTI-pcrWLp95VMHfuEo6xUeAUgyGJH_50ukO0kOzV3Ez9v6N19TH54uzp8B5xK_RXUiZ3zPOUhElP7TupUgsyTfIo1PO5JybEaE6BzXyoa-dCiIBjz1rXwrqPHAj8N39YMmGiniOdF8wqb82k6NLg_KmQDIZ",
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "model"
+            },
+            "grounding_metadata": null,
+            "partial": null,
+            "turn_complete": null,
+            "finish_reason": "STOP",
+            "error_code": null,
+            "error_message": null,
+            "interrupted": null,
+            "custom_metadata": {
+              "__llm_request_key__": "96b72d54-2eff-4d91-858f-10fe305a9c77"
+            },
+            "usage_metadata": {
+              "cache_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 6552
+                }
+              ],
+              "cached_content_token_count": 6552,
+              "candidates_token_count": 30,
+              "candidates_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 30
+                }
+              ],
+              "prompt_token_count": 6588,
+              "prompt_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 6588
+                }
+              ],
+              "thoughts_token_count": 175,
+              "tool_use_prompt_token_count": null,
+              "tool_use_prompt_tokens_details": null,
+              "total_token_count": 6793,
+              "traffic_type": "ON_DEMAND"
+            },
+            "live_session_resumption_update": null,
+            "input_transcription": null,
+            "output_transcription": null,
+            "avg_logprobs": -0.9886500040690104,
+            "logprobs_result": null,
+            "cache_metadata": null,
+            "citation_metadata": null,
+            "interaction_id": null,
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "author": "GCP_billing_concierge",
+            "actions": {
+              "skip_summarization": null,
+              "state_delta": {
+                "__llm_request_key__": "96b72d54-2eff-4d91-858f-10fe305a9c77"
+              },
+              "artifact_delta": {},
+              "transfer_to_agent": null,
+              "escalate": null,
+              "requested_auth_configs": {},
+              "requested_tool_confirmations": {},
+              "compaction": null,
+              "end_of_agent": null,
+              "agent_state": null,
+              "rewind_before_invocation_id": null,
+              "render_ui_widgets": null
+            },
+            "long_running_tool_ids": [],
+            "branch": null,
+            "id": "590ab07c-64c1-424c-911b-b9773a1532dc",
+            "timestamp": 1776728717.713513
+          },
+          {
+            "model_version": null,
+            "content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": {
+                    "will_continue": null,
+                    "scheduling": null,
+                    "parts": null,
+                    "id": "adk-3211d008-a992-4b6e-ba80-4ad8303e091d",
+                    "name": "get_table_info",
+                    "response": {
+                      "kind": "bigquery#table",
+                      "etag": "JXfVwNDGnRMF1UAZgtZITw==",
+                      "id": "your-project-id:billing_test.billing_sample_table",
+                      "selfLink": "https://bigquery.mtls.googleapis.com/bigquery/v2/projects/your-project-id/datasets/billing_test/tables/billing_sample_table",
+                      "tableReference": {
+                        "projectId": "your-project-id",
+                        "datasetId": "billing_test",
+                        "tableId": "billing_sample_table"
+                      },
+                      "schema": {
+                        "fields": [
+                          {
+                            "name": "ingestion_time",
+                            "type": "TIMESTAMP",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "billing_account_id",
+                            "type": "STRING",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "service",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "id",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "description",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sku",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "id",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "description",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "usage_start_time",
+                            "type": "TIMESTAMP",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "usage_end_time",
+                            "type": "TIMESTAMP",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "project",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "id",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "number",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "name",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "labels",
+                                "type": "RECORD",
+                                "mode": "REPEATED",
+                                "fields": [
+                                  {
+                                    "name": "key",
+                                    "type": "STRING",
+                                    "mode": "NULLABLE"
+                                  },
+                                  {
+                                    "name": "value",
+                                    "type": "STRING",
+                                    "mode": "NULLABLE"
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "ancestry_numbers",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "ancestors",
+                                "type": "RECORD",
+                                "mode": "REPEATED",
+                                "fields": [
+                                  {
+                                    "name": "resource_name",
+                                    "type": "STRING",
+                                    "mode": "NULLABLE"
+                                  },
+                                  {
+                                    "name": "display_name",
+                                    "type": "STRING",
+                                    "mode": "NULLABLE"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "labels",
+                            "type": "RECORD",
+                            "mode": "REPEATED",
+                            "fields": [
+                              {
+                                "name": "key",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "value",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "system_labels",
+                            "type": "RECORD",
+                            "mode": "REPEATED",
+                            "fields": [
+                              {
+                                "name": "key",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "value",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "location",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "location",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "country",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "region",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "zone",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "tags",
+                            "type": "RECORD",
+                            "mode": "REPEATED",
+                            "fields": [
+                              {
+                                "name": "key",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "value",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "inherited",
+                                "type": "BOOLEAN",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "namespace",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "price",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "effective_price",
+                                "type": "NUMERIC",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "tier_start_amount",
+                                "type": "NUMERIC",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "unit",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "pricing_unit_quantity",
+                                "type": "NUMERIC",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "list_price",
+                                "type": "NUMERIC",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "effective_price_default",
+                                "type": "NUMERIC",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "list_price_consumption_model",
+                                "type": "NUMERIC",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "transaction_type",
+                            "type": "STRING",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "seller_name",
+                            "type": "STRING",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "export_time",
+                            "type": "TIMESTAMP",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "cost",
+                            "type": "FLOAT",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "currency",
+                            "type": "STRING",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "currency_conversion_rate",
+                            "type": "FLOAT",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "usage",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "amount",
+                                "type": "FLOAT",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "unit",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "amount_in_pricing_units",
+                                "type": "FLOAT",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "pricing_unit",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "credits",
+                            "type": "RECORD",
+                            "mode": "REPEATED",
+                            "fields": [
+                              {
+                                "name": "name",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "amount",
+                                "type": "FLOAT",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "full_name",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "id",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "type",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "invoice",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "month",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "publisher_type",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "cost_type",
+                            "type": "STRING",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "adjustment_info",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "id",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "description",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "mode",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "type",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "cost_at_list",
+                            "type": "FLOAT",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "cost_at_effective_price_default",
+                            "type": "FLOAT",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "cost_at_list_consumption_model",
+                            "type": "FLOAT",
+                            "mode": "NULLABLE"
+                          },
+                          {
+                            "name": "consumption_model",
+                            "type": "RECORD",
+                            "mode": "NULLABLE",
+                            "fields": [
+                              {
+                                "name": "id",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              },
+                              {
+                                "name": "description",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "timePartitioning": {
+                        "type": "DAY",
+                        "field": "ingestion_time"
+                      },
+                      "numBytes": "39607725",
+                      "numLongTermBytes": "0",
+                      "numRows": "69315",
+                      "creationTime": "1775583551664",
+                      "lastModifiedTime": "1776244484971",
+                      "type": "TABLE",
+                      "location": "US",
+                      "numTimeTravelPhysicalBytes": "0",
+                      "numTotalLogicalBytes": "39607725",
+                      "numActiveLogicalBytes": "39607725",
+                      "numLongTermLogicalBytes": "0",
+                      "numTotalPhysicalBytes": "3262703",
+                      "numActivePhysicalBytes": "3262703",
+                      "numLongTermPhysicalBytes": "0",
+                      "numPartitions": "139",
+                      "partitionDefinition": {
+                        "partitionedColumn": [
+                          {
+                            "field": "ingestion_time"
+                          }
+                        ]
+                      },
+                      "numCurrentPhysicalBytes": "3262703"
+                    }
+                  },
+                  "inline_data": null,
+                  "text": null,
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "user"
+            },
+            "grounding_metadata": null,
+            "partial": null,
+            "turn_complete": null,
+            "finish_reason": null,
+            "error_code": null,
+            "error_message": null,
+            "interrupted": null,
+            "custom_metadata": null,
+            "usage_metadata": null,
+            "live_session_resumption_update": null,
+            "input_transcription": null,
+            "output_transcription": null,
+            "avg_logprobs": null,
+            "logprobs_result": null,
+            "cache_metadata": null,
+            "citation_metadata": null,
+            "interaction_id": null,
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "author": "GCP_billing_concierge",
+            "actions": {
+              "skip_summarization": null,
+              "state_delta": {},
+              "artifact_delta": {},
+              "transfer_to_agent": null,
+              "escalate": null,
+              "requested_auth_configs": {},
+              "requested_tool_confirmations": {},
+              "compaction": null,
+              "end_of_agent": null,
+              "agent_state": null,
+              "rewind_before_invocation_id": null,
+              "render_ui_widgets": null
+            },
+            "long_running_tool_ids": null,
+            "branch": null,
+            "id": "70df7c08-f924-45a1-bc51-b85ee55446d7",
+            "timestamp": 1776728721.3976128
+          },
+          {
+            "model_version": "gemini-2.5-flash",
+            "content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": {
+                    "id": "adk-1d30f5c2-b8ec-4440-868e-c8a18eeb46c1",
+                    "args": {
+                      "project_id": "your-project-id",
+                      "dry_run": true,
+                      "query": "SELECT SUM(cost) FROM `your-project-id.billing_test.billing_sample_table` WHERE project.id = \"data-warehouse-dev\" AND service.description = \"Vertex AI\""
+                    },
+                    "name": "execute_sql",
+                    "partial_args": null,
+                    "will_continue": null
+                  },
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": null,
+                  "thought": null,
+                  "thought_signature": "CpQGAY89a1_vWhgsRSq_xxVWGxXSgn1pCb9XbtMRFr6wIXrwcjeycMZMZDtwZP2A4AH-YOTPlVpcwN7G3YJgU8r_6DoqjPjSXjHbAmQHC1BW5I-7fl9sB5mOQXXM1bdMv2jU1hWygx75OaLn63y7FzU198TGkNldUI5B1F-G6gDa9kMNvvCdg2K2fKMioJTLO1L7G-HjyFGVraHMufiTVexXSZW0uPPScQoYDKWkeNj2oxt__fGLnoxnz06Zg5EuT31JH6pEj8nkywbxrVzw-O1S36lVIb0jtWBnxP8Z0K33xaWBxPd-uu-9AFOQZE4aFMO-9PLVfkv_DeUXuYES185D9IPyxTXobeK1u0uz85g2uSqlTvLjjTpzPIWJZJi4Zr2Xdx2GrYA1wrZmHmtO11gasv716dKY7uzSiR6t9pLCQMwb0154ftsXj8ESTEin7p7OH4kbRZNTWviqG0beOk6Le4QoYJPcSCZStinn6gJGkEpTP9OOy2atXooZJSlVX8H7bQfexfpLmNYZIc9c_2A0T8nSHg2Fg19L2Xit797Y2adl6PcrDb6_ZNMqvqHQ7t-FKB8DwEf6tehsTIolq6PNFyxK--CpZTj01VpTQqw7SGQ4VYqWhePs31q7hFvlc7HPuFuXS_vbADRGXsxDygNHcxyF4hLV3sele23JMUQ9JMpBnasOO-KR6fDIaVULOhEdzJY66IR48e7mu88fxRn1wvlmtIZzmd39_bbX65RB4MX4CZxGv17YuFOIfbrQcEtkC-SMRnRQB0rbCDdwql3qtw8gAJlT6_v5qfZ5qaUMMGOEaDlKp7T9YDF4KoMQPU4ofESwlf-CO_tcwv4emqZJDnfzWK_cpMKok_Yb9TOYfFnHwuzf3dhh2TkTyMe5ZWaqBnUma1aPn-vaHWAh1TDnXyOJSWLm-97B_avEku4H6-ClMOuYyFakUcCPlLRrtm88vlwYp-OBvud-J_nTCn6iknzIeClQWa7homC6hIDtroYVzHmydWM4MxwTxUavxXDlKRZpAm1i0RfYk8IBpOm-kvtYUxU=",
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "model"
+            },
+            "grounding_metadata": null,
+            "partial": null,
+            "turn_complete": null,
+            "finish_reason": "STOP",
+            "error_code": null,
+            "error_message": null,
+            "interrupted": null,
+            "custom_metadata": {
+              "__llm_request_key__": "525d3377-a087-4146-af00-a1f7750df0ef"
+            },
+            "usage_metadata": {
+              "cache_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 5848
+                }
+              ],
+              "cached_content_token_count": 5848,
+              "candidates_token_count": 66,
+              "candidates_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 66
+                }
+              ],
+              "prompt_token_count": 7728,
+              "prompt_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 7728
+                }
+              ],
+              "thoughts_token_count": 197,
+              "tool_use_prompt_token_count": null,
+              "tool_use_prompt_tokens_details": null,
+              "total_token_count": 7991,
+              "traffic_type": "ON_DEMAND"
+            },
+            "live_session_resumption_update": null,
+            "input_transcription": null,
+            "output_transcription": null,
+            "avg_logprobs": -0.8668329065496271,
+            "logprobs_result": null,
+            "cache_metadata": null,
+            "citation_metadata": null,
+            "interaction_id": null,
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "author": "GCP_billing_concierge",
+            "actions": {
+              "skip_summarization": null,
+              "state_delta": {
+                "__llm_request_key__": "525d3377-a087-4146-af00-a1f7750df0ef"
+              },
+              "artifact_delta": {},
+              "transfer_to_agent": null,
+              "escalate": null,
+              "requested_auth_configs": {},
+              "requested_tool_confirmations": {},
+              "compaction": null,
+              "end_of_agent": null,
+              "agent_state": null,
+              "rewind_before_invocation_id": null,
+              "render_ui_widgets": null
+            },
+            "long_running_tool_ids": [],
+            "branch": null,
+            "id": "e1f1c3f1-25a5-45fa-8a84-cc6f475836eb",
+            "timestamp": 1776728721.4031293
+          },
+          {
+            "model_version": null,
+            "content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": {
+                    "will_continue": null,
+                    "scheduling": null,
+                    "parts": null,
+                    "id": "adk-1d30f5c2-b8ec-4440-868e-c8a18eeb46c1",
+                    "name": "execute_sql",
+                    "response": {
+                      "status": "SUCCESS",
+                      "dry_run_info": {
+                        "jobReference": {
+                          "projectId": "your-project-id",
+                          "location": "US"
+                        },
+                        "configuration": {
+                          "query": {
+                            "query": "SELECT SUM(cost) FROM `your-project-id.billing_test.billing_sample_table` WHERE project.id = \"data-warehouse-dev\" AND service.description = \"Vertex AI\"",
+                            "destinationTable": {
+                              "projectId": "your-project-id",
+                              "datasetId": "_dd67e03c77bff7ccc58a7fd1d712f875666bc502",
+                              "tableId": "anonb731c300ff8e24d74565a4a30f216651e7931e071c5fb84bc21b8edf492c7c48"
+                            },
+                            "writeDisposition": "WRITE_TRUNCATE",
+                            "priority": "INTERACTIVE",
+                            "useLegacySql": false
+                          },
+                          "dryRun": true,
+                          "labels": {
+                            "adk-bigquery-tool": "execute_sql"
+                          },
+                          "jobType": "QUERY"
+                        }
+                      }
+                    }
+                  },
+                  "inline_data": null,
+                  "text": null,
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "user"
+            },
+            "grounding_metadata": null,
+            "partial": null,
+            "turn_complete": null,
+            "finish_reason": null,
+            "error_code": null,
+            "error_message": null,
+            "interrupted": null,
+            "custom_metadata": null,
+            "usage_metadata": null,
+            "live_session_resumption_update": null,
+            "input_transcription": null,
+            "output_transcription": null,
+            "avg_logprobs": null,
+            "logprobs_result": null,
+            "cache_metadata": null,
+            "citation_metadata": null,
+            "interaction_id": null,
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "author": "GCP_billing_concierge",
+            "actions": {
+              "skip_summarization": null,
+              "state_delta": {},
+              "artifact_delta": {},
+              "transfer_to_agent": null,
+              "escalate": null,
+              "requested_auth_configs": {},
+              "requested_tool_confirmations": {},
+              "compaction": null,
+              "end_of_agent": null,
+              "agent_state": null,
+              "rewind_before_invocation_id": null,
+              "render_ui_widgets": null
+            },
+            "long_running_tool_ids": null,
+            "branch": null,
+            "id": "f070e3da-150b-4737-987c-a9130a96bff4",
+            "timestamp": 1776728726.369879
+          },
+          {
+            "model_version": "gemini-2.5-flash",
+            "content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": {
+                    "id": "adk-70e257e9-44cd-4100-a931-8584502897af",
+                    "args": {
+                      "query": "SELECT SUM(cost) FROM `your-project-id.billing_test.billing_sample_table` WHERE project.id = \"data-warehouse-dev\" AND service.description = \"Vertex AI\"",
+                      "project_id": "your-project-id"
+                    },
+                    "name": "execute_sql",
+                    "partial_args": null,
+                    "will_continue": null
+                  },
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": null,
+                  "thought": null,
+                  "thought_signature": "CrwDAY89a19d0ajCnwzZXP54Qbme8_rGkFcQagWNMhjgyOabAezI-rfSW6fsFTCbyOgbBspOUrzmyLt3oVJyfglpitwF0-FQuWup6qq1TdhurfZm5EZNXMELV__OYsX9PMYYN2SxH2giBufs6B258JyeJapRgaOwqVzb83yAP9PMKz5BE6j6z3X7RPUq_yD4B79GUhH7xIPfmNYIVqW1GooEveqGJyLxPl_0wKdOaBmciDWnqriPHKQLJ0S-IzJDtWXJa9v3vqZ46eW6Hs9Uq3oMjb2KuEyxs_2FwaD0qOqbjwWwV98LwzE0SE1HDlpig3A_b6tr-Hxc9_hFsjUCwlRz5-wwrNBVLV-p5erN-9K0geKTFruxTkzo7YRyTk4jbcN-L9cC-SDW8QvVOti6J_quOoP63sEL7QQ8gKRBISJcrYxRyhEFSQ61j7-jYhjZesoWntf4BIR7kzlFZrtqVN_Zsc94AqYQSyJo2FV4pbvz1ti99kvS2swzbWWrajtz3lEhUsUKL6JuzEyuXOdrv1J-JsRR6wbd8Q0nZhUs6ITDEUwJ1xR_gzthQK47AytaWTDmRKvhzs72eZTuySP7",
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "model"
+            },
+            "grounding_metadata": null,
+            "partial": null,
+            "turn_complete": null,
+            "finish_reason": "STOP",
+            "error_code": null,
+            "error_message": null,
+            "interrupted": null,
+            "custom_metadata": {
+              "__llm_request_key__": "10f45ec2-5015-4be2-9797-439d4cd80d5d"
+            },
+            "usage_metadata": {
+              "cache_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 7526
+                }
+              ],
+              "cached_content_token_count": 7526,
+              "candidates_token_count": 62,
+              "candidates_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 62
+                }
+              ],
+              "prompt_token_count": 8204,
+              "prompt_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 8204
+                }
+              ],
+              "thoughts_token_count": 105,
+              "tool_use_prompt_token_count": null,
+              "tool_use_prompt_tokens_details": null,
+              "total_token_count": 8371,
+              "traffic_type": "ON_DEMAND"
+            },
+            "live_session_resumption_update": null,
+            "input_transcription": null,
+            "output_transcription": null,
+            "avg_logprobs": -0.6924348646594632,
+            "logprobs_result": null,
+            "cache_metadata": null,
+            "citation_metadata": null,
+            "interaction_id": null,
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "author": "GCP_billing_concierge",
+            "actions": {
+              "skip_summarization": null,
+              "state_delta": {
+                "__llm_request_key__": "10f45ec2-5015-4be2-9797-439d4cd80d5d"
+              },
+              "artifact_delta": {},
+              "transfer_to_agent": null,
+              "escalate": null,
+              "requested_auth_configs": {},
+              "requested_tool_confirmations": {},
+              "compaction": null,
+              "end_of_agent": null,
+              "agent_state": null,
+              "rewind_before_invocation_id": null,
+              "render_ui_widgets": null
+            },
+            "long_running_tool_ids": [],
+            "branch": null,
+            "id": "0f56b04b-b3d5-409e-9c31-f46bee43a012",
+            "timestamp": 1776728726.412272
+          },
+          {
+            "model_version": null,
+            "content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": {
+                    "will_continue": null,
+                    "scheduling": null,
+                    "parts": null,
+                    "id": "adk-70e257e9-44cd-4100-a931-8584502897af",
+                    "name": "execute_sql",
+                    "response": {
+                      "status": "SUCCESS",
+                      "rows": [
+                        {
+                          "f0_": 118.2239250000001
+                        }
+                      ]
+                    }
+                  },
+                  "inline_data": null,
+                  "text": null,
+                  "thought": null,
+                  "thought_signature": null,
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "user"
+            },
+            "grounding_metadata": null,
+            "partial": null,
+            "turn_complete": null,
+            "finish_reason": null,
+            "error_code": null,
+            "error_message": null,
+            "interrupted": null,
+            "custom_metadata": null,
+            "usage_metadata": null,
+            "live_session_resumption_update": null,
+            "input_transcription": null,
+            "output_transcription": null,
+            "avg_logprobs": null,
+            "logprobs_result": null,
+            "cache_metadata": null,
+            "citation_metadata": null,
+            "interaction_id": null,
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "author": "GCP_billing_concierge",
+            "actions": {
+              "skip_summarization": null,
+              "state_delta": {},
+              "artifact_delta": {},
+              "transfer_to_agent": null,
+              "escalate": null,
+              "requested_auth_configs": {},
+              "requested_tool_confirmations": {},
+              "compaction": null,
+              "end_of_agent": null,
+              "agent_state": null,
+              "rewind_before_invocation_id": null,
+              "render_ui_widgets": null
+            },
+            "long_running_tool_ids": null,
+            "branch": null,
+            "id": "4bf3081a-8d3f-4a65-9b8a-a61f5ea2fca7",
+            "timestamp": 1776728731.8817775
+          },
+          {
+            "model_version": "gemini-2.5-flash",
+            "content": {
+              "parts": [
+                {
+                  "media_resolution": null,
+                  "code_execution_result": null,
+                  "executable_code": null,
+                  "file_data": null,
+                  "function_call": null,
+                  "function_response": null,
+                  "inline_data": null,
+                  "text": "118.22",
+                  "thought": null,
+                  "thought_signature": "CsgBAY89a19gsVitpu5q2OCnVu7tNCNQwfPyeYjEJKyJCfuQxXMHLtfhieOywkTEpTNFXDdHAHjyykopkopoDbEZPrN8rwgf3PLCt6F3r_P46Zd3nUWVIhdnVVjLbCylXc34-kawXOvp5JuCT2l6BjUUIvp-ktfJlOuK8p3ZW_MrFXP5ZfH2ZJQTd6HOnwVFao4Rp1r3-g7Dk0QGW31SDmIOAt28T17hIPNEbhTxiEKznZP3z0bthWh9plSnYvePAAQyvy9VURtjzK8=",
+                  "video_metadata": null,
+                  "tool_call": null,
+                  "tool_response": null,
+                  "part_metadata": null
+                }
+              ],
+              "role": "model"
+            },
+            "grounding_metadata": null,
+            "partial": null,
+            "turn_complete": null,
+            "finish_reason": "STOP",
+            "error_code": null,
+            "error_message": null,
+            "interrupted": null,
+            "custom_metadata": {
+              "__llm_request_key__": "1c8bbd38-b928-4662-b5cc-14070bf0ce13"
+            },
+            "usage_metadata": {
+              "cache_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 7509
+                }
+              ],
+              "cached_content_token_count": 7509,
+              "candidates_token_count": 6,
+              "candidates_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 6
+                }
+              ],
+              "prompt_token_count": 8381,
+              "prompt_tokens_details": [
+                {
+                  "modality": "TEXT",
+                  "token_count": 8381
+                }
+              ],
+              "thoughts_token_count": 53,
+              "tool_use_prompt_token_count": null,
+              "tool_use_prompt_tokens_details": null,
+              "total_token_count": 8440,
+              "traffic_type": "ON_DEMAND"
+            },
+            "live_session_resumption_update": null,
+            "input_transcription": null,
+            "output_transcription": null,
+            "avg_logprobs": -1.0356545448303223,
+            "logprobs_result": null,
+            "cache_metadata": null,
+            "citation_metadata": null,
+            "interaction_id": null,
+            "invocation_id": "e-0f517516-78d7-4dd5-9690-6f88143d57f2",
+            "author": "GCP_billing_concierge",
+            "actions": {
+              "skip_summarization": null,
+              "state_delta": {
+                "__llm_request_key__": "1c8bbd38-b928-4662-b5cc-14070bf0ce13"
+              },
+              "artifact_delta": {},
+              "transfer_to_agent": null,
+              "escalate": null,
+              "requested_auth_configs": {},
+              "requested_tool_confirmations": {},
+              "compaction": null,
+              "end_of_agent": null,
+              "agent_state": null,
+              "rewind_before_invocation_id": null,
+              "render_ui_widgets": null
+            },
+            "long_running_tool_ids": null,
+            "branch": null,
+            "id": "be52eefd-d692-4988-940d-313fd4176110",
+            "timestamp": 1776728731.9377038
+          }
+        ],
+        "last_update_time": 1776728731.9377038
+      },
+      "user_id": "tester"
+    }
+  ],
+  "creation_timestamp": 1776728874.2266426
+}
