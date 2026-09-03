@@ -36,6 +36,10 @@ check-env:
 	else \
 		echo "✅ Region:  $(GOOGLE_CLOUD_LOCATION)"; \
 	fi
+	@if ! grep -q "^GOOGLE_GENAI_USE_VERTEXAI=" $(ENV_FILE) 2>/dev/null; then \
+		echo "GOOGLE_GENAI_USE_VERTEXAI=true" >> $(ENV_FILE); \
+		echo "✅ Enabled Vertex AI backend (GOOGLE_GENAI_USE_VERTEXAI=true) in .env"; \
+	fi
 
 enable_apis:
 	@echo "Enabling Google Cloud APIs..."
@@ -100,3 +104,4 @@ store_agent_id:
 eval:
 	@echo "🧪 Running evaluations..."
 	@cd gcp_billing_concierge_agent_evals && uv run python run_eval.py
+

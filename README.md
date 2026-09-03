@@ -198,6 +198,12 @@ make eval
 uvx google-agents-cli eval
 ```
 
+#### Step 6: Register with Gemini Enterprise (Optional)
+Register your deployed agent so users can discover and interact with it in Gemini Enterprise using `google-agents-cli`:
+```bash
+uvx google-agents-cli publish gemini-enterprise --interactive
+```
+
 ---
 
 ## 📝 Disclaimer

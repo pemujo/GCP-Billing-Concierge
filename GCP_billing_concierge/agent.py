@@ -1,16 +1,19 @@
 import logging
 import os
+import pathlib
 from typing import Any, Optional
 
 import google.auth
 import google.cloud.logging
 from dotenv import load_dotenv
 from google.adk.agents import Agent
+from google.adk.skills import load_skill_from_dir
 from google.adk.tools.bigquery import (
     BigQueryCredentialsConfig,
     BigQueryToolset,
 )
 from google.adk.tools.bigquery.config import BigQueryToolConfig, WriteMode
+from google.adk.tools.skill_toolset import SkillToolset
 from google.auth.transport.requests import Request
 
 # Internal Imports
@@ -20,6 +23,8 @@ from .tools.tools import log_billing_anomaly
 
 # Initialization
 load_dotenv()
+if os.getenv("GOOGLE_CLOUD_PROJECT") and not os.getenv("GEMINI_API_KEY"):
+    os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "true")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -117,11 +122,25 @@ def log_anomaly(anomaly_type: str, severity: str, details: str) -> str:
     )
 
 
+# Skills Setup
+skills_dir = pathlib.Path(__file__).parent / "skills"
+skills = []
+try:
+    if skills_dir.exists():
+        for skill_path in sorted(skills_dir.iterdir()):
+            if skill_path.is_dir() and (skill_path / "SKILL.md").exists():
+                skills.append(load_skill_from_dir(skill_path))
+        logger.info("Successfully loaded %d skills from %s", len(skills), skills_dir)
+except Exception as e:
+    logger.warning("Could not load skills from %s: %s", skills_dir, e)
+
+skill_toolset = SkillToolset(skills=skills)
+
 # Final Agent Definition
 billing_concierge_agent = Agent(
     model=GEMINI_MODEL,
     name=AGENT_NAME,
-    description="FinOps agent for GCP Billing analysis and anomaly logging.",
+    description="FinOps agent for GCP Billing analysis, anomaly logging, and monitoring infrastructure.",
     instruction=get_instructions(
         FULL_TABLE_PATH, AGENT_PROJECT_ID, GOOGLE_CLOUD_LOCATION
     ),
@@ -129,6 +148,7 @@ billing_concierge_agent = Agent(
     tools=[
         bigquery_toolset,
         log_anomaly,
+        skill_toolset,
     ],
 )
 
