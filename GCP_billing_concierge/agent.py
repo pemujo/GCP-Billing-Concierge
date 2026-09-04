@@ -10,9 +10,9 @@ from google.adk.agents import Agent
 from google.adk.skills import load_skill_from_dir
 from google.adk.tools.bigquery import (
     BigQueryCredentialsConfig,
-    BigQueryToolset,
 )
 from google.adk.tools.bigquery.config import BigQueryToolConfig, WriteMode
+from .tools.finops_bigquery_toolset import FinOpsBigQueryToolset
 from google.adk.tools.skill_toolset import SkillToolset
 from google.auth.transport.requests import Request
 
@@ -70,11 +70,23 @@ except Exception as e:
         e,
     )
 
-# Toolset Setup
-bq_read_only_config = BigQueryToolConfig(write_mode=WriteMode.BLOCKED)
-bigquery_toolset = BigQueryToolset(
+# BigQuery FinOps Toolset & Guardrails Setup
+MAX_BYTES_BILLED = int(os.getenv("BQ_MAX_BYTES_BILLED", "1073741824"))  # 1 GiB budget limit
+MAX_RESULT_ROWS = int(os.getenv("BQ_MAX_QUERY_RESULT_ROWS", "50"))
+
+bq_guardrail_config = BigQueryToolConfig(
+    write_mode=WriteMode.BLOCKED,
+    maximum_bytes_billed=MAX_BYTES_BILLED,
+    max_query_result_rows=MAX_RESULT_ROWS,
+    compute_project_id=AGENT_PROJECT_ID or None,
+    location=GOOGLE_CLOUD_LOCATION,
+    application_name="gcp-billing-concierge",
+    job_labels={"env": "production", "workload": "finops-analysis"},
+)
+bigquery_toolset = FinOpsBigQueryToolset(
     credentials_config=bq_credentials_config,
-    bigquery_tool_config=bq_read_only_config,
+    bigquery_tool_config=bq_guardrail_config,
+    max_bytes_billed=MAX_BYTES_BILLED,
     tool_filter=[
         "get_table_info",
         "execute_sql",

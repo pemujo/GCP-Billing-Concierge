@@ -15,7 +15,7 @@ Accurately translate user schedules into standard 5-field CRON expressions:
 - **Bi-weekly**: `0 9 1,15 * *`
 
 ## Target & Authentication
-- **Endpoint**: The deployed Vertex AI Agent Runtime streaming endpoint.
+- **Endpoint**: The deployed Agent Runtime streaming endpoint.
 - **Payload**: Standard JSON payload with the query prompt for the audit:
   ```json
   {

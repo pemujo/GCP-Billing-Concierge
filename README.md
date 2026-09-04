@@ -1,5 +1,5 @@
 # 💰 Billing Concierge Agent
-An intelligent automation agent that simplifies Google Cloud cost management. Starting with answering billing questions, this agent also acts as a FinOps concierge—capable of auditing environments, detecting anomalies, and provisioning monitoring infrastructure using natural language. Built with Google ADK, Gemini, and deployed via `google-agents-cli` on Vertex AI.
+An intelligent automation agent that simplifies Google Cloud cost management. Starting with answering billing questions, this agent also acts as a FinOps concierge—capable of auditing environments, detecting anomalies, and provisioning monitoring infrastructure using natural language. Built with Google ADK, Gemini, and deployed via `google-agents-cli` on Agent Runtime (Gemini Enterprise Agent Platform).
 
 🛠️ Integrated Cloud Ecosystem:
 The agent seamlessly orchestrates the following Google Cloud services:
@@ -72,7 +72,7 @@ If you do not have an existing export, the setup script (`make setup_billing_dat
 * `roles/resourcemanager.projectIamAdmin`: To manage Service Account roles.
 * `roles/iam.serviceAccountAdmin`: To create the agent identity.
 * `roles/bigquery.admin`: To configure datasets and verify schemas.
-* `roles/aiplatform.admin`: To deploy agent to Vertex AI Reasoning Engine / Agent Runtime.
+* `roles/aiplatform.admin`: To deploy agent to Agent Runtime.
 * `roles/secretmanager.admin`: To create and manage the Agent ID secret.
 * `roles/bigquery.dataViewer`: Minimum access needed to the existing **Billing Export table**.
 
@@ -81,7 +81,7 @@ The `make install` (or `make create_sa`) script creates `gcp-billing-concierge-s
 
 **Agent Project (Local Execution & Infra Management):**
 * BigQuery: `roles/bigquery.jobUser` (To run analysis jobs).
-* AI & Vertex: `roles/aiplatform.user` and `roles/geminidataanalytics.dataAgentStatelessUser`.
+* AI & Platform: `roles/aiplatform.user` and `roles/geminidataanalytics.dataAgentStatelessUser`.
 * Infrastructure Ops: 
   * `roles/cloudscheduler.admin`: To manage recurring audit schedules.
   * `roles/monitoring.alertPolicyEditor`: To create and edit billing alerts.
@@ -126,7 +126,7 @@ make install
 # Test interactively in terminal:
 make run
 
-# Deploy to Vertex AI Agent Runtime:
+# Deploy to Agent Runtime:
 make deploy
 ```
 
@@ -148,7 +148,7 @@ cp GCP_billing_concierge/.env.example GCP_billing_concierge/.env
 
 Edit `GCP_billing_concierge/.env`:
 ```bash
-# Vertex AI Agent Engine Configuration
+# Gemini Enterprise Agent Platform / Agent Runtime Configuration
 GOOGLE_CLOUD_PROJECT="your-project-id"
 GOOGLE_CLOUD_LOCATION="us-central1"
 
@@ -177,7 +177,7 @@ make run
 uvx google-agents-cli run
 ```
 
-#### Step 4: Deploy to Vertex AI Agent Runtime
+#### Step 4: Deploy to Agent Runtime
 Deploy the agent to managed cloud infrastructure:
 ```bash
 make deploy
@@ -186,9 +186,9 @@ uvx google-agents-cli deploy
 ```
 
 Upon successful deployment:
-* `agents-cli deploy` packages the agent and deploys to Vertex AI.
+* `agents-cli deploy` packages the agent and deploys to Agent Runtime.
 * `make store_agent_id` extracts the deployed Agent ID from `deployment_metadata.json` and syncs it to Secret Manager (`billing-concierge-agent-id`).
-* Scheduled audits provisioned by `finops_infra_agent` automatically invoke the live Agent Runtime.
+* Scheduled audits provisioned by `finops_infra_agent` automatically invoke the live Agent Runtime endpoint.
 
 #### Step 5: Run Evaluation Benchmarks
 Benchmark agent accuracy against the golden dataset:

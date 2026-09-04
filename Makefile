@@ -38,7 +38,7 @@ check-env:
 	fi
 	@if ! grep -q "^GOOGLE_GENAI_USE_VERTEXAI=" $(ENV_FILE) 2>/dev/null; then \
 		echo "GOOGLE_GENAI_USE_VERTEXAI=true" >> $(ENV_FILE); \
-		echo "✅ Enabled Vertex AI backend (GOOGLE_GENAI_USE_VERTEXAI=true) in .env"; \
+		echo "✅ Enabled Cloud backend (GOOGLE_GENAI_USE_VERTEXAI=true) in .env"; \
 	fi
 
 enable_apis:
@@ -69,12 +69,12 @@ run:
 	@echo "💬 Starting local interactive session with GCP Billing Concierge..."
 	@uvx google-agents-cli run || uv run agents-cli run
 
-# --- Deployment using agents-cli to Vertex AI Agent Runtime ---
+# --- Deployment using agents-cli to Agent Runtime ---
 deploy:
 	$(eval AGENT_SA := $(shell grep "^AGENT_SERVICE_ACCOUNT=" $(ENV_FILE) 2>/dev/null | cut -d'=' -f2))
 	$(eval G_PROJECT := $(shell grep "^GOOGLE_CLOUD_PROJECT=" $(ENV_FILE) 2>/dev/null | cut -d'=' -f2))
 	$(eval G_LOCATION := $(shell grep "^GOOGLE_CLOUD_LOCATION=" $(ENV_FILE) 2>/dev/null | cut -d'=' -f2))
-	@echo "🚀 Deploying GCP Billing Concierge to Vertex AI Agent Runtime..."
+	@echo "🚀 Deploying GCP Billing Concierge to Agent Runtime..."
 	@if [ -n "$(AGENT_SA)" ]; then \
 		uvx google-agents-cli deploy --project="$(G_PROJECT)" --region="$(G_LOCATION)" --service-account="$(AGENT_SA)" || \
 		uv run agents-cli deploy --project="$(G_PROJECT)" --region="$(G_LOCATION)" --service-account="$(AGENT_SA)"; \

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Agent Runtime entry point for Vertex AI Agent Engine."""
+"""Agent Runtime entry point for Agent Platform."""
 
 import logging
 import os
@@ -34,7 +34,7 @@ load_dotenv()
 
 
 class AgentEngineApp(AdkApp):
-    """AdkApp wrapper for Vertex AI Agent Runtime."""
+    """AdkApp wrapper for Agent Runtime."""
 
     def set_up(self) -> None:
         """Initialize the agent engine app with logging and telemetry."""

@@ -7,7 +7,7 @@ variable "project_id" {
 variable "region" {
   type        = string
   default     = "us-central1"
-  description = "The GCP region for the Scheduler and Vertex AI."
+  description = "The GCP region for the Scheduler and Agent Runtime."
 }
 
 # 2. THE WORKFLOW TOGGLE
