@@ -22,7 +22,7 @@ Before running the setup, ensure you have:
 
 ### 📊 Billing Export Setup
 **Recommended:** Enabling a BigQuery billing export is a highly common and recommended FinOps best practice. The GCP Billing Concierge relies on this billing export for live querying.
-If you do not have an existing export, the setup script (`make setup_billing_data` or `make install`) includes an option to generate a sample dataset for testing purposes.
+If you do not have an existing export, the setup script (`make install`) includes an option to generate a sample dataset for testing purposes.
 
 - [Official Documentation: Set up Cloud Billing data export to BigQuery](https://cloud.google.com/billing/docs/how-to/export-data-bigquery)
 - **Key Requirement:** You must have the `Billing Account Administrator` role on the Cloud Billing account to enable this export.
@@ -37,27 +37,28 @@ If you do not have an existing export, the setup script (`make setup_billing_dat
 ├── GCP_billing_concierge /            # Root directory for Agent Logic
 │   ├── agent.py                       # Main Orchestrator Agent (Billing Concierge)
 │   ├── prompt.py                      # Orchestrator system instructions
-│   ├── .env.example                   # Sample .env file for setting env vars
+│   ├── .env.example                   # Environment variable template
+│   ├── skills/                        # ADK Agent Skills (analysis, alerting, scheduling)
 │   ├── tools/
-│   │   └── tools.py                   # Custom tools for Logging
+│   │   ├── finops_bigquery_toolset.py # BigQuery FinOps Toolset (location recovery & budget limits)
+│   │   └── tools.py                   # Anomaly and audit logging tools
 │   └── sub_agents/
 │       └── finops_infra_agent/        # Specialized agent for Platform Ops
 │           ├── agent.py               # Sub-agent: Handles infrastructure tasks
 │           ├── prompt.py              # Sub-agent: Instructions for CRON and Monitoring
-│           └── tools/
-│                └── tools.py          # Custom tools (Scheduler, Alerts, Notifications)
+│           └── tools/tools.py         # Custom tools (Scheduler, Alerts, Notifications)
 ├── deployment_scripts/                
 │   ├── setup_billing_data.py          # Configures BQ dataset (Real or Mock)
-│   └── create_sa.py                   # Provisions the Agent Service Account & IAM
+│   └── create_sa.py                   # Provisions Agent Service Account & IAM roles
 ├── mock_data/  
 │   ├── billing_export_test_table.json # Sample billing dataset
 │   └── billing_schema.json            # Sample billing dataset schema
-├── gcp_billing_concierge_agent_evals/ # Evaluation benchmark suite
-│   ├── golden_dataset.json            # Ground truth eval questions & expected queries
-│   └── run_eval.py                    # Evaluation runner script
+├── new_agent_evals/                   # Modern ADK evaluation benchmark suite
+│   ├── billing_eval_dataset_fully_modern.evalset.json
+│   └── eval_config.json
 ├── agents-cli-manifest.yaml           # Manifest for google-agents-cli lifecycle
 ├── pyproject.toml                     # Project dependencies & configuration
-├── Makefile                           # Target automation for install, run, and deploy
+├── Makefile                           # Streamlined automation (install, playground, deploy, eval)
 └── README.md
 ```
 
@@ -77,7 +78,7 @@ If you do not have an existing export, the setup script (`make setup_billing_dat
 * `roles/bigquery.dataViewer`: Minimum access needed to the existing **Billing Export table**.
 
 ### For the Agent (Service Account)
-The `make install` (or `make create_sa`) script creates `gcp-billing-concierge-sa` and grants:
+The `make install` script creates `gcp-billing-concierge-sa` and grants:
 
 **Agent Project (Local Execution & Infra Management):**
 * BigQuery: `roles/bigquery.jobUser` (To run analysis jobs).
@@ -113,20 +114,24 @@ uvx google-agents-cli setup
 gcloud auth application-default login
 ```
 
-#### Step 2: Create Project from Template
+#### Step 2: Create Project and Run Setup Wizard
 ```bash
 export AGENT_NAME=billing-concierge-${RANDOM}
 uvx google-agents-cli create ${AGENT_NAME} -d agent_runtime -a pemujo/GCP-Billing-Concierge
 cd ${AGENT_NAME}
 make install
 ```
+`make install` runs an interactive configuration wizard that guides you through selecting your GCP project and BigQuery billing export details, enables all required Cloud APIs, provisions the Agent Service Account, and automatically writes your `.env` configuration file.
 
-#### Step 3: Run Locally or Deploy
+#### Step 3: Test Locally in the Agent Playground
+Start the local interactive playground:
 ```bash
-# Test interactively in terminal:
-make run
+make playground
+```
 
-# Deploy to Agent Runtime:
+#### Step 4: Deploy to Agent Runtime
+Deploy the agent to managed cloud infrastructure:
+```bash
 make deploy
 ```
 
@@ -134,68 +139,57 @@ make deploy
 
 ### Method 2: GitHub Clone and Deploy (Development Flow)
 
-#### Step 1: Clone and Configure Environment
+#### Step 1: Clone Repository & Install Dependencies
 ```bash
 git clone https://github.com/pemujo/GCP-Billing-Concierge.git
 cd GCP-Billing-Concierge
 
 # Install dependencies with uv
 uv sync
-
-# Create .env from template
-cp GCP_billing_concierge/.env.example GCP_billing_concierge/.env
 ```
 
-Edit `GCP_billing_concierge/.env`:
-```bash
-# Gemini Enterprise Agent Platform / Agent Runtime Configuration
-GOOGLE_CLOUD_PROJECT="your-project-id"
-GOOGLE_CLOUD_LOCATION="us-central1"
-
-# Billing Data Source (BigQuery)
-BILLING_EXPORT_PROJECT_ID="your-billing-project"
-BILLING_EXPORT_DATASET="your_dataset"
-BILLING_EXPORT_TABLE="your_table"
-```
-
-#### Step 2: One-Step Provisioning (`make install`)
-Run the automated installation target:
+#### Step 2: Interactive Provisioning & Configuration (`make install`)
+Run the automated installation wizard:
 ```bash
 make install
 ```
-This target:
-1. Validates `GOOGLE_CLOUD_PROJECT` and target region.
-2. Enables all necessary Google Cloud APIs (`aiplatform`, `bigquery`, `logging`, `cloudscheduler`, etc.).
-3. Configures billing data (points to live export or provisions mock dataset).
-4. Creates `gcp-billing-concierge-sa` and applies all IAM role bindings.
 
-#### Step 3: Test Locally
-Chat with the agent in your terminal:
+> [!TIP]
+> **Automatic `.env` Generation:** You do not need to manually create or configure `.env` beforehand! `make install` interactively prompts for your settings and automatically writes `GCP_billing_concierge/.env`:
+> 1. **Execution Project (`GOOGLE_CLOUD_PROJECT`)**: Prompts for your agent project ID (defaults to your active `gcloud` project).
+> 2. **API Activation**: Enables all required Google Cloud APIs (`aiplatform`, `bigquery`, `logging`, `cloudscheduler`, `secretmanager`, etc.).
+> 3. **Billing Data Source Configuration**:
+>    - **Option 1 (Existing Billing Export)**: Prompts for your BigQuery coordinates (`BILLING_EXPORT_PROJECT_ID`, `BILLING_EXPORT_DATASET`, `BILLING_EXPORT_TABLE`).
+>    - **Option 2 (Sample Data)**: Automatically provisions a mock BigQuery dataset and loads sample GCP billing records for sandbox testing.
+> 4. **Service Account Provisioning**: Creates `gcp-billing-concierge-sa`, assigns least-privilege IAM roles across execution and billing projects, and saves `AGENT_SERVICE_ACCOUNT` into `.env`.
+>
+> *(Optional: If you prefer to pre-populate `.env` by copying `GCP_billing_concierge/.env.example`, `make install` will read existing values and offer them as default suggestions in brackets).*
+
+#### Step 3: Test Locally in the Agent Playground
+Start the local Agent Playground web interface:
 ```bash
-make run
-# or directly:
-uvx google-agents-cli run
+make playground
 ```
+This launches the local Agent Dev-UI at `http://127.0.0.1:8080/dev-ui/?app=GCP_billing_concierge`, featuring:
+* **Interactive Multi-Turn Chat**: Full conversational session with memory and context retention.
+* **Trace & Tool Execution Viewer**: Real-time inspection of generated BigQuery SQL, dry-run scan estimates, and sub-agent tool calls.
+* **Live Reloading**: Hot-reloads your agent when code or prompts change.
 
 #### Step 4: Deploy to Agent Runtime
 Deploy the agent to managed cloud infrastructure:
 ```bash
 make deploy
-# or directly:
-uvx google-agents-cli deploy
 ```
 
 Upon successful deployment:
 * `agents-cli deploy` packages the agent and deploys to Agent Runtime.
-* `make store_agent_id` extracts the deployed Agent ID from `deployment_metadata.json` and syncs it to Secret Manager (`billing-concierge-agent-id`).
+* Automatically extracts the deployed Agent ID from `deployment_metadata.json` and syncs it to Secret Manager (`billing-concierge-agent-id`).
 * Scheduled audits provisioned by `finops_infra_agent` automatically invoke the live Agent Runtime endpoint.
 
 #### Step 5: Run Evaluation Benchmarks
-Benchmark agent accuracy against the golden dataset:
+Benchmark agent accuracy against the 50-case golden dataset:
 ```bash
 make eval
-# or directly:
-uvx google-agents-cli eval
 ```
 
 #### Step 6: Register with Gemini Enterprise (Optional)

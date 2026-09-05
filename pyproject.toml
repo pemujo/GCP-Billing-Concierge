@@ -14,9 +14,16 @@ dependencies = [
     "google-cloud-secret-manager>=2.20.0",
     "google-cloud-iam>=2.15.0",
     "google-cloud-resource-manager>=1.12.0",
+    "google-cloud-aiplatform[agent-engines]>=1.130.0",
+    "google-cloud-bigquery-storage>=2.27.0",
+    "google-cloud-dataplex>=1.7.0",
+    "pyarrow>=14.0.0",
+    "tabulate>=0.9.0",
     "python-dotenv>=1.0.1",
     "ruff>=0.15.10",
     "tzlocal>=5.3.1",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.30.0",
 ]
 
 [build-system]
@@ -37,3 +44,7 @@ deployment_target = "agent_runtime"
 session_type = "none"
 cicd_runner = "skip"
 include_data_ingestion = false
+
+[[tool.uv.index]]
+url = "https://pypi.org/simple"
+default = true

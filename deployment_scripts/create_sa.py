@@ -27,21 +27,23 @@ def draw_header(title: str, width: int = 80) -> None:
 
 def update_env(filepath: Union[str, Path], key: str, value: str) -> None:
     """
-    Updates or appends a key-value pair in a .env file.
+    Updates or appends a key-value pair in a .env file and keeps root .env in sync.
 
     Args:
         filepath (Union[str, Path]): Path to the .env file.
         key (str): The environment variable name.
         value (str): The value to assign to the key.
     """
-    lines = []
-    if os.path.exists(filepath):
-        with open(filepath, "r") as f:
-            lines = f.readlines()
-    lines = [line for line in lines if not line.startswith(f"{key}=")]
-    lines.append(f"{key}={value}\n")
-    with open(filepath, "w") as f:
-        f.writelines(lines)
+    targets = {Path(filepath), Path(".env")}
+    for target in targets:
+        lines = []
+        if target.exists():
+            with open(target, "r") as f:
+                lines = f.readlines()
+        lines = [line for line in lines if not line.startswith(f"{key}=")]
+        lines.append(f"{key}={value}\n")
+        with open(target, "w") as f:
+            f.writelines(lines)
 
 
 def create_service_account(project_id: str, sa_id: str) -> str:

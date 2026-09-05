@@ -26,7 +26,7 @@ def draw_header(title: str, width: int = 80) -> None:
 def update_env(filepath: Union[str, Path], new_vars: Dict[str, Any]) -> None:
     """
     Updates or appends variables in the .env file while preserving 
-    existing keys.
+    existing keys and keeping root .env in sync.
 
     Args:
         filepath (Union[str, Path]): Path to the .env file to be modified.
@@ -34,26 +34,28 @@ def update_env(filepath: Union[str, Path], new_vars: Dict[str, Any]) -> None:
         to the file.
 
     Returns:
-        None: Modifies the file on disk.
+        None: Modifies the files on disk.
     """
-    lines = []
-    if os.path.exists(filepath):
-        with open(filepath, "r") as f:
-            lines = f.readlines()
+    targets = {Path(filepath), Path(".env")}
+    for target in targets:
+        lines = []
+        if target.exists():
+            with open(target, "r") as f:
+                lines = f.readlines()
 
-    # Filter out lines we are about to update
-    lines = [
-        line
-        for line in lines
-        if not any(line.startswith(f"{k}=") for k in new_vars.keys())
-    ]
+        # Filter out lines we are about to update
+        lines = [
+            line
+            for line in lines
+            if not any(line.startswith(f"{k}=") for k in new_vars.keys())
+        ]
 
-    # Append new values
-    for k, v in new_vars.items():
-        lines.append(f"{k}={v}\n")
+        # Append new values
+        for k, v in new_vars.items():
+            lines.append(f"{k}={v}\n")
 
-    with open(filepath, "w") as f:
-        f.writelines(lines)
+        with open(target, "w") as f:
+            f.writelines(lines)
 
 
 def main() -> None:

@@ -21,29 +21,41 @@ from .prompt import get_instructions
 from .sub_agents.finops_infra_agent.agent import finops_infra_agent
 from .tools.tools import log_billing_anomaly
 
-# Initialization
-load_dotenv()
+# Initialization - Search for .env in package directory, current working directory, and parent
+pkg_dir = pathlib.Path(__file__).resolve().parent
+cwd = pathlib.Path.cwd()
+env_candidates = [
+    pkg_dir / ".env",
+    cwd / ".env",
+    cwd / "GCP_billing_concierge" / ".env",
+    pkg_dir.parent / ".env",
+]
+env_loaded = False
+for candidate in env_candidates:
+    if candidate.is_file():
+        load_dotenv(dotenv_path=candidate, override=True)
+        env_loaded = True
+        break
+if not env_loaded:
+    load_dotenv(override=True)
+
 if os.getenv("GOOGLE_CLOUD_PROJECT") and not os.getenv("GEMINI_API_KEY"):
     os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "true")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Config Constants & Environment Variables
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-AGENT_PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "")
-GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID", AGENT_PROJECT_ID)
-BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET", "")
-BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE", "")
-
-if BILLING_PROJECT and BILLING_DATASET and BILLING_TABLE:
-    FULL_TABLE_PATH = f"{BILLING_PROJECT}.{BILLING_DATASET}.{BILLING_TABLE}"
-else:
-    FULL_TABLE_PATH = "billing_export_table_not_configured"
-    logger.warning(
-        "Billing export table environment variables (BILLING_EXPORT_PROJECT_ID, "
-        "BILLING_EXPORT_DATASET, BILLING_EXPORT_TABLE) are not fully set."
-    )
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+AGENT_PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "").strip()
+GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1").strip()
+BIGQUERY_LOCATION = (
+    os.getenv("BIGQUERY_LOCATION", "").strip()
+    or os.getenv("BILLING_EXPORT_LOCATION", "").strip()
+    or None
+)
+BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID", "").strip() or AGENT_PROJECT_ID
+BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET", "").strip()
+BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE", "").strip()
 
 AGENT_NAME = "GCP_billing_concierge"
 
@@ -56,8 +68,6 @@ try:
     credentials, _ = google.auth.default(
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
-    auth_request = Request()
-    credentials.refresh(auth_request)
     bq_credentials_config = BigQueryCredentialsConfig(credentials=credentials)
 
     if AGENT_PROJECT_ID:
@@ -70,6 +80,17 @@ except Exception as e:
         e,
     )
 
+if BILLING_PROJECT and BILLING_DATASET and BILLING_TABLE:
+    FULL_TABLE_PATH = f"{BILLING_PROJECT}.{BILLING_DATASET}.{BILLING_TABLE}"
+    logger.info("Configured BigQuery Billing Table: %s", FULL_TABLE_PATH)
+else:
+    FULL_TABLE_PATH = "billing_export_table_not_configured"
+    logger.warning(
+        "Missing required BigQuery billing export configuration. Please ensure "
+        "BILLING_EXPORT_PROJECT_ID, BILLING_EXPORT_DATASET, and BILLING_EXPORT_TABLE "
+        "are all defined in your .env file."
+    )
+
 # BigQuery FinOps Toolset & Guardrails Setup
 MAX_BYTES_BILLED = int(os.getenv("BQ_MAX_BYTES_BILLED", "1073741824"))  # 1 GiB budget limit
 MAX_RESULT_ROWS = int(os.getenv("BQ_MAX_QUERY_RESULT_ROWS", "50"))
@@ -79,7 +100,7 @@ bq_guardrail_config = BigQueryToolConfig(
     maximum_bytes_billed=MAX_BYTES_BILLED,
     max_query_result_rows=MAX_RESULT_ROWS,
     compute_project_id=AGENT_PROJECT_ID or None,
-    location=GOOGLE_CLOUD_LOCATION,
+    location=BIGQUERY_LOCATION,
     application_name="gcp-billing-concierge",
     job_labels={"env": "production", "workload": "finops-analysis"},
 )
@@ -87,6 +108,9 @@ bigquery_toolset = FinOpsBigQueryToolset(
     credentials_config=bq_credentials_config,
     bigquery_tool_config=bq_guardrail_config,
     max_bytes_billed=MAX_BYTES_BILLED,
+    billing_project=BILLING_PROJECT,
+    billing_dataset=BILLING_DATASET,
+    billing_table=BILLING_TABLE,
     tool_filter=[
         "get_table_info",
         "execute_sql",
@@ -154,7 +178,12 @@ billing_concierge_agent = Agent(
     name=AGENT_NAME,
     description="FinOps agent for GCP Billing analysis, anomaly logging, and monitoring infrastructure.",
     instruction=get_instructions(
-        FULL_TABLE_PATH, AGENT_PROJECT_ID, GOOGLE_CLOUD_LOCATION
+        full_table_path=FULL_TABLE_PATH,
+        project_id=AGENT_PROJECT_ID,
+        agent_region=GOOGLE_CLOUD_LOCATION,
+        billing_project=BILLING_PROJECT,
+        billing_dataset=BILLING_DATASET,
+        billing_table=BILLING_TABLE,
     ),
     sub_agents=[finops_infra_agent],
     tools=[
@@ -165,3 +194,11 @@ billing_concierge_agent = Agent(
 )
 
 root_agent = billing_concierge_agent
+
+from google.adk.apps import App
+
+app = App(
+    root_agent=root_agent,
+    name=AGENT_NAME,
+)
+

@@ -38,6 +38,9 @@ class FinOpsBigQueryToolset(BigQueryToolset):
         credentials_config: Optional[BigQueryCredentialsConfig] = None,
         bigquery_tool_config: Optional[BigQueryToolConfig] = None,
         max_bytes_billed: Optional[int] = 1_073_741_824,  # Default 1 GiB limit
+        billing_project: str = "",
+        billing_dataset: str = "",
+        billing_table: str = "",
     ):
         """Initializes FinOpsBigQueryToolset.
 
@@ -46,6 +49,9 @@ class FinOpsBigQueryToolset(BigQueryToolset):
             credentials_config: BigQueryCredentialsConfig instance.
             bigquery_tool_config: BigQueryToolConfig instance.
             max_bytes_billed: Hard limit in bytes for queries (defaults to 1 GiB).
+            billing_project: GCP Project ID containing the billing export dataset.
+            billing_dataset: BigQuery dataset ID containing billing tables.
+            billing_table: BigQuery billing export table ID.
         """
         config = bigquery_tool_config or BigQueryToolConfig(write_mode=WriteMode.BLOCKED)
         if max_bytes_billed and config.maximum_bytes_billed is None:
@@ -57,6 +63,9 @@ class FinOpsBigQueryToolset(BigQueryToolset):
             bigquery_tool_config=config,
         )
         self.max_bytes_billed = config.maximum_bytes_billed
+        self.billing_project = billing_project
+        self.billing_dataset = billing_dataset
+        self.billing_table = billing_table
         # In-memory schema cache: (project_id, dataset_id, table_id) -> schema dict
         self._schema_cache: Dict[Tuple[str, str, str], dict] = {}
 
@@ -65,7 +74,7 @@ class FinOpsBigQueryToolset(BigQueryToolset):
         self._schema_cache.clear()
 
     def _create_cached_get_table_info(self) -> Callable[..., dict]:
-        """Wraps metadata_tool.get_table_info with in-memory caching to prevent redundant API calls."""
+        """Wraps metadata_tool.get_table_info with in-memory caching and location auto-recovery."""
         @functools.wraps(metadata_tool.get_table_info)
         def get_table_info(
             project_id: str,
@@ -74,29 +83,100 @@ class FinOpsBigQueryToolset(BigQueryToolset):
             credentials: Credentials,
             settings: BigQueryToolConfig,
         ) -> dict:
-            cache_key = (project_id, dataset_id, table_id)
+            # Normalize target parameters to configured billing export if mismatched or omitted
+            target_project = project_id
+            target_dataset = dataset_id
+            target_table = table_id
+
+            if self.billing_project and project_id != self.billing_project:
+                if dataset_id == self.billing_dataset or table_id == self.billing_table or "billing" in dataset_id:
+                    logger.info(
+                        "FinOps: Normalizing get_table_info project_id from %s to billing project %s",
+                        project_id,
+                        self.billing_project,
+                    )
+                    target_project = self.billing_project
+
+            if self.billing_dataset and (not dataset_id or dataset_id == "billing_export_dataset"):
+                target_dataset = self.billing_dataset
+
+            if self.billing_table and (not table_id or "gcp_billing_export" not in table_id):
+                target_table = self.billing_table
+
+            cache_key = (target_project, target_dataset, target_table)
             if cache_key in self._schema_cache:
                 logger.info(
                     "FinOps Cache Hit: Reusing cached schema for %s.%s.%s",
-                    project_id,
-                    dataset_id,
-                    table_id,
+                    target_project,
+                    target_dataset,
+                    target_table,
                 )
                 return self._schema_cache[cache_key]
 
             logger.info(
                 "FinOps Cache Miss: Fetching schema from BigQuery for %s.%s.%s",
-                project_id,
-                dataset_id,
-                table_id,
+                target_project,
+                target_dataset,
+                target_table,
             )
             result = metadata_tool.get_table_info(
-                project_id=project_id,
-                dataset_id=dataset_id,
-                table_id=table_id,
+                project_id=target_project,
+                dataset_id=target_dataset,
+                table_id=target_table,
                 credentials=credentials,
                 settings=settings,
             )
+
+            # Auto-recovery: If failed, retry with billing_project or location auto-detection
+            if isinstance(result, dict) and result.get("status") == "ERROR":
+                err_str = str(result.get("error_details", ""))
+                if "Not found: Dataset" in err_str and self.billing_project and target_project != self.billing_project:
+                    logger.warning(
+                        "FinOps: Dataset not found in %s, retrying in configured billing project %s...",
+                        target_project,
+                        self.billing_project,
+                    )
+                    target_project = self.billing_project
+                    cache_key = (target_project, target_dataset, target_table)
+                    result = metadata_tool.get_table_info(
+                        project_id=target_project,
+                        dataset_id=target_dataset,
+                        table_id=target_table,
+                        credentials=credentials,
+                        settings=settings,
+                    )
+                    err_str = str(result.get("error_details", ""))
+
+                if "was not found in location" in err_str:
+                    logger.warning(
+                        "FinOps: Location mismatch detected in get_table_info (%s). Retrying with location=None...",
+                        err_str,
+                    )
+                    relaxed_settings = settings.model_copy(update={"location": None})
+                    result = metadata_tool.get_table_info(
+                        project_id=target_project,
+                        dataset_id=target_dataset,
+                        table_id=target_table,
+                        credentials=credentials,
+                        settings=relaxed_settings,
+                    )
+                    if (
+                        isinstance(result, dict)
+                        and result.get("status") == "ERROR"
+                        and "was not found in location" in str(result.get("error_details", ""))
+                    ):
+                        logger.warning(
+                            "FinOps: Retrying get_table_info with fallback location='US'..."
+                        )
+                        us_settings = settings.model_copy(update={"location": "US"})
+                        result = metadata_tool.get_table_info(
+                            project_id=target_project,
+                            dataset_id=target_dataset,
+                            table_id=target_table,
+                            credentials=credentials,
+                            settings=us_settings,
+                        )
+
             if isinstance(result, dict) and result.get("status") != "ERROR":
                 self._schema_cache[cache_key] = result
             return result
@@ -116,6 +196,16 @@ class FinOpsBigQueryToolset(BigQueryToolset):
             tool_context: ToolContext,
             dry_run: bool = False,
         ) -> dict:
+            # Route execution to compute_project_id if caller passed external dataset project
+            target_project = project_id
+            if settings.compute_project_id and project_id != settings.compute_project_id:
+                logger.info(
+                    "FinOps: Routing execute_sql query execution to compute project %s (requested: %s)",
+                    settings.compute_project_id,
+                    project_id,
+                )
+                target_project = settings.compute_project_id
+
             # Check for common partition filters in billing queries
             is_billing_query = bool(re.search(r"billing|export", query, re.IGNORECASE))
             has_partition_filter = bool(
@@ -128,13 +218,50 @@ class FinOpsBigQueryToolset(BigQueryToolset):
 
             # Execute underlying BigQuery tool
             result = base_execute(
-                project_id=project_id,
+                project_id=target_project,
                 query=query,
                 credentials=credentials,
                 settings=settings,
                 tool_context=tool_context,
                 dry_run=dry_run,
             )
+
+            # Auto-recovery: If failed due to a dataset location mismatch, retry with location=None, then 'US'
+            if isinstance(result, dict) and result.get("status") == "ERROR":
+                err_details = str(result.get("error_details", ""))
+                if "was not found in location" in err_details:
+                    logger.warning(
+                        "FinOps: Location mismatch in execute_sql (%s). Retrying with location=None...",
+                        err_details,
+                    )
+                    relaxed_settings = settings.model_copy(update={"location": None})
+                    relaxed_execute = query_tool.get_execute_sql(relaxed_settings)
+                    result = relaxed_execute(
+                        project_id=target_project,
+                        query=query,
+                        credentials=credentials,
+                        settings=relaxed_settings,
+                        tool_context=tool_context,
+                        dry_run=dry_run,
+                    )
+                    if (
+                        isinstance(result, dict)
+                        and result.get("status") == "ERROR"
+                        and "was not found in location" in str(result.get("error_details", ""))
+                    ):
+                        logger.warning(
+                            "FinOps: Retrying execute_sql with fallback location='US'..."
+                        )
+                        us_settings = settings.model_copy(update={"location": "US"})
+                        us_execute = query_tool.get_execute_sql(us_settings)
+                        result = us_execute(
+                            project_id=target_project,
+                            query=query,
+                            credentials=credentials,
+                            settings=us_settings,
+                            tool_context=tool_context,
+                            dry_run=dry_run,
+                        )
 
             # Enrich dry run results with FinOps financial calculations
             if dry_run and isinstance(result, dict) and result.get("status") == "SUCCESS":

@@ -1,0 +1,21 @@
+.venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.git/
+
+# Secrets
+.env
+.env.*
+*.env
+
+# Non-runtime assets
+tests/
+new_agent_evals/
+gcp_billing_concierge_agent_evals/
+terraform/
+mock_data/
+
+# Dependency lockfiles (resolve cleanly from public PyPI in Cloud Build)
+uv.lock

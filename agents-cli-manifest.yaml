@@ -1,7 +1,10 @@
 name: GCP_billing_concierge
+acli_version: "1.5.0"
 agent_directory: GCP_billing_concierge
+language: python
+region: us-central1
 entrypoint:
-  module: agent
+  module: GCP_billing_concierge.agent
   object: root_agent
 create_params:
   deployment_target: agent_runtime
