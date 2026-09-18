@@ -47,7 +47,15 @@ logger = logging.getLogger(__name__)
 # Config Constants & Environment Variables
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
 AGENT_PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "").strip()
-GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1").strip()
+# Regional infrastructure location (Agent Runtime, Cloud Scheduler)
+GOOGLE_CLOUD_REGION = (
+    os.getenv("GOOGLE_CLOUD_REGION", "").strip()
+    or os.getenv("GOOGLE_CLOUD_AGENT_ENGINE_LOCATION", "").strip()
+    or "us-central1"
+)
+GOOGLE_CLOUD_LOCATION = os.getenv(
+    "GOOGLE_CLOUD_LOCATION", GOOGLE_CLOUD_REGION
+).strip()
 BIGQUERY_LOCATION = (
     os.getenv("BIGQUERY_LOCATION", "").strip()
     or os.getenv("BILLING_EXPORT_LOCATION", "").strip()
@@ -64,12 +72,21 @@ credentials: Optional[Any] = None
 bq_credentials_config: Optional[BigQueryCredentialsConfig] = None
 logging_client: Optional[google.cloud.logging.Client] = None
 
+# OAuth & Security Configuration
+ENABLE_USER_OAUTH = os.getenv("ENABLE_USER_OAUTH", "true").lower() in ("true", "1")
+REQUIRE_USER_OAUTH = os.getenv("REQUIRE_USER_OAUTH", "true").lower() in ("true", "1")
+OAUTH_CLIENT_ID = os.getenv("OAUTH_CLIENT_ID", "").strip()
+OAUTH_CLIENT_SECRET = os.getenv("OAUTH_CLIENT_SECRET", "").strip()
+EXTERNAL_ACCESS_TOKEN_KEY = (
+    os.getenv("AUTH_ID", "").strip()
+    or os.getenv("EXTERNAL_ACCESS_TOKEN_KEY", "").strip()
+    or "bq-agent"
+)
+
 try:
     credentials, _ = google.auth.default(
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
-    bq_credentials_config = BigQueryCredentialsConfig(credentials=credentials)
-
     if AGENT_PROJECT_ID:
         logging_client = google.cloud.logging.Client(
             project=AGENT_PROJECT_ID, credentials=credentials
@@ -79,6 +96,33 @@ except Exception as e:
         "Running in local/offline mode or credentials could not be initialized: %s",
         e,
     )
+
+# Configure BigQuery Credentials: User OAuth vs Ambient Service Account
+if ENABLE_USER_OAUTH:
+    logger.info(
+        "FinOps Security: Enabling User OAuth for BigQuery (auth_id: %s).",
+        EXTERNAL_ACCESS_TOKEN_KEY,
+    )
+    if OAUTH_CLIENT_ID and OAUTH_CLIENT_SECRET:
+        logger.info(
+            "FinOps Security: Configured BigQueryCredentialsConfig with client_id for interactive OAuth (adk web)."
+        )
+        bq_credentials_config = BigQueryCredentialsConfig(
+            client_id=OAUTH_CLIENT_ID,
+            client_secret=OAUTH_CLIENT_SECRET,
+            scopes=["https://www.googleapis.com/auth/bigquery"],
+        )
+    else:
+        logger.info(
+            "FinOps Security: Using external OAuth token delegation (Gemini Enterprise)."
+        )
+        bq_credentials_config = None
+elif credentials:
+    logger.warning(
+        "SECURITY NOTICE: ENABLE_USER_OAUTH is false. BigQuery queries will execute using "
+        "the agent's service account credentials."
+    )
+    bq_credentials_config = BigQueryCredentialsConfig(credentials=credentials)
 
 if BILLING_PROJECT and BILLING_DATASET and BILLING_TABLE:
     FULL_TABLE_PATH = f"{BILLING_PROJECT}.{BILLING_DATASET}.{BILLING_TABLE}"
@@ -111,6 +155,9 @@ bigquery_toolset = FinOpsBigQueryToolset(
     billing_project=BILLING_PROJECT,
     billing_dataset=BILLING_DATASET,
     billing_table=BILLING_TABLE,
+    ambient_credentials=credentials,
+    require_user_oauth=REQUIRE_USER_OAUTH if ENABLE_USER_OAUTH else False,
+    external_access_token_key=EXTERNAL_ACCESS_TOKEN_KEY,
     tool_filter=[
         "get_table_info",
         "execute_sql",
@@ -129,7 +176,7 @@ def log_anomaly(anomaly_type: str, severity: str, details: str) -> str:
     to record specific findings that can later trigger alert policies.
 
     Args:
-        anomaly_type (str): The category of the anomaly (e.g., 'Sudden Spike', 'New Service', 'Cost Anomaly').
+        anomaly_type (str): The category of the anomaly (e.g., 'Sudden Spike', 'Sudden Drop', 'Vanished Service', 'New Service', 'Cost Anomaly').
         severity (str): The severity level ('CRITICAL', 'HIGH', 'ERROR', 'MEDIUM', 'WARNING', 'LOW', 'INFO', 'URGENT').
         details (str): A descriptive explanation of the billing anomaly detected.
 
@@ -180,7 +227,7 @@ billing_concierge_agent = Agent(
     instruction=get_instructions(
         full_table_path=FULL_TABLE_PATH,
         project_id=AGENT_PROJECT_ID,
-        agent_region=GOOGLE_CLOUD_LOCATION,
+        agent_region=GOOGLE_CLOUD_REGION,
         billing_project=BILLING_PROJECT,
         billing_dataset=BILLING_DATASET,
         billing_table=BILLING_TABLE,

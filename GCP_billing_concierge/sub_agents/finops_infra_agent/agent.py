@@ -18,7 +18,15 @@ logger = logging.getLogger(__name__)
 # Config Constants & Environment Variables
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 AGENT_PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "")
-GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+# Regional infrastructure location (Cloud Scheduler, Agent Runtime reasoning engine)
+GOOGLE_CLOUD_REGION = (
+    os.getenv("GOOGLE_CLOUD_REGION", "").strip()
+    or os.getenv("GOOGLE_CLOUD_AGENT_ENGINE_LOCATION", "").strip()
+    or "us-central1"
+)
+GOOGLE_CLOUD_LOCATION = os.getenv(
+    "GOOGLE_CLOUD_LOCATION", GOOGLE_CLOUD_REGION
+).strip()
 BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID", AGENT_PROJECT_ID)
 BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET", "")
 BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE", "")
@@ -42,7 +50,7 @@ except Exception as e:
 # FinOps Infrastructure Toolset
 finops_infra_toolset = FinOpsInfraToolset(
     project_id=AGENT_PROJECT_ID,
-    location=GOOGLE_CLOUD_LOCATION,
+    region=GOOGLE_CLOUD_REGION,
     credentials=credentials,
     require_confirmation_for_delete=True,
 )
@@ -51,6 +59,7 @@ finops_infra_toolset = FinOpsInfraToolset(
 list_schedulers = finops_infra_toolset.list_schedulers
 list_channels = finops_infra_toolset.list_channels
 list_policies = finops_infra_toolset.list_policies
+get_policy = finops_infra_toolset.get_policy
 setup_notification = finops_infra_toolset.setup_notification
 setup_alert_policy = finops_infra_toolset.setup_alert_policy
 schedule_audit = finops_infra_toolset.schedule_audit
@@ -65,7 +74,7 @@ finops_infra_agent = Agent(
         "Alerts, and Notifications of the billing anomalies reported by the Billing concierge agent."
     ),
     instruction=get_instructions(
-        FULL_TABLE_PATH, AGENT_PROJECT_ID, GOOGLE_CLOUD_LOCATION
+        FULL_TABLE_PATH, AGENT_PROJECT_ID, GOOGLE_CLOUD_REGION
     ),
     tools=[finops_infra_toolset],
 )

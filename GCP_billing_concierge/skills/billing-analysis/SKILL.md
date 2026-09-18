@@ -32,8 +32,11 @@ This skill guides the FinOps agent on how to inspect, query, and analyze Google 
 
 ## Cost Anomaly & Trend Detection
 1. **Anomaly Criteria**:
-   - A service or SKU whose spend in the recent evaluation window is **>20% higher** than the baseline 30-day daily moving average.
-   - Sudden appearance of a new high-cost SKU or region that had zero spend in prior weeks.
+   - **Spend Surge (Spike)**: A service or SKU whose spend in the recent evaluation window is **>20% higher** than the baseline 30-day daily moving average or prior comparison period. Indicates runaway jobs, resource leaks, or unbudgeted scaling.
+   - **Spend Plummet (Sudden Drop)**: A significant, unexpected drop (e.g., **>50% to 70% decrease**, or dropping down to $0) in spend for active workloads with a steady historical baseline. This often signals service downtime, failed batch/ETL pipelines, network/DNS outages, or accidental resource teardowns.
+   - **Vanished Service / Outage**: An ongoing production service, SKU, or project that typically has continuous 24/7 spend suddenly ceasing consumption completely.
+   - **New Footprint**: Sudden appearance of a new high-cost SKU, service, or region that had zero spend in prior weeks.
 2. **Action on Anomaly**:
-   - Summarize the top contributing factors (specific SKU, region, or project ID).
-   - Use `log_billing_anomaly` to record the finding in Cloud Logging so that alert policies can notify the FinOps team.
+   - Categorize the anomaly type (`Sudden Spike`, `Sudden Drop`, `Vanished Service`, `New Service`, or `Cost Anomaly`).
+   - Summarize the top contributing factors (specific SKU, service, region, or project ID).
+   - Use `log_billing_anomaly` (or `log_anomaly`) to record the finding in Cloud Logging with appropriate severity (`CRITICAL`, `WARNING`, `NOTICE`) so that alert policies can notify the FinOps and SRE teams.

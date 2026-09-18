@@ -24,3 +24,7 @@ Accurately translate user schedules into standard 5-field CRON expressions:
   ```
 - **Service Account**: Cloud Scheduler must use the provisioned Agent Service Account with `roles/aiplatform.user` permission to authenticate via OIDC.
 - **Verification**: Call `list_schedulers` to verify successful job registration and inspect `schedule` and `state`.
+
+## Confidentiality and Data Protection
+- Never disclose internal project IDs, project numbers, full Cloud Scheduler resource paths, or service account email addresses in user-facing responses.
+- Refer to scheduler jobs by their description IDs (e.g. `monthly-audit`, `weekly-audit`, `daily-audit`).

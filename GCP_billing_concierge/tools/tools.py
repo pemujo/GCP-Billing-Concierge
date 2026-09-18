@@ -25,7 +25,7 @@ def log_billing_anomaly(
         logging_client (google.cloud.logging.Client): The initialized GCP Logging client.
         project_id (str): The GCP Project ID where the log should be recorded.
         full_table_path (str): The BigQuery table path used as the data source for context.
-        anomaly_type (str): The category of the anomaly (e.g., 'Spike', 'Unauthorized Usage').
+        anomaly_type (str): The category of the anomaly (e.g., 'Sudden Spike', 'Sudden Drop', 'Vanished Service', 'New Service', 'Unauthorized Usage').
         severity (str): The input severity level ('CRITICAL', 'HIGH', 'ERROR', 'MEDIUM', 'WARNING', 'LOW', 'INFO', 'URGENT').
         details (str): A detailed description of the anomaly findings.
 
@@ -70,9 +70,9 @@ def log_billing_anomaly(
             severity=final_severity,
         )
         return (
-            f"Successfully logged anomaly '{anomaly_type}' to project '{project_id}' "
-            f"under log 'billing-anomaly-detector' with severity '{final_severity}'."
+            f"Successfully recorded billing anomaly '{anomaly_type}' "
+            f"with severity '{final_severity}'."
         )
     except Exception as e:
         logger.exception("Failed to write billing anomaly log to Cloud Logging.")
-        return f"ERROR: Failed to write anomaly log to Cloud Logging: {str(e)}"
+        return "ERROR: Failed to record billing anomaly to Cloud Logging."

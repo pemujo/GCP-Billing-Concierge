@@ -78,13 +78,29 @@ def attach_reasoning_engine_routes(app: FastAPI) -> None:
 
     @app.post("/api/stream_reasoning_engine")
     async def stream_query(request: Request) -> responses.StreamingResponse:
+        from GCP_billing_concierge.tools.finops_bigquery_toolset import (
+            get_current_user_token,
+            set_current_user_token,
+        )
+
         body = await request.json()
+        payload_input = body.get("input") or {}
+        token = (
+            payload_input.get("user_oauth_token")
+            or payload_input.get("oauth_token")
+            or get_current_user_token()
+        )
+        if token:
+            set_current_user_token(token)
+
         method = resolve_method(
             body.get("class_method", "async_stream_query"), streaming=True
         )
 
         async def generator():
-            async for event in method(**(body.get("input") or {})):
+            if token:
+                set_current_user_token(token)
+            async for event in method(**payload_input):
                 yield json.dumps(event) + "\n"
 
         return responses.StreamingResponse(
@@ -93,11 +109,25 @@ def attach_reasoning_engine_routes(app: FastAPI) -> None:
 
     @app.post("/api/reasoning_engine")
     async def query(request: Request) -> responses.JSONResponse:
+        from GCP_billing_concierge.tools.finops_bigquery_toolset import (
+            get_current_user_token,
+            set_current_user_token,
+        )
+
         body = await request.json()
+        payload_input = body.get("input") or {}
+        token = (
+            payload_input.get("user_oauth_token")
+            or payload_input.get("oauth_token")
+            or get_current_user_token()
+        )
+        if token:
+            set_current_user_token(token)
+
         method = resolve_method(
             body.get("class_method", "async_query"), streaming=False
         )
-        kwargs = body.get("input") or {}
+        kwargs = payload_input
         output = (
             await method(**kwargs)
             if inspect.iscoroutinefunction(method)
@@ -106,3 +136,4 @@ def attach_reasoning_engine_routes(app: FastAPI) -> None:
         return responses.JSONResponse(
             content=encoders.jsonable_encoder({"output": output})
         )
+

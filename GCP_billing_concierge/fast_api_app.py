@@ -66,6 +66,30 @@ app: FastAPI = get_fast_api_app(
 app.title = "GCP_billing_concierge"
 app.description = "API for interacting with GCP Billing Concierge"
 
+from fastapi import Request
+from GCP_billing_concierge.tools.finops_bigquery_toolset import set_current_user_token
+
+
+@app.middleware("http")
+async def extract_oauth_token_middleware(request: Request, call_next):
+    """Extracts end-user OAuth token from incoming HTTP headers to enforce per-user BigQuery IAM."""
+    auth_header = request.headers.get("Authorization", "")
+    token = None
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+    elif "X-User-Token" in request.headers:
+        token = request.headers.get("X-User-Token", "").strip()
+
+    if token:
+        set_current_user_token(token)
+    try:
+        response = await call_next(request)
+        return response
+    finally:
+        if token:
+            set_current_user_token(None)
+
+
 # Proxy routes so the Agent Runtime / Vertex AI Console Playground can
 # talk to this agent alongside the native adk_api routes.
 attach_reasoning_engine_routes(app)
@@ -75,3 +99,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8080)))
+
