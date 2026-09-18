@@ -18,7 +18,25 @@ Before running the setup, ensure you have:
 * **gcloud CLI** installed and authenticated. [(Google SDK Installation guide)](https://docs.cloud.google.com/sdk/docs/install-sdk)
 * **Application Default Credentials** set with `gcloud auth application-default login`.
 * **Google Agents CLI & ADK** installed via `uvx google-agents-cli setup` [(ADK Docs)](https://adk.dev/get-started/installation/)
-* Optional: **Gemini Enterprise application** with Gemini Enterprise or Business licenses. [(Gemini Enterprise Quickstart Guide)](https://docs.cloud.google.com/gemini/enterprise/docs/quickstart-gemini-enterprise).
+* **Gemini Enterprise application** (Optional, for conversational enterprise search/chat integration) with Gemini Enterprise or Business licenses. [(Gemini Enterprise Quickstart Guide)](https://docs.cloud.google.com/gemini/enterprise/docs/quickstart-gemini-enterprise).
+* **Google OAuth 2.0 Client Credentials** (Required for End-User OAuth identity delegation):
+  * **OAuth Consent Screen**: In Google Cloud Console (**APIs & Services > OAuth consent screen**), configure an **Internal** app (recommended for enterprise Google Workspace accounts) or **External** app, specifying your support email and developer contact.
+  * **Scopes**: Ensure the following scopes are configured on the consent screen:
+    * `https://www.googleapis.com/auth/bigquery` (View and manage data in Google BigQuery)
+    * `https://www.googleapis.com/auth/userinfo.email`
+    * `https://www.googleapis.com/auth/userinfo.profile`
+    * `openid`
+  * **OAuth Client ID**: Under **APIs & Services > Credentials**, click **Create Credentials > OAuth client ID**:
+    * **Application Type**: **Web application**
+    * **Name**: `Gemini Enterprise Billing Concierge Web Client`
+    * **Authorized JavaScript origins**:
+      * `http://localhost:8080`, `http://127.0.0.1:8080`
+      * `http://localhost:8000`, `http://127.0.0.1:8000`
+    * **Authorized redirect URIs** (Critical):
+      * `https://vertexaisearch.cloud.google.com/static/oauth/oauth.html` (*Mandatory for Gemini Enterprise Discovery Engine callback*)
+      * `http://127.0.0.1:8080/dev-ui/` and `http://localhost:8080/dev-ui/` (*For local ADK Web playground testing*)
+      * `http://127.0.0.1:8000/dev-ui/` and `http://localhost:8000/dev-ui/`
+  * **Save Credentials**: Copy your **Client ID** and **Client Secret** into your `.env` file (`OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET`).
 
 ### 📊 Billing Export Setup
 **Recommended:** Enabling a BigQuery billing export is a highly common and recommended FinOps best practice. The GCP Billing Concierge relies on this billing export for live querying.
@@ -97,6 +115,120 @@ The `make install` script creates `gcp-billing-concierge-sa` and grants:
 
 ---
 
+## 🔐 End-User OAuth 2.0 Security Architecture
+
+To enforce strict FinOps governance and zero-trust access control, the GCP Billing Concierge implements **Dual-Mode End-User OAuth 2.0 Authentication**. Rather than querying billing data with a broad, shared service account, BigQuery queries are executed directly with the **personal Google Cloud IAM credentials of the chatting user**.
+
+### 🛡️ Why End-User OAuth?
+1. **Least Privilege Enforcement**: If a user lacks `roles/bigquery.jobUser` on the billing project or `roles/bigquery.dataViewer` on the billing export dataset/table, BigQuery returns HTTP 403 Forbidden. The agent's ambient service account does not grant unauthorized data access.
+2. **True Audit Compliance**: All queries appear in Google Cloud Audit Logs with the user's authentic corporate identity (`user@example.com`), satisfying enterprise compliance and accountability standards.
+3. **Fail-Closed Protection**: With `REQUIRE_USER_OAUTH=true`, the agent immediately blocks execution if no authenticated user token is present, preventing silent fallback to service account privileges.
+
+### 👤 End-User IAM Permissions Matrix
+To successfully query billing data through the agent, the **chatting end user** must have the following IAM roles in Google Cloud:
+
+| Role | Target Resource | Purpose |
+| :--- | :--- | :--- |
+| `roles/bigquery.jobUser` | Project (`GOOGLE_CLOUD_PROJECT` or `BILLING_EXPORT_PROJECT_ID`) | Allows the user to run BigQuery jobs (queries, dry-runs) in the project. |
+| `roles/bigquery.dataViewer` | Dataset/Table (`BILLING_EXPORT_DATASET` / `BILLING_EXPORT_TABLE`) | Grants read access to the Cloud Billing export records. |
+
+> [!IMPORTANT]
+> **Zero Trust in Action:** If an employee without these roles tries to chat with the agent in Gemini Enterprise, BigQuery denies the query (`HTTP 403 Access Denied: User does not have bigquery.jobs.create permission` or `Permission Denied on table`). The AI agent cannot be used as an unintended privilege-escalation backdoor.
+
+### 🔄 Dual-Mode Execution Architecture
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as End User
+    participant GE as Gemini Enterprise (Discovery Engine)
+    participant Auth as Google OAuth 2.0 (accounts.google.com)
+    participant Agent as GCP Billing Concierge (Agent Runtime)
+    participant Tool as FinOpsBigQueryToolset
+    participant BQ as BigQuery API
+
+    User->>GE: "What was our GCP spend last week?"
+    Note over GE: Detects tool requires authorization: "billing-ge-oauth"
+    alt User Not Yet Authenticated with Gemini Enterprise
+        GE->>User: Displays "Connect Google Cloud Account" consent prompt
+        User->>Auth: Consents to BigQuery & Profile scopes
+        Auth-->>GE: Issues delegated Access Token (ya29...) and Refresh Token
+        Note over GE: Tokens securely encrypted in Discovery Engine auth cache
+    end
+    GE->>Agent: Invokes Agent with Session State (temp:bq-agent)
+    Agent->>Tool: execute_query(sql) with tool_context
+    Tool->>Tool: Unpacks user bearer token from session state
+    Tool->>BQ: Executes BigQuery job with User Credentials
+    BQ-->>Tool: Results (governed by User's BigQuery IAM permissions)
+    Tool-->>Agent: Billing Records
+    Agent-->>GE: Final Financial Analysis & Visualization
+    GE-->>User: Answers User
+```
+
+### ⚙️ How Discovery Engine Authorization Works Under the Hood
+
+The end-user authentication flow bridges Gemini Enterprise and Vertex AI Reasoning Engine:
+
+1. **Discovery Engine Authorization Resource**:
+   - Registered under `projects/{PROJECT_NUMBER}/locations/{LOCATION}/authorizations/{AUTH_ID}` (e.g. `billing-ge-oauth`).
+   - Stores the server-side OAuth 2.0 Web Client credentials (`clientId`, `clientSecret`, redirect URI, and scopes).
+   - Requires numeric **Project Number** (e.g., `813632901865`), which `configure-gemini-oauth` automatically fetches.
+
+2. **Agent Specification Binding (`toolAuthorizations`)**:
+   - Once the agent is published to Gemini Enterprise, its Discovery Engine resource is at:  
+     `projects/{PROJECT_ID}/locations/{LOCATION}/collections/default_collection/engines/{APP_ID}/assistants/default_assistant/agents/{AGENT_ID}`
+   - `make configure-gemini-oauth` sends a PATCH request updating `authorizationConfig.toolAuthorizations` to link the authorization resource.
+   - This tells Gemini Enterprise to enforce user consent before invoking the agent's BigQuery tools.
+
+3. **Consent & Token Delegation**:
+   - When the user asks a question, Gemini Enterprise prompts the user to **"Connect Google Cloud Account"**.
+   - After user consent, Google OAuth redirects back to `https://vertexaisearch.cloud.google.com/static/oauth/oauth.html`.
+   - Gemini Enterprise exchanges the authorization code for access and refresh tokens, caching them securely.
+   - On each agent turn, Gemini Enterprise injects the delegated bearer token (`ya29...`) into the ADK session state under `temp:bq-agent` (or `temp:{AUTH_ID}`).
+
+4. **Agent Runtime Execution**:
+   - `FinOpsBigQueryToolset` inspects `tool_context.session.state` across recognized keys (`temp:bq-agent`, `temp:billing-ge-oauth`, `user_oauth_token`).
+   - The token is unpacked into `google.oauth2.credentials.Credentials(token=access_token)`.
+   - All BigQuery API operations (query dry-runs, executions, table metadata inspections) run directly under the end user's identity.
+
+5. **Local Mode (ADK Web Playground)**:
+   - When developing locally via `make playground`, ADK uses `GoogleCredentialsManager` with your `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET`.
+   - An interactive browser popup prompts for Google login and consent, storing the resulting token in local session state.
+
+### ⚙️ OAuth Configuration Reference
+
+| Environment Variable | Description | Default |
+| :--- | :--- | :--- |
+| `ENABLE_USER_OAUTH` | Enables resolution of end-user OAuth tokens for BigQuery queries | `true` |
+| `REQUIRE_USER_OAUTH` | Strictly requires user tokens; returns `401 Unauthorized` if absent | `true` |
+| `OAUTH_CLIENT_ID` | OAuth 2.0 Web Client ID from Google Cloud Console | *Required* |
+| `OAUTH_CLIENT_SECRET` | OAuth 2.0 Web Client Secret from Google Cloud Console | *Required* |
+| `AUTH_ID` | Authorization ID registered in Gemini Enterprise Discovery Engine | `billing-ge-oauth` |
+
+### 🔍 Verifying and Managing Agent Authorizations
+
+You can inspect or reset agent authorizations using `curl`:
+
+**Check current authorizations on an agent:**
+```bash
+curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "X-Goog-User-Project: ${GOOGLE_CLOUD_PROJECT}" \
+  "https://${LOCATION}-discoveryengine.googleapis.com/v1alpha/projects/${GOOGLE_CLOUD_PROJECT}/locations/${LOCATION}/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents/${AGENT_ID}" \
+  | grep -A 5 "authorizationConfig"
+```
+
+**Unbind / Reset authorizations (revert to no OAuth prompt):**
+```bash
+curl -s -X PATCH \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type: application/json" \
+  -H "X-Goog-User-Project: ${GOOGLE_CLOUD_PROJECT}" \
+  "https://${LOCATION}-discoveryengine.googleapis.com/v1alpha/projects/${GOOGLE_CLOUD_PROJECT}/locations/${LOCATION}/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents/${AGENT_ID}?updateMask=authorizationConfig" \
+  -d '{"authorizationConfig": {"toolAuthorizations": []}}'
+```
+
+---
+
 ## 🚀 Quickstart & Usage
 
 There are two primary ways to deploy and use the agent:
@@ -129,11 +261,23 @@ Start the local interactive playground:
 make playground
 ```
 
-#### Step 4: Deploy to Agent Runtime
-Deploy the agent to managed cloud infrastructure:
+#### Step 4: Deploy, Publish, and Configure OAuth
+Deploy the agent to managed cloud infrastructure, publish to Gemini Enterprise, and configure End-User OAuth using this 3-step sequence:
+
 ```bash
-make deploy
+# 1. Deploy to Vertex AI Agent Runtime (supports custom name):
+make deploy AGENT_NAME="finops-billing-assistant"
+
+# 2. Publish agent to Gemini Enterprise (interactive registration wizard):
+uvx google-agents-cli publish gemini-enterprise --interactive
+
+# 3. Configure Gemini Enterprise End-User OAuth:
+make configure-gemini-oauth AGENT_NAME="finops-billing-assistant"
 ```
+
+* **Step 1 (`make deploy`)**: Builds and deploys the container to Vertex AI Agent Runtime (Reasoning Engine) with sanitized agent identifiers and OAuth environment variables (`ENABLE_USER_OAUTH=true`, `REQUIRE_USER_OAUTH=true`).
+* **Step 2 (`uvx google-agents-cli publish`)**: Interactively registers the deployed Reasoning Engine into your Gemini Enterprise App/Assistant so it appears in your enterprise Agent Gallery.
+* **Step 3 (`make configure-gemini-oauth`)**: Automatically creates or verifies the Discovery Engine OAuth 2.0 Authorization resource, discovers your published agent, and links `toolAuthorizations` so users receive the OAuth consent prompt before BigQuery queries.
 
 ---
 
@@ -175,27 +319,86 @@ This launches the local Agent Dev-UI at `http://127.0.0.1:8080/dev-ui/?app=GCP_b
 * **Trace & Tool Execution Viewer**: Real-time inspection of generated BigQuery SQL, dry-run scan estimates, and sub-agent tool calls.
 * **Live Reloading**: Hot-reloads your agent when code or prompts change.
 
-#### Step 4: Deploy to Agent Runtime
-Deploy the agent to managed cloud infrastructure:
+### 🚀 Deployment & Gemini Enterprise Lifecycle (3 Steps)
+
+Once tested locally, deploy and register your agent with Gemini Enterprise using the following 3-step sequence:
+
 ```bash
+# Step 1: Deploy to Vertex AI Agent Runtime (Reasoning Engine)
+make deploy AGENT_NAME="finops-billing-assistant"
+
+# Step 2: Publish to Gemini Enterprise
+uvx google-agents-cli publish gemini-enterprise --interactive
+
+# Step 3: Configure Gemini Enterprise End-User OAuth
+make configure-gemini-oauth AGENT_NAME="finops-billing-assistant"
+```
+
+---
+
+#### Step 4: Deploy to Agent Runtime
+Deploy the agent to Vertex AI Agent Runtime (Reasoning Engine):
+
+```bash
+# Deploy with a custom agent / service name (recommended):
+make deploy AGENT_NAME="finops-billing-assistant"
+
+# Or deploy with the default service name (GCP_billing_concierge):
 make deploy
 ```
 
-Upon successful deployment:
-* `agents-cli deploy` packages the agent and deploys to Agent Runtime.
-* Automatically extracts the deployed Agent ID from `deployment_metadata.json` and syncs it to Secret Manager (`billing-concierge-agent-id`).
-* Scheduled audits provisioned by `finops_infra_agent` automatically invoke the live Agent Runtime endpoint.
+**What `make deploy` does under the hood:**
+1. **Name Sanitization**: Python ADK requires identifiers (`isidentifier() == True`). The deployment pipeline automatically sanitizes `AGENT_NAME` (e.g. `finops-billing-assistant` $\rightarrow$ `finops_billing_assistant`) for internal ADK agent/app definitions while passing the exact service name to Cloud Console.
+2. **Environment Variable Injection**: Configures the cloud container with `ENABLE_USER_OAUTH=true`, `REQUIRE_USER_OAUTH=true`, `AUTH_ID=billing-ge-oauth`, and your BigQuery dataset coordinates.
+3. **Container Build & Deploy**: Uses `agents-cli deploy` to package your source code, build the remote container image, and provision the Vertex AI Reasoning Engine endpoint.
+4. **Secret Manager Sync**: Extracts the deployed Agent Resource ID from `deployment_metadata.json` and updates Secret Manager (`billing-concierge-agent-id`) so background Cloud Scheduler jobs can invoke the live endpoint.
 
-#### Step 5: Run Evaluation Benchmarks
+#### Step 5: Publish to Gemini Enterprise
+Register your newly deployed Reasoning Engine into your Gemini Enterprise (Discovery Engine) application so team members can discover and chat with it in the enterprise Agent Gallery:
+
+```bash
+uvx google-agents-cli publish gemini-enterprise --interactive
+# Or using the make shortcut:
+make publish
+```
+
+**Interactive Publication Walkthrough:**
+1. **Select Agent Runtime**: The CLI queries your Google Cloud project and displays active Reasoning Engines. Select your newly deployed agent (e.g., `finops-billing-assistant` or `GCP_billing_concierge`).
+2. **Select Gemini Enterprise App**: The CLI lists your Discovery Engine engines (e.g., `us-region-pedro`). Select your target app.
+3. **Confirm Registration**: The CLI registers the agent with the Discovery Engine assistant.
+
+> [!NOTE]
+> At this stage, your agent is registered in Gemini Enterprise, but its tools are **not yet linked** to an OAuth authorization resource. Because `REQUIRE_USER_OAUTH=true` is enforced for security, queries will fail closed until Step 6 is completed.
+
+#### Step 6: Configure Gemini Enterprise End-User OAuth
+Link the Discovery Engine OAuth 2.0 Authorization resource to your registered agent so BigQuery queries execute under each chatting user's personal identity:
+
+```bash
+# Configure OAuth for your custom agent:
+make configure-gemini-oauth AGENT_NAME="finops-billing-assistant"
+
+# Or for the default agent name:
+make configure-gemini-oauth
+```
+
+**What `make configure-gemini-oauth` automates:**
+1. **Numeric Project Number Lookup**: Queries `gcloud projects describe` to resolve your numeric project number (e.g., `813632901865`), which is strictly required by the Discovery Engine `authorizations` REST API.
+2. **Discovery Engine Authorization Resource (`billing-ge-oauth`)**: Creates or verifies the server-side OAuth 2.0 Web Client resource using your `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET`, and authorized redirect URI (`https://vertexaisearch.cloud.google.com/static/oauth/oauth.html`).
+3. **Interactive Agent Discovery & Matching**: Queries registered agents within your Gemini Enterprise app, automatically detecting and pre-selecting the agent matching `AGENT_NAME="finops-billing-assistant"`.
+4. **Explicit Confirmation**: Previews the Agent ID, Display Name, and Authorization Resource, then asks for confirmation (`[Y/n]`).
+5. **Tool Authorization Binding**: Sends a PATCH request to Discovery Engine updating `authorizationConfig.toolAuthorizations`, binding the OAuth resource to the agent.
+
+**The End-User Experience in Gemini Enterprise:**
+* **First Query**: An end user opens Gemini Enterprise and asks: *"What was our Google Cloud spend last month?"*
+* **Consent Card**: Gemini Enterprise intercepts the BigQuery tool call and renders an interactive **"Connect Google Cloud Account"** card.
+* **OAuth Consent**: The user clicks **Connect**, reviews the consent screen on `accounts.google.com`, and grants permission for BigQuery.
+* **Token Delegation**: Gemini Enterprise caches the token and injects the user's delegated bearer token (`ya29...`) into the ADK session state under `temp:bq-agent`.
+* **Zero-Trust Enforcement**: The agent queries BigQuery directly under that user's identity. If the user does not have `roles/bigquery.jobUser` and dataset read access, BigQuery immediately denies the query with HTTP 403 Forbidden.
+
+#### Step 7: Run Evaluation Benchmarks
 Benchmark agent accuracy against the 50-case golden dataset:
 ```bash
 make eval
-```
-
-#### Step 6: Register with Gemini Enterprise (Optional)
-Register your deployed agent so users can discover and interact with it in Gemini Enterprise using `google-agents-cli`:
-```bash
-uvx google-agents-cli publish gemini-enterprise --interactive
 ```
 
 ---

@@ -1,6 +1,7 @@
 import logging
 import os
 import pathlib
+import re
 from typing import Any, Optional
 
 import google.auth
@@ -65,7 +66,11 @@ BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID", "").strip() or AGENT_PR
 BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET", "").strip()
 BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE", "").strip()
 
-AGENT_NAME = "GCP_billing_concierge"
+raw_agent_name = os.getenv("AGENT_NAME", "GCP_billing_concierge").strip()
+# ADK Agent and App names require valid Python identifiers (alphanumeric and underscores)
+AGENT_NAME = re.sub(r"[^a-zA-Z0-9_]", "_", raw_agent_name)
+if not AGENT_NAME or AGENT_NAME[0].isdigit():
+    AGENT_NAME = f"agent_{AGENT_NAME}"
 
 # Environment & Auth Initialization with Safe Fallback
 credentials: Optional[Any] = None

@@ -10,7 +10,7 @@ G_SUGGESTION := $(shell gcloud config get-value project 2>/dev/null)
 AGENT_ID_SECRET_NAME ?= billing-concierge-agent-id
 METADATA_FILE ?= deployment_metadata.json
 
-.PHONY: install playground run deploy eval store_agent_id
+.PHONY: install playground run deploy eval store_agent_id configure-gemini-oauth publish
 
 # --- 1. Provision Cloud Infrastructure & Service Account ---
 install:
@@ -76,6 +76,13 @@ setup_billing_data:
 create_sa:
 	@uv run python deployment_scripts/create_sa.py
 
+configure-gemini-oauth:
+	@bash deployment_scripts/configure_gemini_enterprise_oauth.sh $(AGENT_NAME)
+
+publish:
+	@echo "📢 Publishing agent to Gemini Enterprise..."
+	@uvx google-agents-cli publish gemini-enterprise --interactive
+
 # --- 2. Local Interactive Agent Playground ---
 playground:
 	@echo "🌐 Starting local Agent Playground..."
@@ -99,11 +106,14 @@ deploy:
 	$(eval BQ_LOC := $(if $(BQ_LOC),$(BQ_LOC),US))
 	$(eval AUTH_KEY := $(shell grep "^AUTH_ID=" $(ENV_FILE) 2>/dev/null | cut -d'=' -f2 | tr -d ' "'))
 	$(eval AUTH_KEY := $(if $(AUTH_KEY),$(AUTH_KEY),bq-agent))
-	@echo "🚀 Deploying with Service Account: $(AGENT_SA)..."
+	$(eval DEPLOY_NAME := $(if $(AGENT_NAME),$(AGENT_NAME),$(shell grep "^AGENT_NAME=" $(ENV_FILE) 2>/dev/null | cut -d'=' -f2 | tr -d ' "')))
+	$(eval DEPLOY_NAME := $(if $(DEPLOY_NAME),$(DEPLOY_NAME),GCP_billing_concierge))
+	@echo "🚀 Deploying agent '$(DEPLOY_NAME)' with Service Account: $(AGENT_SA)..."
 	@uv run agents-cli deploy \
 		--project="$(GOOGLE_CLOUD_PROJECT)" \
 		--region="$(DEPLOY_REGION)" \
-		--update-env-vars="GOOGLE_CLOUD_REGION=$(DEPLOY_REGION),AUTH_ID=$(AUTH_KEY),ENABLE_USER_OAUTH=true,REQUIRE_USER_OAUTH=true,BILLING_EXPORT_PROJECT_ID=$(BQ_PROJECT),BILLING_EXPORT_DATASET=$(BQ_DATASET),BILLING_EXPORT_TABLE=$(BQ_TABLE),BIGQUERY_LOCATION=$(BQ_LOC)" \
+		--service-name="$(DEPLOY_NAME)" \
+		--update-env-vars="GOOGLE_CLOUD_REGION=$(DEPLOY_REGION),AGENT_NAME=$(DEPLOY_NAME),AUTH_ID=$(AUTH_KEY),ENABLE_USER_OAUTH=true,REQUIRE_USER_OAUTH=true,BILLING_EXPORT_PROJECT_ID=$(BQ_PROJECT),BILLING_EXPORT_DATASET=$(BQ_DATASET),BILLING_EXPORT_TABLE=$(BQ_TABLE),BIGQUERY_LOCATION=$(BQ_LOC)" \
 		--service-account="$(AGENT_SA)"
 	@$(MAKE) store_agent_id
 
