@@ -19,9 +19,32 @@ elif [ -f "GCP_billing_concierge/.env" ]; then
   source GCP_billing_concierge/.env
 fi
 
+TARGET_AGENT_INPUT="${1:-${AGENT_NAME:-GCP_billing_concierge}}"
+CLI_AUTH_INPUT="${2:-}"
 PROJECT_ID="${GOOGLE_CLOUD_PROJECT:-$(gcloud config get-value project 2>/dev/null)}"
 LOCATION="${DISCOVERY_ENGINE_LOCATION:-us}" # 'us', 'eu', or 'global'
-AUTH_ID="${AUTH_ID:-bq-agent}"
+
+# Derive dynamic, agent-name-aware default Authorization ID
+CLEAN_AGENT_NAME=$(echo "${TARGET_AGENT_INPUT}" | tr '[:upper:]' '[:lower:]' | tr ' _' '--' | tr -cd 'a-z0-9-')
+if [ "${CLEAN_AGENT_NAME}" = "gcp-billing-concierge" ] || [ "${CLEAN_AGENT_NAME}" = "billing-concierge" ] || [ -z "${CLEAN_AGENT_NAME}" ]; then
+  DEFAULT_AGENT_AUTH_ID="billing-ge-oauth"
+else
+  DEFAULT_AGENT_AUTH_ID="${CLEAN_AGENT_NAME}-oauth"
+fi
+
+if [ -n "${CLI_AUTH_INPUT}" ]; then
+  DEFAULT_AUTH_SUGGESTION="${CLI_AUTH_INPUT}"
+elif [ -n "${AUTH_ID:-}" ]; then
+  # If existing AUTH_ID in .env is the generic default ('billing-ge-oauth' or 'bq-agent')
+  # but the agent being configured is a custom agent, prefer the agent-aware default
+  if { [ "${AUTH_ID}" = "billing-ge-oauth" ] || [ "${AUTH_ID}" = "bq-agent" ]; } && [ "${DEFAULT_AGENT_AUTH_ID}" != "billing-ge-oauth" ]; then
+    DEFAULT_AUTH_SUGGESTION="${DEFAULT_AGENT_AUTH_ID}"
+  else
+    DEFAULT_AUTH_SUGGESTION="${AUTH_ID}"
+  fi
+else
+  DEFAULT_AUTH_SUGGESTION="${DEFAULT_AGENT_AUTH_ID}"
+fi
 OAUTH_CLIENT_ID="${OAUTH_CLIENT_ID:-}"
 OAUTH_CLIENT_SECRET="${OAUTH_CLIENT_SECRET:-}"
 
@@ -31,15 +54,6 @@ echo "================================================================="
 
 if [ -z "${PROJECT_ID}" ]; then
   read -rp "Enter Google Cloud Project ID: " PROJECT_ID
-fi
-
-if [ -z "${OAUTH_CLIENT_ID}" ]; then
-  read -rp "Enter OAuth 2.0 Client ID: " OAUTH_CLIENT_ID
-fi
-
-if [ -z "${OAUTH_CLIENT_SECRET}" ]; then
-  read -rsp "Enter OAuth 2.0 Client Secret: " OAUTH_CLIENT_SECRET
-  echo ""
 fi
 
 # Determine numeric Project Number (strictly required by Discovery Engine Authorization paths)
@@ -56,7 +70,6 @@ fi
 echo "✅ Google Cloud Project ID:     ${PROJECT_ID}"
 echo "✅ Google Cloud Project Number: ${PROJECT_NUMBER}"
 echo "✅ Discovery Engine Location:   ${LOCATION}"
-echo "✅ Authorization ID:            ${AUTH_ID}"
 
 # Set Endpoint Prefix based on location
 if [ "${LOCATION}" = "global" ]; then
@@ -73,13 +86,120 @@ if [ -z "${TOKEN}" ]; then
   exit 1
 fi
 
-# --- 2. Construct OAuth Authorization URL ---
-# Gemini Enterprise requires the redirect_uri to point to its OAuth callback page:
-# https://vertexaisearch.cloud.google.com/static/oauth/oauth.html
-REDIRECT_URI_ENCODED="https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fstatic%2Foauth%2Foauth.html"
-SCOPES_ENCODED="https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fbigquery+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile"
+# --- 2. Select or Configure Authorization ID (AUTH_ID) ---
+echo ""
+echo "🔍 Checking Discovery Engine for existing Authorization resources..."
+AUTH_LIST_JSON=$(curl -s \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "X-Goog-User-Project: ${PROJECT_ID}" \
+  "https://${ENDPOINT_PREFIX}discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_NUMBER}/locations/${LOCATION}/authorizations" 2>/dev/null || echo "{}")
 
-AUTH_URI="https://accounts.google.com/o/oauth2/v2/auth?client_id=${OAUTH_CLIENT_ID}&redirect_uri=${REDIRECT_URI_ENCODED}&scope=${SCOPES_ENCODED}&include_granted_scopes=true&response_type=code&access_type=offline&prompt=consent"
+EXISTING_AUTHS=$(echo "${AUTH_LIST_JSON}" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    for a in data.get('authorizations', []):
+        name = a.get('name', '')
+        aid = name.split('/')[-1]
+        if aid:
+            print(aid)
+except Exception:
+    pass
+")
+
+NUM_AUTHS=$(echo -n "${EXISTING_AUTHS}" | grep -c . || true)
+
+AUTH_ID=""
+IS_NEW_AUTH=false
+
+if [ "${NUM_AUTHS}" -gt 0 ]; then
+  echo ""
+  echo "Found existing Discovery Engine Authorization resources in project:"
+  auth_options=()
+  idx=1
+  DEFAULT_CHOICE=""
+
+  while IFS= read -r aid; do
+    [ -z "${aid}" ] && continue
+    match_note=""
+    if [ "${aid}" = "${DEFAULT_AUTH_SUGGESTION}" ]; then
+      DEFAULT_CHOICE="${idx}"
+      match_note=" [Matches target agent '${TARGET_AGENT_INPUT}']"
+    fi
+    echo "  [${idx}] ${aid}${match_note}"
+    auth_options[${idx}]="${aid}"
+    idx=$((idx + 1))
+  done <<< "${EXISTING_AUTHS}"
+
+  echo "  [c] Enter a custom / new Authorization ID"
+  echo ""
+
+  if [ -n "${DEFAULT_CHOICE}" ]; then
+    read -rp "Select Authorization resource [1-$((idx - 1)), or 'c', default: ${DEFAULT_CHOICE} (${auth_options[${DEFAULT_CHOICE}]})]: " sel_auth || true
+    sel_auth="${sel_auth:-${DEFAULT_CHOICE}}"
+  else
+    read -rp "Select Authorization resource [1-$((idx - 1)), or 'c' to create '${DEFAULT_AUTH_SUGGESTION}', default: c]: " sel_auth || true
+    sel_auth="${sel_auth:-c}"
+  fi
+
+  if [ "${sel_auth}" = "c" ] || [ "${sel_auth}" = "C" ]; then
+    read -rp "Enter new Authorization ID [default: ${DEFAULT_AUTH_SUGGESTION}]: " custom_auth || true
+    AUTH_ID="${custom_auth:-${DEFAULT_AUTH_SUGGESTION}}"
+    IS_NEW_AUTH=true
+  elif [[ "${sel_auth}" =~ ^[0-9]+$ ]] && [ "${sel_auth}" -ge 1 ] && [ "${sel_auth}" -lt "${idx}" ]; then
+    AUTH_ID="${auth_options[${sel_auth}]}"
+  else
+    AUTH_ID="${sel_auth}"
+    IS_IN_EXISTING=false
+    for aid in "${auth_options[@]}"; do
+      if [ "${aid}" = "${AUTH_ID}" ]; then
+        IS_IN_EXISTING=true
+        break
+      fi
+    done
+    if [ "${IS_IN_EXISTING}" = false ]; then
+      IS_NEW_AUTH=true
+    fi
+  fi
+else
+  echo ""
+  read -rp "Enter Discovery Engine Authorization ID [default: ${DEFAULT_AUTH_SUGGESTION}]: " input_auth || true
+  AUTH_ID="${input_auth:-${DEFAULT_AUTH_SUGGESTION}}"
+  IS_NEW_AUTH=true
+fi
+
+AUTH_ID="${AUTH_ID:-${DEFAULT_AUTH_SUGGESTION}}"
+AUTH_ID="${AUTH_ID:-${DEFAULT_AGENT_AUTH_ID}}"
+echo "✅ Using Authorization ID:     ${AUTH_ID} (scoped to agent '${TARGET_AGENT_INPUT}')"
+
+# Sync chosen AUTH_ID to .env and GCP_billing_concierge/.env
+python3 -c "
+import sys, re
+from pathlib import Path
+auth_id = sys.argv[1]
+for p in [Path('.env'), Path('GCP_billing_concierge/.env')]:
+    if p.exists():
+        content = p.read_text(encoding='utf-8')
+        if re.search(r'^AUTH_ID=', content, flags=re.M):
+            new_content = re.sub(r'^AUTH_ID=.*$', f'AUTH_ID=\"{auth_id}\"', content, flags=re.M)
+        else:
+            new_content = content.rstrip() + f'\nAUTH_ID=\"{auth_id}\"\n'
+        p.write_text(new_content, encoding='utf-8')
+" "${AUTH_ID}" 2>/dev/null || true
+
+# Check OAuth Credentials
+if [ -z "${OAUTH_CLIENT_ID}" ]; then
+  if [ "${IS_NEW_AUTH}" = true ]; then
+    read -rp "Enter OAuth 2.0 Client ID: " OAUTH_CLIENT_ID
+  else
+    read -rp "Enter OAuth 2.0 Client ID (press Enter to use existing authorization as-is): " OAUTH_CLIENT_ID || true
+  fi
+fi
+
+if [ -n "${OAUTH_CLIENT_ID}" ] && [ -z "${OAUTH_CLIENT_SECRET}" ]; then
+  read -rsp "Enter OAuth 2.0 Client Secret: " OAUTH_CLIENT_SECRET
+  echo ""
+fi
 
 AUTH_RESOURCE_NAME="projects/${PROJECT_NUMBER}/locations/${LOCATION}/authorizations/${AUTH_ID}"
 
@@ -87,8 +207,14 @@ AUTH_RESOURCE_NAME="projects/${PROJECT_NUMBER}/locations/${LOCATION}/authorizati
 echo ""
 echo "🚀 [Step 1/3] Creating/Updating Discovery Engine Authorization Resource: '${AUTH_ID}'..."
 
-PAYLOAD_FILE=$(mktemp)
-cat <<AUTH_JSON > "${PAYLOAD_FILE}"
+if [ -n "${OAUTH_CLIENT_ID}" ] && [ -n "${OAUTH_CLIENT_SECRET}" ]; then
+  REDIRECT_URI_ENCODED="https%3A%2F%2Fvertexaisearch.cloud.google.com%2Fstatic%2Foauth%2Foauth.html"
+  SCOPES_ENCODED="https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fbigquery+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile"
+
+  AUTH_URI="https://accounts.google.com/o/oauth2/v2/auth?client_id=${OAUTH_CLIENT_ID}&redirect_uri=${REDIRECT_URI_ENCODED}&scope=${SCOPES_ENCODED}&include_granted_scopes=true&response_type=code&access_type=offline&prompt=consent"
+
+  PAYLOAD_FILE=$(mktemp)
+  cat <<AUTH_JSON > "${PAYLOAD_FILE}"
 {
   "name": "${AUTH_RESOURCE_NAME}",
   "serverSideOauth2": {
@@ -100,31 +226,32 @@ cat <<AUTH_JSON > "${PAYLOAD_FILE}"
 }
 AUTH_JSON
 
-AUTH_HTTP_CODE=$(curl -s -o /tmp/auth_resp.json -w "%{http_code}" \
-  -X POST \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -H "Content-Type: application/json" \
-  -H "X-Goog-User-Project: ${PROJECT_ID}" \
-  "https://${ENDPOINT_PREFIX}discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_NUMBER}/locations/${LOCATION}/authorizations?authorizationId=${AUTH_ID}" \
-  -d @"${PAYLOAD_FILE}")
+  AUTH_HTTP_CODE=$(curl -s -o /tmp/auth_resp.json -w "%{http_code}" \
+    -X POST \
+    -H "Authorization: Bearer ${TOKEN}" \
+    -H "Content-Type: application/json" \
+    -H "X-Goog-User-Project: ${PROJECT_ID}" \
+    "https://${ENDPOINT_PREFIX}discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_NUMBER}/locations/${LOCATION}/authorizations?authorizationId=${AUTH_ID}" \
+    -d @"${PAYLOAD_FILE}")
 
-rm -f "${PAYLOAD_FILE}"
+  rm -f "${PAYLOAD_FILE}"
 
-if [ "${AUTH_HTTP_CODE}" = "200" ] || [ "${AUTH_HTTP_CODE}" = "201" ]; then
-  echo "✅ Authorization resource created successfully."
-elif [ "${AUTH_HTTP_CODE}" = "409" ]; then
-  echo "ℹ️ Authorization resource '${AUTH_ID}' already exists (HTTP 409). Continuing..."
+  if [ "${AUTH_HTTP_CODE}" = "200" ] || [ "${AUTH_HTTP_CODE}" = "201" ]; then
+    echo "✅ Authorization resource created successfully."
+  elif [ "${AUTH_HTTP_CODE}" = "409" ]; then
+    echo "ℹ️ Authorization resource '${AUTH_ID}' already exists (HTTP 409). Continuing..."
+  else
+    echo "⚠️ Note: Authorization creation returned HTTP ${AUTH_HTTP_CODE}. Response:"
+    cat /tmp/auth_resp.json
+    echo ""
+  fi
 else
-  echo "⚠️ Note: Authorization creation returned HTTP ${AUTH_HTTP_CODE}. Response:"
-  cat /tmp/auth_resp.json
-  echo ""
+  echo "ℹ️ Reusing existing Authorization resource '${AUTH_ID}'. Skipping creation step."
 fi
 
 # --- 4. Step 2: Locate Registered Gemini Enterprise Agent ---
 echo ""
 echo "🔍 [Step 2/3] Locating Gemini Enterprise (Discovery Engine) registered apps and agents..."
-
-TARGET_AGENT_INPUT="${1:-${AGENT_NAME:-}}"
 
 # 2a. Discover or Select Discovery Engine / Gemini Enterprise App
 ENGINES_JSON=$(curl -s \

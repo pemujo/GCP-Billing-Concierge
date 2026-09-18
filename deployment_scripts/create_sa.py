@@ -1,5 +1,7 @@
+import argparse
 import os
 from pathlib import Path
+import re
 import time
 from typing import List, Union
 
@@ -36,23 +38,31 @@ def update_env(filepath: Union[str, Path], key: str, value: str) -> None:
     """
     targets = {Path(filepath), Path(".env")}
     for target in targets:
-        lines = []
-        if target.exists():
-            with open(target, "r") as f:
-                lines = f.readlines()
-        lines = [line for line in lines if not line.startswith(f"{key}=")]
-        lines.append(f"{key}={value}\n")
-        with open(target, "w") as f:
-            f.writelines(lines)
+        try:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            lines = []
+            if target.exists():
+                with open(target, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+            lines = [line for line in lines if not line.startswith(f"{key}=")]
+            lines.append(f"{key}={value}\n")
+            with open(target, "w", encoding="utf-8") as f:
+                f.writelines(lines)
+        except Exception as e:
+            print(f"⚠️ Warning: Could not update {target}: {e}")
 
 
-def create_service_account(project_id: str, sa_id: str) -> str:
+
+def create_service_account(
+    project_id: str, sa_id: str, display_name: str = "GCP Billing Concierge"
+) -> str:
     """
     Creates a Google Cloud Service Account if it does not already exist.
 
     Args:
         project_id (str): The GCP Project ID where the SA will be created.
         sa_id (str): The account ID (prefix) for the service account.
+        display_name (str): Human-readable display name for the service account.
 
     Returns:
         str: The full email address of the created or existing service account.
@@ -63,13 +73,13 @@ def create_service_account(project_id: str, sa_id: str) -> str:
     sa_resource_name = f"projects/{project_id}/serviceAccounts/{sa_email}"
 
     try:
-        print(f"-> Creating Service Account: {sa_id}...")
+        print(f"-> Creating Service Account: {sa_id} ({display_name})...")
         client.create_service_account(
             request={
                 "name": project_path,
                 "account_id": sa_id,
                 "service_account": {
-                    "display_name": "GCP Billing Concierge"
+                    "display_name": display_name
                 },
             }
         )
@@ -216,25 +226,62 @@ def main() -> None:
     """
     Orchestrates the provisioning of the FinOps Agent service account and permissions.
     """
+    parser = argparse.ArgumentParser(description="Provision Service Account for FinOps Agent")
+    parser.add_argument("--agent-name", default=None, help="Agent name")
+    args, _ = parser.parse_known_args()
+
     agent_env = Path("GCP_billing_concierge/.env")
     load_dotenv(agent_env)
+    if Path(".env").exists():
+        load_dotenv(Path(".env"))
 
     local_project = os.getenv("GOOGLE_CLOUD_PROJECT")
     billing_project = os.getenv("BILLING_EXPORT_PROJECT_ID")
     billing_dataset = os.getenv("BILLING_EXPORT_DATASET")
     billing_table = os.getenv("BILLING_EXPORT_TABLE")
 
-    if not all([local_project, billing_project, billing_dataset, billing_table]):
-        print("❌ ERROR: Missing project or table variables in .env.")
+    if not local_project:
+        print("❌ ERROR: Missing GOOGLE_CLOUD_PROJECT in .env.")
         return
 
-    sa_id = "gcp-billing-concierge-sa"
+    raw_agent_name = (
+        args.agent_name
+        or os.getenv("AGENT_NAME", "GCP_billing_concierge").strip()
+    )
+    clean_agent_name = (
+        re.sub(r"[^a-zA-Z0-9-]", "-", raw_agent_name).lower().strip("-")
+    )
+    if clean_agent_name in ("gcp-billing-concierge", "gcp_billing_concierge", ""):
+        default_sa_id = "gcp-billing-concierge-sa"
+    else:
+        candidate_sa = f"{clean_agent_name}-sa"
+        if len(candidate_sa) > 30:
+            candidate_sa = candidate_sa[:30].rstrip("-")
+        if len(candidate_sa) < 6:
+            candidate_sa = f"{candidate_sa}-agent"[:30]
+        default_sa_id = candidate_sa
+
+    existing_sa = os.getenv("AGENT_SERVICE_ACCOUNT", "").strip()
+    if existing_sa and "@" in existing_sa:
+        sa_id = existing_sa.split("@")[0]
+    else:
+        sa_id = default_sa_id
+
+    clean_disp = raw_agent_name.replace("-", " ").replace("_", " ").strip()
+    sa_display_name = (
+        clean_disp.title()
+        if clean_disp.lower() not in ("gcp billing concierge", "gcp_billing_concierge", "")
+        else "GCP Billing Concierge"
+    )
+
     sa_member = f"serviceAccount:{sa_id}@{local_project}.iam.gserviceaccount.com"
 
     draw_header("🔑 Provisioning Agent Service Account")
 
     # 1. Create the SA
-    email_address = create_service_account(local_project, sa_id)
+    email_address = create_service_account(
+        local_project, sa_id, display_name=sa_display_name
+    )
 
     # 2. Grant Local Execution Roles
     local_roles = [
@@ -251,16 +298,41 @@ def main() -> None:
         "roles/cloudscheduler.admin",
     ]
     add_iam_member(local_project, local_roles, sa_member)
-
-    # 3. Grant Billing Data Access to the table (supports cross-project)
-    add_bigquery_table_iam_member(
-        billing_project,
-        billing_dataset,
-        billing_table,
-        "roles/bigquery.dataViewer",
-        sa_member,
-    )
     grant_sa_user_role_on_self(local_project, email_address)
+
+    # 3. Check BigQuery Access Mode (OAuth vs Default Credentials)
+    enable_oauth_val = os.getenv("ENABLE_USER_OAUTH", "").strip().lower()
+    if not enable_oauth_val:
+        print("\nBigQuery Authentication Mode:")
+        print("  1) oauth [Default - Recommended] (End-user OAuth delegation; SA skips BQ data read permissions)")
+        print("  2) default_credentials (Service account needs table-level 'roles/bigquery.dataViewer')")
+        try:
+            raw_choice = input("Enable User OAuth or use Default Credentials? [1-2, default: 1 (oauth)]: ").strip().lower()
+        except EOFError:
+            raw_choice = ""
+        is_oauth = raw_choice not in ("2", "default_credentials", "default")
+    else:
+        is_oauth = enable_oauth_val in ("true", "1", "yes")
+
+    if is_oauth:
+        print("\nℹ️ BigQuery Data Viewer table IAM skipped on service account.")
+        print("   (User OAuth is enabled; BigQuery queries execute under each chatting user's delegated identity).")
+        update_env(agent_env, "ENABLE_USER_OAUTH", "true")
+        update_env(agent_env, "REQUIRE_USER_OAUTH", "true")
+    else:
+        print("\n🚀 Granting BigQuery Data Viewer on billing export table to service account...")
+        if billing_project and billing_dataset and billing_table:
+            add_bigquery_table_iam_member(
+                billing_project,
+                billing_dataset,
+                billing_table,
+                "roles/bigquery.dataViewer",
+                sa_member,
+            )
+        else:
+            print("⚠️ Warning: Billing table coordinates (BILLING_EXPORT_PROJECT_ID, DATASET, TABLE) missing in .env.")
+        update_env(agent_env, "ENABLE_USER_OAUTH", "false")
+        update_env(agent_env, "REQUIRE_USER_OAUTH", "false")
 
     # 4. Update .env
     update_env(agent_env, "AGENT_SERVICE_ACCOUNT", email_address)

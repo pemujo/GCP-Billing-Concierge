@@ -54,9 +54,10 @@ GOOGLE_CLOUD_REGION = (
     or os.getenv("GOOGLE_CLOUD_AGENT_ENGINE_LOCATION", "").strip()
     or "us-central1"
 )
-GOOGLE_CLOUD_LOCATION = os.getenv(
-    "GOOGLE_CLOUD_LOCATION", GOOGLE_CLOUD_REGION
-).strip()
+# Gemini foundation model routing location (Vertex AI global endpoint by default)
+GOOGLE_CLOUD_LOCATION = (
+    os.getenv("GOOGLE_CLOUD_LOCATION", "").strip() or "global"
+)
 BIGQUERY_LOCATION = (
     os.getenv("BIGQUERY_LOCATION", "").strip()
     or os.getenv("BILLING_EXPORT_LOCATION", "").strip()
@@ -81,11 +82,17 @@ logging_client: Optional[google.cloud.logging.Client] = None
 ENABLE_USER_OAUTH = os.getenv("ENABLE_USER_OAUTH", "true").lower() in ("true", "1")
 REQUIRE_USER_OAUTH = os.getenv("REQUIRE_USER_OAUTH", "true").lower() in ("true", "1")
 OAUTH_CLIENT_ID = os.getenv("OAUTH_CLIENT_ID", "").strip()
-OAUTH_CLIENT_SECRET = os.getenv("OAUTH_CLIENT_SECRET", "").strip()
+clean_agent_auth = re.sub(r"[^a-zA-Z0-9-]", "-", raw_agent_name).lower().strip("-")
+default_auth_id = (
+    "billing-ge-oauth"
+    if clean_agent_auth in ("gcp-billing-concierge", "billing-concierge", "")
+    else f"{clean_agent_auth}-oauth"
+)
+
 EXTERNAL_ACCESS_TOKEN_KEY = (
     os.getenv("AUTH_ID", "").strip()
     or os.getenv("EXTERNAL_ACCESS_TOKEN_KEY", "").strip()
-    or "bq-agent"
+    or default_auth_id
 )
 
 try:
@@ -144,14 +151,27 @@ else:
 MAX_BYTES_BILLED = int(os.getenv("BQ_MAX_BYTES_BILLED", "1073741824"))  # 1 GiB budget limit
 MAX_RESULT_ROWS = int(os.getenv("BQ_MAX_QUERY_RESULT_ROWS", "50"))
 
+clean_app_name = (
+    re.sub(r"[^a-zA-Z0-9_-]", "-", raw_agent_name).lower().strip("-")
+    or "gcp-billing-concierge"
+)
+clean_label = (
+    re.sub(r"[^a-z0-9_-]", "_", raw_agent_name.lower())[:63].strip("_")
+    or "gcp_billing_concierge"
+)
+
 bq_guardrail_config = BigQueryToolConfig(
     write_mode=WriteMode.BLOCKED,
     maximum_bytes_billed=MAX_BYTES_BILLED,
     max_query_result_rows=MAX_RESULT_ROWS,
     compute_project_id=AGENT_PROJECT_ID or None,
     location=BIGQUERY_LOCATION,
-    application_name="gcp-billing-concierge",
-    job_labels={"env": "production", "workload": "finops-analysis"},
+    application_name=clean_app_name,
+    job_labels={
+        "env": "production",
+        "workload": "finops-analysis",
+        "agent": clean_label,
+    },
 )
 bigquery_toolset = FinOpsBigQueryToolset(
     credentials_config=bq_credentials_config,
@@ -224,11 +244,16 @@ except Exception as e:
 
 skill_toolset = SkillToolset(skills=skills)
 
+AGENT_DESCRIPTION = os.getenv(
+    "AGENT_DESCRIPTION",
+    "FinOps billing concierge for Google Cloud cost analysis, anomaly detection, and automated spend monitoring.",
+).strip()
+
 # Final Agent Definition
 billing_concierge_agent = Agent(
     model=GEMINI_MODEL,
     name=AGENT_NAME,
-    description="FinOps agent for GCP Billing analysis, anomaly logging, and monitoring infrastructure.",
+    description=AGENT_DESCRIPTION,
     instruction=get_instructions(
         full_table_path=FULL_TABLE_PATH,
         project_id=AGENT_PROJECT_ID,
@@ -236,6 +261,7 @@ billing_concierge_agent = Agent(
         billing_project=BILLING_PROJECT,
         billing_dataset=BILLING_DATASET,
         billing_table=BILLING_TABLE,
+        agent_name=raw_agent_name,
     ),
     sub_agents=[finops_infra_agent],
     tools=[
@@ -252,5 +278,6 @@ from google.adk.apps import App
 app = App(
     root_agent=root_agent,
     name=AGENT_NAME,
+    description=AGENT_DESCRIPTION,
 )
 

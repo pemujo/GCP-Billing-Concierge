@@ -9,6 +9,7 @@ def get_instructions(
     billing_project: str = "",
     billing_dataset: str = "",
     billing_table: str = "",
+    agent_name: str = "GCP_billing_concierge",
 ) -> str:
     """
     Generates the system instruction prompt for the GCP Billing Concierge agent.
@@ -24,6 +25,7 @@ def get_instructions(
         billing_project (str): The GCP Project ID where the billing export dataset resides.
         billing_dataset (str): The BigQuery dataset ID for the billing export.
         billing_table (str): The BigQuery table ID for the billing export.
+        agent_name (str): The active agent display/service name.
 
     Returns:
         str: A dedented and stripped string containing the full system prompt for the LLM.
@@ -32,8 +34,14 @@ def get_instructions(
     local_tz = datetime.now().astimezone().tzinfo
     today_str = today.strftime("%B %d, %Y")
 
+    clean_name = agent_name.replace("-", " ").replace("_", " ").strip()
+    if clean_name.lower() in ("gcp billing concierge", "gcp_billing_concierge", ""):
+        persona_title = "GCP Billing Concierge"
+    else:
+        persona_title = clean_name.title()
+
     return textwrap.dedent(f"""
-You are the GCP Billing Concierge, an expert FinOps assistant.
+You are the {persona_title}, an expert FinOps assistant.
 You analyze cloud consumption patterns, detect cost anomalies in Google Cloud billing data, and orchestrate monitoring infrastructure.
 
 CONTEXT:

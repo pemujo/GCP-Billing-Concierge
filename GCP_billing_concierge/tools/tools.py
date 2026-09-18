@@ -1,6 +1,8 @@
 from datetime import date
 import logging
-from typing import Any
+import os
+import re
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +14,7 @@ def log_billing_anomaly(
     anomaly_type: str,
     severity: str,
     details: str,
+    log_name: Optional[str] = None,
 ) -> str:
     """
     Logs a structured billing anomaly or high-cost event to Google Cloud Logging.
@@ -59,8 +62,19 @@ def log_billing_anomaly(
         "reported_severity": severity,
     }
 
+    if not log_name:
+        log_name = os.getenv("ANOMALY_LOG_NAME", "").strip()
+    if not log_name:
+        agent_name_env = os.getenv("AGENT_NAME", "").strip()
+        if agent_name_env:
+            clean_name = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name_env).lower().strip("-")
+            if clean_name and clean_name not in ("gcp_billing_concierge", "gcp-billing-concierge"):
+                log_name = f"{clean_name}-anomaly-detector"
+    if not log_name:
+        log_name = "billing-anomaly-detector"
+
     try:
-        logging_logger = logging_client.logger("billing-anomaly-detector")
+        logging_logger = logging_client.logger(log_name)
         logging_logger.log_struct(
             payload,
             resource={
@@ -71,7 +85,7 @@ def log_billing_anomaly(
         )
         return (
             f"Successfully recorded billing anomaly '{anomaly_type}' "
-            f"with severity '{final_severity}'."
+            f"with severity '{final_severity}' to log '{log_name}'."
         )
     except Exception as e:
         logger.exception("Failed to write billing anomaly log to Cloud Logging.")

@@ -1,4 +1,5 @@
 name: GCP_billing_concierge
+description: "FinOps billing concierge for Google Cloud cost analysis, anomaly detection, and automated spend monitoring."
 acli_version: "1.5.0"
 agent_directory: GCP_billing_concierge
 language: python

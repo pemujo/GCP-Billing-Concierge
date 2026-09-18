@@ -88,30 +88,46 @@ def get_agent_id_from_secrets(project_id: str) -> Optional[str]:
 
     # 3. Secret Manager lookup
     client = secretmanager.SecretManagerServiceClient()
-    secret_name = "billing-concierge-agent-id"
-    name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+    candidate_secrets: List[str] = []
+    env_secret = os.getenv("AGENT_ID_SECRET_NAME")
+    if env_secret and env_secret.strip():
+        candidate_secrets.append(env_secret.strip())
 
-    try:
-        response = client.access_secret_version(request={"name": name})
-        return response.payload.data.decode("UTF-8").strip()
-    except exceptions.NotFound:
-        logger.warning(
-            "Secret '%s' or version 'latest' not found in project %s.",
-            secret_name,
-            project_id,
-        )
-    except exceptions.PermissionDenied:
-        logger.error(
-            "Permission denied: Ensure the SA has 'Secret Manager Secret Accessor' on %s.",
-            secret_name,
-        )
-    except exceptions.InvalidArgument:
-        logger.error(
-            "Invalid argument: Check if project_id '%s' is correct.", project_id
-        )
-    except Exception as e:
-        logger.error("An unexpected error occurred while fetching secret: %s", e)
+    agent_name = os.getenv("AGENT_NAME")
+    if agent_name and agent_name.strip():
+        clean_name = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name).lower().strip("-")
+        if clean_name and clean_name not in ("gcp_billing_concierge", "gcp-billing-concierge"):
+            derived_sec = f"{clean_name}-agent-id"
+            if derived_sec not in candidate_secrets:
+                candidate_secrets.append(derived_sec)
 
+    if "billing-concierge-agent-id" not in candidate_secrets:
+        candidate_secrets.append("billing-concierge-agent-id")
+
+    for sec_name in candidate_secrets:
+        name = f"projects/{project_id}/secrets/{sec_name}/versions/latest"
+        try:
+            response = client.access_secret_version(request={"name": name})
+            return response.payload.data.decode("UTF-8").strip()
+        except exceptions.NotFound:
+            continue
+        except exceptions.PermissionDenied:
+            logger.error(
+                "Permission denied: Ensure the principal has 'Secret Manager Secret Accessor' on %s.",
+                sec_name,
+            )
+        except exceptions.InvalidArgument:
+            logger.error(
+                "Invalid argument: Check if project_id '%s' is correct.", project_id
+            )
+        except Exception as e:
+            logger.error("An unexpected error occurred while fetching secret '%s': %s", sec_name, e)
+
+    logger.warning(
+        "None of the candidate secrets (%s) found in project %s.",
+        ", ".join(candidate_secrets),
+        project_id,
+    )
     return None
 
 
@@ -363,9 +379,19 @@ def create_billing_alert_policy(project_id: str, channel_ids: List[str]) -> str:
     project_id = get_resolved_project_id(project_id)
     client = monitoring_v3.AlertPolicyServiceClient()
     project_name = f"projects/{project_id}"
+
+    agent_name_env = os.getenv("AGENT_NAME", "billing-concierge")
+    clean_prefix = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name_env).lower().strip("-")
+    if not clean_prefix or clean_prefix in ("gcp_billing_concierge", "gcp-billing-concierge"):
+        policy_display_name = "billing-anomaly-detector"
+        log_id_name = "billing-anomaly-detector"
+    else:
+        policy_display_name = f"{clean_prefix}-anomaly-detector"
+        log_id_name = f"{clean_prefix}-anomaly-detector"
+
     robust_filter = (
-        f'logName="projects/{project_id}/logs/billing-anomaly-detector" OR '
-        f'log_id("billing-anomaly-detector")'
+        f'logName="projects/{project_id}/logs/{log_id_name}" OR '
+        f'log_id("{log_id_name}")'
     )
 
     formatted_channel_ids = [
@@ -376,7 +402,7 @@ def create_billing_alert_policy(project_id: str, channel_ids: List[str]) -> str:
     # Duplicate Check & In-place update
     existing = list_alert_policies(project_id)
     matching_policy = next(
-        (p for p in existing if p.get("display_name") == "billing-anomaly-detector"),
+        (p for p in existing if p.get("display_name") == policy_display_name),
         None,
     )
 
@@ -430,11 +456,11 @@ def create_billing_alert_policy(project_id: str, channel_ids: List[str]) -> str:
             return "ERROR: Failed to update existing alert policy. Please check Cloud Monitoring permissions."
 
     alert_policy = {
-        "display_name": "billing-anomaly-detector",
+        "display_name": policy_display_name,
         "combiner": monitoring_v3.AlertPolicy.ConditionCombinerType.OR,
         "conditions": [
             {
-                "display_name": "Log match: billing-anomaly-detector",
+                "display_name": f"Log match: {policy_display_name}",
                 "condition_matched_log": {
                     "filter": robust_filter,
                 },
@@ -493,8 +519,20 @@ def create_scheduler(
         )
 
     client = scheduler_v1.CloudSchedulerClient()
-    parent = f"projects/{project_id}/locations/{region}"
-    job_name = f"{parent}/jobs/billing-concierge-{description}"
+    agent_name_env = os.getenv("AGENT_NAME", "billing-concierge")
+    clean_prefix = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name_env).lower().strip("-")
+    if not clean_prefix or clean_prefix in ("gcp_billing_concierge", "gcp-billing-concierge"):
+        clean_prefix = "billing-concierge"
+
+    clean_desc = description.strip()
+    if clean_desc.startswith(f"{clean_prefix}-"):
+        short_desc = clean_desc[len(clean_prefix) + 1:]
+    elif clean_desc.startswith("billing-concierge-"):
+        short_desc = clean_desc[len("billing-concierge-"):]
+    else:
+        short_desc = clean_desc
+    job_id = f"{clean_prefix}-{short_desc}"
+    job_name = f"{parent}/jobs/{job_id}"
 
     local_tz = os.getenv("TIMEZONE", "")
     if not local_tz:
@@ -503,8 +541,11 @@ def create_scheduler(
         except Exception:
             local_tz = "UTC"
 
-    service_account_id = "gcp-billing-concierge-sa"
-    scheduler_sa = f"{service_account_id}@{project_id}.iam.gserviceaccount.com"
+    scheduler_sa = (
+        os.getenv("SCHEDULER_SERVICE_ACCOUNT", "").strip()
+        or os.getenv("AGENT_SERVICE_ACCOUNT", "").strip()
+        or f"gcp-billing-concierge-sa@{project_id}.iam.gserviceaccount.com"
+    )
 
     logger.info(
         "Configuring scheduler job '%s' with SA %s, timezone: %s",
@@ -549,7 +590,7 @@ def create_scheduler(
                 {
                     "class_method": "async_stream_query",
                     "input": {
-                        "user_id": "billing_concierge_audit",
+                        "user_id": f"{clean_prefix.replace('-', '_')}_audit",
                         "message": message,
                     },
                 }
@@ -566,12 +607,12 @@ def create_scheduler(
     try:
         # Try to create the job first
         client.create_job(parent=parent, job=job)
-        return f"SUCCESS: Created scheduler job '{description}' with schedule '{schedule}'."
+        return f"SUCCESS: Created scheduler job '{job_id}' with schedule '{schedule}'."
     except exceptions.AlreadyExists:
         # If it exists, update it so the new schedule takes effect
         update_mask = {"paths": ["schedule", "http_target", "time_zone"]}
         client.update_job(job=job, update_mask=update_mask)
-        return f"SUCCESS: Updated existing scheduler job '{description}' to schedule '{schedule}'."
+        return f"SUCCESS: Updated existing scheduler job '{job_id}' to schedule '{schedule}'."
     except Exception as e:
         logger.error("ERROR: Failed to schedule audit: %s", str(e))
         return "ERROR: Failed to schedule audit. Please check Cloud Scheduler permissions."
@@ -595,12 +636,27 @@ def delete_finops_resource(resource_name: str, resource_type: str) -> str:
     try:
         if resource_type == "scheduler":
             client = scheduler_v1.CloudSchedulerClient()
-            target_name = (
-                resource_name
-                if resource_name.startswith("projects/")
-                else f"projects/{get_resolved_project_id()}/locations/{os.getenv('GOOGLE_CLOUD_REGION', 'us-central1')}/jobs/{resource_name}"
-            )
-            client.delete_job(name=target_name)
+            resolved_proj = get_resolved_project_id()
+            resolved_region = os.getenv("GOOGLE_CLOUD_REGION", "us-central1")
+
+            agent_name_env = os.getenv("AGENT_NAME", "billing-concierge")
+            clean_prefix = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name_env).lower().strip("-")
+            if not clean_prefix or clean_prefix in ("gcp_billing_concierge", "gcp-billing-concierge"):
+                clean_prefix = "billing-concierge"
+
+            if resource_name.startswith("projects/"):
+                target_name = resource_name
+            elif resource_name.startswith(f"{clean_prefix}-") or resource_name.startswith("billing-concierge-"):
+                target_name = f"projects/{resolved_proj}/locations/{resolved_region}/jobs/{resource_name}"
+            else:
+                target_name = f"projects/{resolved_proj}/locations/{resolved_region}/jobs/{clean_prefix}-{resource_name}"
+
+            try:
+                client.delete_job(name=target_name)
+            except exceptions.NotFound:
+                fallback_name = f"projects/{resolved_proj}/locations/{resolved_region}/jobs/{resource_name}"
+                client.delete_job(name=fallback_name)
+
         elif resource_type == "channel":
             client = monitoring_v3.NotificationChannelServiceClient()
             target_name = (
@@ -611,11 +667,21 @@ def delete_finops_resource(resource_name: str, resource_type: str) -> str:
             client.delete_notification_channel(name=target_name, force=True)
         elif resource_type == "policy":
             client = monitoring_v3.AlertPolicyServiceClient()
-            target_name = (
-                resource_name
-                if resource_name.startswith("projects/")
-                else f"projects/{get_resolved_project_id()}/alertPolicies/{resource_name}"
-            )
+            resolved_proj = get_resolved_project_id()
+            if resource_name.startswith("projects/"):
+                target_name = resource_name
+            elif resource_name.isdigit():
+                target_name = f"projects/{resolved_proj}/alertPolicies/{resource_name}"
+            else:
+                policies = list_alert_policies(resolved_proj)
+                matched = next(
+                    (p for p in policies if p.get("display_name") == resource_name or p.get("id") == resource_name),
+                    None,
+                )
+                if matched and matched.get("id"):
+                    target_name = f"projects/{resolved_proj}/alertPolicies/{matched['id']}"
+                else:
+                    target_name = f"projects/{resolved_proj}/alertPolicies/{resource_name}"
             client.delete_alert_policy(name=target_name)
         else:
             return f"ERROR: Unknown resource type '{resource_type}'. Must be 'scheduler', 'channel', or 'policy'."

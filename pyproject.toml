@@ -1,7 +1,7 @@
 [project]
 name = "gcp-billing-concierge"
 version = "0.2.0"
-description = "FinOps GCP Billing Concierge agent powered by Gemini and Google ADK"
+description = "FinOps billing concierge for Google Cloud cost analysis, anomaly detection, and automated spend monitoring."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -35,7 +35,7 @@ packages = ["GCP_billing_concierge"]
 
 [tool.agents-cli]
 name = "gcp-billing-concierge"
-description = "FinOps GCP Billing Concierge agent powered by Gemini and Google ADK"
+description = "FinOps billing concierge for Google Cloud cost analysis, anomaly detection, and automated spend monitoring."
 base_template = "adk"
 agent_directory = "GCP_billing_concierge"
 

@@ -63,8 +63,14 @@ app: FastAPI = get_fast_api_app(
     otel_to_cloud=otel_to_cloud,
     lifespan=lifespan,
 )
-app.title = "GCP_billing_concierge"
-app.description = "API for interacting with GCP Billing Concierge"
+raw_agent_name = os.getenv("AGENT_NAME", "GCP_billing_concierge").strip()
+clean_title = (
+    raw_agent_name.replace("-", " ").replace("_", " ").title()
+    if raw_agent_name.lower() not in ("gcp_billing_concierge", "gcp-billing-concierge")
+    else "GCP Billing Concierge"
+)
+app.title = raw_agent_name
+app.description = f"API for interacting with {clean_title}"
 
 from fastapi import Request
 from GCP_billing_concierge.tools.finops_bigquery_toolset import set_current_user_token

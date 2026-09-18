@@ -38,24 +38,29 @@ def update_env(filepath: Union[str, Path], new_vars: Dict[str, Any]) -> None:
     """
     targets = {Path(filepath), Path(".env")}
     for target in targets:
-        lines = []
-        if target.exists():
-            with open(target, "r") as f:
-                lines = f.readlines()
+        try:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            lines = []
+            if target.exists():
+                with open(target, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
 
-        # Filter out lines we are about to update
-        lines = [
-            line
-            for line in lines
-            if not any(line.startswith(f"{k}=") for k in new_vars.keys())
-        ]
+            # Filter out lines we are about to update
+            lines = [
+                line
+                for line in lines
+                if not any(line.startswith(f"{k}=") for k in new_vars.keys())
+            ]
 
-        # Append new values
-        for k, v in new_vars.items():
-            lines.append(f"{k}={v}\n")
+            # Append new values
+            for k, v in new_vars.items():
+                lines.append(f"{k}={v}\n")
 
-        with open(target, "w") as f:
-            f.writelines(lines)
+            with open(target, "w", encoding="utf-8") as f:
+                f.writelines(lines)
+        except Exception as e:
+            print(f"⚠️ Warning: Could not update {target}: {e}")
+
 
 
 def main() -> None:

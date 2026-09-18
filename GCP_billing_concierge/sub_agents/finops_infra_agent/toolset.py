@@ -37,7 +37,7 @@ class FinOpsInfraToolset(BaseToolset):
         credentials: Optional[Any] = None,
         timezone: Optional[str] = None,
         service_account_id: str = "gcp-billing-concierge-sa",
-        agent_id_secret_name: str = "billing-concierge-agent-id",
+        agent_id_secret_name: Optional[str] = None,
         require_confirmation_for_delete: bool = True,
         *,
         tool_filter: Optional[Union[ToolPredicate, List[str]]] = None,
@@ -70,6 +70,17 @@ class FinOpsInfraToolset(BaseToolset):
         self.credentials = credentials
         self.timezone = timezone
         self.service_account_id = service_account_id
+
+        if not agent_id_secret_name:
+            agent_id_secret_name = os.getenv("AGENT_ID_SECRET_NAME")
+        if not agent_id_secret_name:
+            agent_name_env = os.getenv("AGENT_NAME")
+            if agent_name_env and agent_name_env.strip():
+                clean_name = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name_env).lower().strip("-")
+                if clean_name and clean_name not in ("gcp_billing_concierge", "gcp-billing-concierge"):
+                    agent_id_secret_name = f"{clean_name}-agent-id"
+        if not agent_id_secret_name:
+            agent_id_secret_name = "billing-concierge-agent-id"
         self.agent_id_secret_name = agent_id_secret_name
         self.require_confirmation_for_delete = require_confirmation_for_delete
 
@@ -200,31 +211,37 @@ class FinOpsInfraToolset(BaseToolset):
             logger.warning("Cannot fetch secret: project_id is not set.")
             return None
 
-        secret_path = f"projects/{self.project_id}/secrets/{self.agent_id_secret_name}/versions/latest"
-        try:
-            response = self.secret_client.access_secret_version(
-                request={"name": secret_path}
-            )
-            return response.payload.data.decode("UTF-8").strip()
-        except exceptions.NotFound:
-            logger.warning(
-                "Secret '%s' or version 'latest' not found in project %s.",
-                self.agent_id_secret_name,
-                self.project_id,
-            )
-        except exceptions.PermissionDenied:
-            logger.error(
-                "Permission denied: Ensure the SA has 'Secret Manager Secret Accessor' on %s.",
-                self.agent_id_secret_name,
-            )
-        except exceptions.InvalidArgument:
-            logger.error(
-                "Invalid argument: Check if project_id '%s' is correct.",
-                self.project_id,
-            )
-        except Exception as e:
-            logger.error("An unexpected error occurred while fetching secret: %s", e)
+        candidate_secrets = [self.agent_id_secret_name]
+        if "billing-concierge-agent-id" not in candidate_secrets:
+            candidate_secrets.append("billing-concierge-agent-id")
 
+        for sec_name in candidate_secrets:
+            secret_path = f"projects/{self.project_id}/secrets/{sec_name}/versions/latest"
+            try:
+                response = self.secret_client.access_secret_version(
+                    request={"name": secret_path}
+                )
+                return response.payload.data.decode("UTF-8").strip()
+            except exceptions.NotFound:
+                continue
+            except exceptions.PermissionDenied:
+                logger.error(
+                    "Permission denied: Ensure the principal has 'Secret Manager Secret Accessor' on %s.",
+                    sec_name,
+                )
+            except exceptions.InvalidArgument:
+                logger.error(
+                    "Invalid argument: Check if project_id '%s' is correct.",
+                    self.project_id,
+                )
+            except Exception as e:
+                logger.error("An unexpected error occurred while fetching secret '%s': %s", sec_name, e)
+
+        logger.warning(
+            "None of the candidate secrets (%s) found in project %s.",
+            ", ".join(candidate_secrets),
+            self.project_id,
+        )
         return None
 
     def list_schedulers(self) -> List[Dict[str, str]]:
@@ -444,9 +461,19 @@ class FinOpsInfraToolset(BaseToolset):
             return "ERROR: GOOGLE_CLOUD_PROJECT is not configured."
 
         project_name = f"projects/{self.project_id}"
+
+        agent_name_env = os.getenv("AGENT_NAME", "billing-concierge")
+        clean_prefix = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name_env).lower().strip("-")
+        if not clean_prefix or clean_prefix in ("gcp_billing_concierge", "gcp-billing-concierge"):
+            policy_display_name = "billing-anomaly-detector"
+            log_id_name = "billing-anomaly-detector"
+        else:
+            policy_display_name = f"{clean_prefix}-anomaly-detector"
+            log_id_name = f"{clean_prefix}-anomaly-detector"
+
         robust_filter = (
-            f'logName="projects/{self.project_id}/logs/billing-anomaly-detector" OR '
-            f'log_id("billing-anomaly-detector")'
+            f'logName="projects/{self.project_id}/logs/{log_id_name}" OR '
+            f'log_id("{log_id_name}")'
         )
 
         formatted_channel_ids = [
@@ -459,7 +486,7 @@ class FinOpsInfraToolset(BaseToolset):
             (
                 p
                 for p in existing_policies
-                if p.get("display_name") == "billing-anomaly-detector"
+                if p.get("display_name") == policy_display_name
             ),
             None,
         )
@@ -515,11 +542,11 @@ class FinOpsInfraToolset(BaseToolset):
 
         # If not existing, create new policy
         alert_policy = {
-            "display_name": "billing-anomaly-detector",
+            "display_name": policy_display_name,
             "combiner": monitoring_v3.AlertPolicy.ConditionCombinerType.OR,
             "conditions": [
                 {
-                    "display_name": "Log match: billing-anomaly-detector",
+                    "display_name": f"Log match: {policy_display_name}",
                     "condition_matched_log": {
                         "filter": robust_filter,
                     },
@@ -569,8 +596,21 @@ class FinOpsInfraToolset(BaseToolset):
                 "Ensure the agent is deployed and the agent ID secret is configured."
             )
 
+        agent_name_env = os.getenv("AGENT_NAME", "billing-concierge")
+        clean_prefix = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name_env).lower().strip("-")
+        if not clean_prefix or clean_prefix in ("gcp_billing_concierge", "gcp-billing-concierge"):
+            clean_prefix = "billing-concierge"
+
+        clean_desc = description.strip()
+        if clean_desc.startswith(f"{clean_prefix}-"):
+            short_desc = clean_desc[len(clean_prefix) + 1:]
+        elif clean_desc.startswith("billing-concierge-"):
+            short_desc = clean_desc[len("billing-concierge-"):]
+        else:
+            short_desc = clean_desc
+        job_id = f"{clean_prefix}-{short_desc}"
         parent = f"projects/{self.project_id}/locations/{self.location}"
-        job_name = f"{parent}/jobs/billing-concierge-{description}"
+        job_name = f"{parent}/jobs/{job_id}"
 
         tz_str = self.timezone or os.getenv("TIMEZONE", "")
         if not tz_str:
@@ -579,7 +619,11 @@ class FinOpsInfraToolset(BaseToolset):
             except Exception:
                 tz_str = "UTC"
 
-        scheduler_sa = f"{self.service_account_id}@{self.project_id}.iam.gserviceaccount.com"
+        scheduler_sa = (
+            os.getenv("SCHEDULER_SERVICE_ACCOUNT", "").strip()
+            or os.getenv("AGENT_SERVICE_ACCOUNT", "").strip()
+            or f"{self.service_account_id}@{self.project_id}.iam.gserviceaccount.com"
+        )
 
         logger.info(
             "Configuring scheduler job '%s' with SA %s, timezone: %s",
@@ -624,7 +668,7 @@ class FinOpsInfraToolset(BaseToolset):
                     {
                         "class_method": "async_stream_query",
                         "input": {
-                            "user_id": "billing_concierge_audit",
+                            "user_id": f"{clean_prefix.replace('-', '_')}_audit",
                             "message": message,
                         },
                     }
@@ -640,11 +684,11 @@ class FinOpsInfraToolset(BaseToolset):
 
         try:
             self.scheduler_client.create_job(parent=parent, job=job)
-            return f"SUCCESS: Created scheduler job '{description}' with schedule '{schedule}'."
+            return f"SUCCESS: Created scheduler job '{job_id}' with schedule '{schedule}'."
         except exceptions.AlreadyExists:
             update_mask = {"paths": ["schedule", "http_target", "time_zone"]}
             self.scheduler_client.update_job(job=job, update_mask=update_mask)
-            return f"SUCCESS: Updated existing scheduler job '{description}' to schedule '{schedule}'."
+            return f"SUCCESS: Updated existing scheduler job '{job_id}' to schedule '{schedule}'."
         except Exception as e:
             logger.error("ERROR: Failed to schedule audit: %s", str(e))
             return "ERROR: Failed to schedule audit. Please check Cloud Scheduler permissions."
@@ -662,12 +706,24 @@ class FinOpsInfraToolset(BaseToolset):
         short_name = resource_name.split("/")[-1]
         try:
             if resource_type == "scheduler":
-                target_name = (
-                    resource_name
-                    if resource_name.startswith("projects/")
-                    else f"projects/{self.project_id}/locations/{self.location}/jobs/{resource_name}"
-                )
-                self.scheduler_client.delete_job(name=target_name)
+                agent_name_env = os.getenv("AGENT_NAME", "billing-concierge")
+                clean_prefix = re.sub(r"[^a-zA-Z0-9_-]", "-", agent_name_env).lower().strip("-")
+                if not clean_prefix or clean_prefix in ("gcp_billing_concierge", "gcp-billing-concierge"):
+                    clean_prefix = "billing-concierge"
+
+                if resource_name.startswith("projects/"):
+                    target_name = resource_name
+                elif resource_name.startswith(f"{clean_prefix}-") or resource_name.startswith("billing-concierge-"):
+                    target_name = f"projects/{self.project_id}/locations/{self.location}/jobs/{resource_name}"
+                else:
+                    target_name = f"projects/{self.project_id}/locations/{self.location}/jobs/{clean_prefix}-{resource_name}"
+
+                try:
+                    self.scheduler_client.delete_job(name=target_name)
+                except exceptions.NotFound:
+                    fallback_name = f"projects/{self.project_id}/locations/{self.location}/jobs/{resource_name}"
+                    self.scheduler_client.delete_job(name=fallback_name)
+
             elif resource_type == "channel":
                 target_name = (
                     resource_name
@@ -678,11 +734,20 @@ class FinOpsInfraToolset(BaseToolset):
                     name=target_name, force=True
                 )
             elif resource_type == "policy":
-                target_name = (
-                    resource_name
-                    if resource_name.startswith("projects/")
-                    else f"projects/{self.project_id}/alertPolicies/{resource_name}"
-                )
+                if resource_name.startswith("projects/"):
+                    target_name = resource_name
+                elif resource_name.isdigit():
+                    target_name = f"projects/{self.project_id}/alertPolicies/{resource_name}"
+                else:
+                    policies = self.list_policies()
+                    matched = next(
+                        (p for p in policies if p.get("display_name") == resource_name or p.get("id") == resource_name),
+                        None,
+                    )
+                    if matched and matched.get("id"):
+                        target_name = f"projects/{self.project_id}/alertPolicies/{matched['id']}"
+                    else:
+                        target_name = f"projects/{self.project_id}/alertPolicies/{resource_name}"
                 self.alert_policy_client.delete_alert_policy(name=target_name)
             else:
                 return (

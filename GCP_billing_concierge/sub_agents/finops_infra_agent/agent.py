@@ -24,9 +24,10 @@ GOOGLE_CLOUD_REGION = (
     or os.getenv("GOOGLE_CLOUD_AGENT_ENGINE_LOCATION", "").strip()
     or "us-central1"
 )
-GOOGLE_CLOUD_LOCATION = os.getenv(
-    "GOOGLE_CLOUD_LOCATION", GOOGLE_CLOUD_REGION
-).strip()
+# Gemini foundation model routing location (Vertex AI global endpoint by default)
+GOOGLE_CLOUD_LOCATION = (
+    os.getenv("GOOGLE_CLOUD_LOCATION", "").strip() or "global"
+)
 BILLING_PROJECT = os.getenv("BILLING_EXPORT_PROJECT_ID", AGENT_PROJECT_ID)
 BILLING_DATASET = os.getenv("BILLING_EXPORT_DATASET", "")
 BILLING_TABLE = os.getenv("BILLING_EXPORT_TABLE", "")
@@ -71,7 +72,7 @@ finops_infra_agent = Agent(
     name=AGENT_NAME,
     description=(
         "Agent specialized to manage audit lifecycle including Cloud Schedulers, "
-        "Alerts, and Notifications of the billing anomalies reported by the Billing concierge agent."
+        "Alerts, and Notifications of billing anomalies reported by the FinOps billing agent."
     ),
     instruction=get_instructions(
         FULL_TABLE_PATH, AGENT_PROJECT_ID, GOOGLE_CLOUD_REGION

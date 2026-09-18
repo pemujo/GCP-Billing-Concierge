@@ -61,6 +61,10 @@ deployment_metadata.json
 .requirements.txt
 **/app_utils/.requirements.txt
 
+# Personal & Local Utilities
+deployment_scripts/cleanup_discovery_engine_authorizations.sh
+*cleanup_discovery_engine_authorizations*
+
 # Agent State & Memory
 **/state/
 **/memory/

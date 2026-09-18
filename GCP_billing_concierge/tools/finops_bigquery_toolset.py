@@ -325,11 +325,27 @@ class FinOpsBigQueryToolset(BigQueryToolset):
             env_auth_id = os.getenv("AUTH_ID")
             env_proj = os.getenv("GOOGLE_CLOUD_PROJECT")
             env_loc = os.getenv("GOOGLE_CLOUD_REGION", "us")
+            raw_agent_name = os.getenv("AGENT_NAME", "").strip()
+            clean_agent = (
+                re.sub(r"[^a-zA-Z0-9-]", "-", raw_agent_name).lower().strip("-")
+                if raw_agent_name
+                else ""
+            )
+            agent_auth_id = (
+                f"{clean_agent}-oauth"
+                if clean_agent and clean_agent not in ("gcp-billing-concierge", "billing-concierge")
+                else None
+            )
+
             candidate_keys = [
                 self.external_access_token_key,
                 f"temp:{self.external_access_token_key}" if self.external_access_token_key else None,
                 env_auth_id,
                 f"temp:{env_auth_id}" if env_auth_id else None,
+                agent_auth_id,
+                f"temp:{agent_auth_id}" if agent_auth_id else None,
+                "billing-ge-oauth",
+                "temp:billing-ge-oauth",
                 "bq-agent",
                 "temp:bq-agent",
                 "bq agent",
